@@ -1,0 +1,4004 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0d0d14">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Codename">
+<title>Codename</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<!--
+  CODENAME — 100% Self-Contained
+  • No Google Fonts, No CDN, No external deps
+  • Works offline permanently once downloaded
+  • All avatars same on vote screen (no imposter leak)
+  • Full hint system for every word
+-->
+<style>
+/* ══ DESIGN TOKENS ══ */
+:root {
+  --ff-head: 'Syne', 'Arial Black', sans-serif;
+  --ff-body: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  --ff-mono: 'JetBrains Mono', 'Courier New', monospace;
+
+  --bg:      #1a1a24;
+  --surf:    #22222e;
+  --surf2:   #2a2a38;
+  --surf3:   #323244;
+  --brd:     #3a3a52;
+  --brd2:    #4a4a68;
+
+  --red:     #e8364a;
+  --red2:    #ff7070;
+  --red-dim: rgba(232,54,74,.12);
+
+  --gold:    #f5c842;
+  --gold2:   #ffe680;
+  --gold-dim:rgba(245,200,66,.1);
+
+  --cyan:    #38bdf8;
+  --cyan2:   #7dd3fc;
+  --cyan-dim:rgba(56,189,248,.1);
+
+  --green:   #10d9a0;
+  --green2:  #6ee7c7;
+  --green-dim:rgba(16,217,160,.1);
+
+  --text:    #f0f0fa;
+  --text2:   #c0c0d8;
+  --text3:   #9090b0;
+
+  --radius:  16px;
+  --radius-s:10px;
+  --radius-l:22px;
+}
+
+/* ══ LIGHT THEME ══ */
+:root[data-theme="light"] {
+  --bg:       #f0f0f5;
+  --surf:     #ffffff;
+  --surf2:    #f4f4f9;
+  --surf3:    #eaeaf2;
+  --brd:      #dcdce8;
+  --brd2:     #c8c8dc;
+
+  --red:      #d42b3d;
+  --red2:     #e8364a;
+  --red-dim:  rgba(212,43,61,.09);
+
+  --gold:     #c49a00;
+  --gold2:    #e6b800;
+  --gold-dim: rgba(196,154,0,.1);
+
+  --cyan:     #0284c7;
+  --cyan2:    #0ea5e9;
+  --cyan-dim: rgba(2,132,199,.08);
+
+  --green:    #059669;
+  --green2:   #10b981;
+  --green-dim:rgba(5,150,105,.08);
+
+  --text:     #18182a;
+  --text2:    #4a4a6a;
+  --text3:    #8888aa;
+}
+
+/* ── Theme toggle button ── */
+.theme-toggle{
+  position:fixed;top:16px;right:16px;z-index:50;
+  width:40px;height:40px;border-radius:50%;
+  background:var(--surf);border:1.5px solid var(--brd2);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:18px;transition:all .2s;
+  box-shadow:0 2px 12px rgba(0,0,0,.12);
+}
+.theme-toggle:active{transform:scale(.9)}
+
+/* ── Leave game button ── */
+.leave-game-btn{
+  position:fixed;top:16px;left:16px;z-index:50;
+  display:none;align-items:center;gap:5px;
+  background:var(--surf);border:1.5px solid var(--brd2);
+  border-radius:20px;padding:7px 13px;
+  font-family:var(--ff-body);font-size:12px;font-weight:700;
+  color:var(--text2);cursor:pointer;
+  box-shadow:0 2px 12px rgba(0,0,0,.12);
+  transition:all .2s;
+}
+.leave-game-btn:active{transform:scale(.93);color:var(--red);border-color:var(--red)}
+.leave-game-btn.visible{display:flex}
+
+/* ── Colour transitions for smooth theme switch ── */
+body,
+.card-box,.card-back-face,.card-face,
+.btn-s,.btn-danger,.btn-giglabz,
+.chip,.vcard,.lb-row,.scoreboard,
+.word-box,.lb-preview,.giglabz-modal,
+.giglabz-item,.confirm-box,.toast,
+input[type=text],.stepbtn,.giglabz-close,
+.confirm-cancel{
+  transition:background .25s ease, border-color .25s ease, color .2s ease, box-shadow .25s ease;
+}
+
+/* light mode body glow adjustments */
+:root[data-theme="light"] body::before{
+  background:
+    radial-gradient(ellipse 80% 55% at 10% 0%,  rgba(212,43,61,.05)  0%,transparent 55%),
+    radial-gradient(ellipse 60% 60% at 90% 100%, rgba(2,132,199,.04) 0%,transparent 55%),
+    radial-gradient(ellipse 50% 40% at 50% 50%,  rgba(5,150,105,.03) 0%,transparent 60%);
+}
+
+/* light mode scanline — barely visible */
+:root[data-theme="light"] .scanline{
+  background:linear-gradient(90deg,transparent 0%,rgba(0,0,50,.04) 50%,transparent 100%);
+}
+
+/* light mode card back face */
+:root[data-theme="light"] .card-back-face{
+  background:var(--surf2);border-color:var(--brd2);
+}
+:root[data-theme="light"] .card-back-face::before{
+  background:repeating-linear-gradient(135deg,transparent,transparent 22px,rgba(0,0,0,.018) 22px,rgba(0,0,0,.018) 44px);
+}
+:root[data-theme="light"] .lock-icon svg rect,
+:root[data-theme="light"] .lock-icon svg path{
+  stroke:rgba(0,0,40,.25);
+}
+:root[data-theme="light"] .slide-hint-txt{color:var(--text2)}
+:root[data-theme="light"] .slide-hint-sub{color:var(--text2);opacity:.8}
+
+/* light mode slide pill */
+:root[data-theme="light"] .slide-pill{
+  background:rgba(0,0,0,.06);border-color:rgba(0,0,0,.12);
+  color:rgba(0,0,40,.4);
+}
+:root[data-theme="light"] .slide-arrow{color:rgba(0,0,40,.3)}
+
+/* light mode toast */
+:root[data-theme="light"] .toast{
+  background:var(--surf);
+  box-shadow:0 8px 32px rgba(0,0,0,.15);
+}
+
+/* light mode confirm */
+:root[data-theme="light"] #confirmOverlay{background:rgba(0,0,0,.45)}
+
+/* logo text shadow lighter */
+:root[data-theme="light"] .logo-wordmark{
+  color:#18182a;
+  text-shadow:0 0 40px rgba(212,43,61,.2);
+}
+
+/* vote title in light mode */
+:root[data-theme="light"] .vote-title{color:var(--text)}
+
+/* imposter/agent card colours don't change — they're vivid on both modes */
+
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--ff-body);
+  min-height:100dvh;
+  overflow-x:hidden;
+  user-select:none;
+  -webkit-user-select:none;
+  font-size:15px;
+  line-height:1.5;
+}
+body::before{
+  content:'';position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse 80% 55% at 10% 0%,  rgba(232,54,74,.07)  0%,transparent 55%),
+    radial-gradient(ellipse 60% 60% at 90% 100%, rgba(56,189,248,.05) 0%,transparent 55%),
+    radial-gradient(ellipse 50% 40% at 50% 50%,  rgba(16,217,160,.03) 0%,transparent 60%);
+  pointer-events:none;z-index:0;
+}
+
+/* ── SCREENS ── */
+.screen{display:none;flex-direction:column;min-height:100dvh;position:relative;z-index:1}
+.screen.on{display:flex;animation:fadeIn .22s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes glow-red{0%,100%{box-shadow:0 0 30px rgba(232,54,74,.3),0 0 60px rgba(232,54,74,.1)}50%{box-shadow:0 0 50px rgba(232,54,74,.5),0 0 100px rgba(232,54,74,.15)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes scanX{from{transform:translateY(-100%)}to{transform:translateY(100vh)}}
+@keyframes revealSlide{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes cardReveal{from{transform:scale(.94) translateY(12px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+@keyframes shimmer{from{background-position:200% center}to{background-position:-200% center}}
+
+.scanline{
+  position:fixed;left:0;right:0;height:1.5px;
+  background:linear-gradient(90deg,transparent 0%,rgba(56,189,248,.08) 30%,rgba(56,189,248,.18) 50%,rgba(56,189,248,.08) 70%,transparent 100%);
+  pointer-events:none;z-index:99;
+  animation:scanX 9s linear infinite;
+}
+
+/* ── LAYOUT ── */
+.wrap{max-width:440px;width:100%;margin:0 auto;padding:28px 18px 36px;display:flex;flex-direction:column;gap:14px;align-items:center}
+
+.card-box{
+  background:var(--surf);
+  border:1px solid var(--brd);
+  border-radius:var(--radius-l);
+  padding:20px;
+  width:100%;
+}
+
+/* ── TYPOGRAPHY ── */
+.lbl{
+  font-family:var(--ff-mono);
+  font-size:11px;letter-spacing:2px;
+  color:var(--text2);text-transform:uppercase;
+  margin-bottom:12px;font-weight:600;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.section-title{
+  font-family:var(--ff-head);
+  font-size:13px;letter-spacing:1px;
+  color:var(--text2);
+  margin-bottom:10px;
+}
+
+/* ── INPUTS ── */
+input[type=text]{
+  background:var(--surf2);
+  border:1.5px solid var(--brd);
+  border-radius:var(--radius-s);
+  color:var(--text);
+  font-family:var(--ff-body);
+  font-size:15px;font-weight:600;
+  padding:13px 15px;
+  outline:none;width:100%;
+  transition:border-color .2s,box-shadow .2s;
+  letter-spacing:.2px;
+}
+input[type=text]:focus{
+  border-color:rgba(56,189,248,.5);
+  box-shadow:0 0 0 3px rgba(56,189,248,.08);
+}
+input[type=text]::placeholder{color:var(--text3);font-weight:400}
+
+/* ── BUTTONS ── */
+.btn-add{
+  background:var(--red);border:none;border-radius:var(--radius-s);
+  color:#fff;font-size:20px;font-weight:800;
+  width:48px;flex-shrink:0;cursor:pointer;
+  transition:transform .13s,opacity .13s;
+  font-family:var(--ff-head);
+}
+.btn-add:active{transform:scale(.9);opacity:.8}
+
+.row{display:flex;gap:8px;align-items:stretch}
+
+.chip{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--surf2);border:1px solid var(--brd2);
+  border-radius:30px;padding:6px 10px 6px 14px;
+  font-size:13px;font-weight:600;margin:3px;
+  color:var(--text);letter-spacing:.1px;
+}
+.chip-x{
+  background:rgba(255,255,255,.06);border:none;color:var(--text3);
+  cursor:pointer;font-size:13px;padding:2px 4px;line-height:1;
+  border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
+}
+.chip-x:active{color:#fff;background:var(--red)}
+.chips-wrap{margin-top:8px;min-height:36px}
+
+.btn-p{
+  background:linear-gradient(135deg,#e8364a 0%,#c0162a 100%);
+  border:none;border-radius:var(--radius);color:#fff;
+  font-family:var(--ff-head);font-size:17px;letter-spacing:.5px;
+  padding:16px;width:100%;cursor:pointer;
+  box-shadow:0 4px 24px rgba(232,54,74,.3),0 1px 0 rgba(255,255,255,.08) inset;
+  transition:transform .13s,box-shadow .13s,opacity .13s;
+}
+.btn-p:active{transform:scale(.97);box-shadow:0 2px 8px rgba(232,54,74,.2);opacity:.9}
+
+.btn-s{
+  background:var(--surf2);border:1.5px solid var(--brd);
+  border-radius:var(--radius);color:var(--text2);
+  font-family:var(--ff-body);font-size:14px;font-weight:700;
+  padding:14px;width:100%;cursor:pointer;
+  transition:border-color .18s,color .18s,background .18s;
+  letter-spacing:.2px;
+}
+.btn-s:active{border-color:var(--brd2);color:var(--text);background:var(--surf3)}
+
+/* ══ HOME ══ */
+#home{justify-content:flex-start;align-items:center;overflow-y:auto}
+
+/* Logo — custom SVG-based wordmark */
+.logo-wrap{text-align:center;margin-bottom:6px;padding:4px 0}
+.logo-emblem{
+  width:90px;height:90px;margin:0 auto 16px;
+  position:relative;
+  animation:float 3.5s ease-in-out infinite;
+}
+.logo-emblem svg{width:100%;height:100%;drop-shadow:filter(0 0 20px red)}
+.logo-wordmark{
+  font-family:var(--ff-head);
+  font-size:40px;font-weight:800;letter-spacing:2px;
+  line-height:1;text-align:center;
+  color:#fff;
+  text-shadow:0 0 40px rgba(232,54,74,.4);
+}
+.logo-wordmark span{color:var(--red2)}
+.logo-tagline{
+  font-family:var(--ff-mono);font-size:10px;
+  color:var(--text2);letter-spacing:3px;margin-top:8px;text-align:center;font-weight:600;
+}
+
+/* Category grid */
+.cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.cat-btn{
+  background:var(--surf2);border:1.5px solid var(--brd);
+  border-radius:var(--radius-s);padding:9px 4px;
+  text-align:center;font-size:11px;font-weight:700;
+  cursor:pointer;transition:all .15s;
+  color:var(--text2);letter-spacing:.2px;
+  line-height:1.4;
+}
+.cat-btn.on{
+  background:var(--red-dim);border-color:rgba(232,54,74,.5);
+  color:var(--red2);
+}
+
+/* Stepper */
+.srow{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--brd)}
+.srow:last-child{border-bottom:none}
+.slabel{font-size:14px;font-weight:600;color:var(--text);letter-spacing:.1px}
+.sval{font-family:var(--ff-mono);font-size:14px;color:var(--cyan);font-weight:600;min-width:24px;text-align:center}
+.stepper{display:flex;align-items:center;gap:10px}
+.stepbtn{
+  background:var(--surf3);border:1.5px solid var(--brd2);
+  border-radius:8px;color:var(--text2);font-size:17px;font-weight:700;
+  width:34px;height:34px;cursor:pointer;transition:all .13s;
+  display:flex;align-items:center;justify-content:center;
+}
+.stepbtn:active{border-color:var(--red);color:var(--red2);background:var(--red-dim)}
+
+/* ══ REVEAL SCREEN ══ */
+#reveal{justify-content:flex-start;align-items:stretch;background:var(--bg)}
+
+.rv-header{
+  padding:36px 24px 20px;
+  text-align:center;
+}
+.rv-player-label{
+  font-family:var(--ff-mono);font-size:11px;letter-spacing:3px;
+  color:var(--text2);margin-bottom:6px;font-weight:600;
+}
+.rv-name{
+  font-family:var(--ff-head);
+  font-size:38px;font-weight:800;letter-spacing:1px;
+  color:var(--gold);line-height:1;
+}
+.rv-inst{
+  font-family:var(--ff-body);font-size:13px;font-weight:600;
+  color:var(--text2);margin-top:6px;letter-spacing:.2px;
+}
+
+/* Slide-to-reveal */
+.card-zone{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  width:100%;padding:10px 24px;
+}
+.card{
+  width:min(340px,90vw);aspect-ratio:3/4;
+  border-radius:26px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  position:relative;overflow:hidden;
+  /* slider state */
+  --reveal-pct: 0%;
+}
+.card-face, .card-back-face{
+  position:absolute;inset:0;border-radius:26px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  padding:28px 20px;transition:none;
+  pointer-events:none;
+}
+/* Back (locked) face — always visible beneath */
+.card-back-face{
+  background:var(--surf);border:2px solid var(--brd2);
+  z-index:1;
+}
+.card-back-face::before{
+  content:'';position:absolute;inset:0;border-radius:24px;
+  background:repeating-linear-gradient(135deg,transparent,transparent 22px,rgba(255,255,255,.012) 22px,rgba(255,255,255,.012) 44px);
+}
+/* Front (role) face — clips in from bottom as user slides */
+.card-face{
+  z-index:2;
+  clip-path:inset(calc(100% - var(--reveal-pct)) 0 0 0 round 26px);
+  transition:clip-path .05s linear;
+}
+.card-face.revealed{
+  clip-path:inset(0% 0 0 0 round 26px) !important;
+  transition:clip-path .35s cubic-bezier(.22,1,.36,1);
+}
+.card-face.imp-face{
+  background:linear-gradient(160deg,#220608 0%,#130308 60%,#0a0203 100%);
+  border:2px solid var(--red);
+  box-shadow:0 0 50px rgba(232,54,74,.25),inset 0 0 60px rgba(232,54,74,.06);
+}
+.card-face.agt-face{
+  background:linear-gradient(160deg,#031b12 0%,#040f0b 60%,#020808 100%);
+  border:2px solid var(--green);
+  box-shadow:0 0 50px rgba(16,217,160,.2),inset 0 0 60px rgba(16,217,160,.04);
+}
+
+/* Slide handle */
+.slide-track{
+  position:absolute;bottom:0;left:0;right:0;height:72px;
+  z-index:10;display:flex;align-items:center;justify-content:center;
+  cursor:grab;
+}
+.slide-track:active{cursor:grabbing}
+.slide-pill{
+  background:rgba(255,255,255,.06);
+  border:1.5px solid rgba(255,255,255,.12);
+  backdrop-filter:blur(8px);
+  border-radius:50px;
+  padding:10px 22px;
+  display:flex;align-items:center;gap:10px;
+  font-family:var(--ff-body);font-size:12px;font-weight:700;
+  color:rgba(255,255,255,.45);letter-spacing:.5px;
+  transition:opacity .2s;
+  pointer-events:none;
+  user-select:none;
+}
+.slide-arrow{font-size:18px;color:rgba(255,255,255,.35);animation:arrowBounce 1.4s ease-in-out infinite}
+@keyframes arrowBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+
+.slide-track.done .slide-pill{opacity:0}
+
+/* Role card content */
+.role-emblem{
+  width:72px;height:72px;border-radius:18px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:0;/* uses SVG */
+}
+.role-emblem svg{width:52px;height:52px}
+.imp-face .role-emblem{background:rgba(232,54,74,.15);border:1.5px solid rgba(232,54,74,.3)}
+.agt-face .role-emblem{background:rgba(16,217,160,.12);border:1.5px solid rgba(16,217,160,.25)}
+
+.role-lbl{
+  font-family:var(--ff-head);font-size:28px;font-weight:800;letter-spacing:2px;
+}
+.imp-face .role-lbl{color:var(--red2)}
+.agt-face .role-lbl{color:var(--green2)}
+
+.hint-label{font-family:var(--ff-mono);font-size:10px;letter-spacing:2px;color:var(--text2);margin-top:2px;font-weight:600}
+.hint-chips{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;padding:0 8px}
+.hint-chip{
+  background:rgba(232,54,74,.12);border:1px solid rgba(232,54,74,.35);
+  border-radius:8px;padding:5px 14px;
+  font-family:var(--ff-head);font-size:18px;letter-spacing:.5px;
+  color:var(--red2);
+}
+.hint-note{
+  font-family:var(--ff-body);font-size:12px;font-weight:600;
+  color:rgba(232,54,74,.65);text-align:center;padding:0 16px;line-height:1.5;
+}
+
+.co-imp-section{
+  width:100%;padding:0 16px;margin-top:2px;
+}
+.co-imp-label{
+  font-family:var(--ff-mono);font-size:9px;letter-spacing:2px;
+  color:rgba(232,54,74,.5);font-weight:700;text-align:center;margin-bottom:6px;
+}
+.co-imp-chips{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
+.co-imp-chip{
+  display:flex;align-items:center;gap:6px;
+  background:rgba(232,54,74,.08);border:1px solid rgba(232,54,74,.25);
+  border-radius:30px;padding:5px 12px 5px 8px;
+  font-size:12px;font-weight:700;color:var(--red2);
+}
+
+.secret-label{font-family:var(--ff-mono);font-size:10px;letter-spacing:2px;color:var(--text2);font-weight:600}
+.secret-word{
+  font-family:var(--ff-head);font-size:34px;font-weight:800;
+  letter-spacing:1.5px;color:var(--cyan);text-align:center;
+  padding:0 12px;line-height:1.1;
+  text-shadow:0 0 30px rgba(56,189,248,.35);
+}
+.agent-note{
+  font-family:var(--ff-body);font-size:12px;font-weight:600;
+  color:rgba(16,217,160,.6);text-align:center;padding:0 16px;line-height:1.5;
+}
+
+/* Back face content */
+.lock-icon{
+  width:60px;height:60px;
+  background:var(--surf3);border:1.5px solid var(--brd2);
+  border-radius:16px;display:flex;align-items:center;justify-content:center;
+}
+.lock-icon svg{width:30px;height:30px;opacity:.4}
+.slide-hint-txt{
+  font-family:var(--ff-body);font-size:13px;font-weight:700;
+  color:var(--text2);letter-spacing:.2px;margin-top:-4px;
+}
+.slide-hint-sub{
+  font-family:var(--ff-mono);font-size:10px;font-weight:600;
+  color:var(--text2);letter-spacing:2px;opacity:.8;
+}
+
+/* Progress dots */
+.dots{display:flex;justify-content:center;gap:6px;margin-bottom:14px}
+.dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--brd2);transition:all .3s;
+}
+.dot.done{background:var(--green);width:18px;border-radius:4px}
+.dot.cur{background:var(--gold)}
+
+.rv-footer{width:100%;padding:0 24px 28px}
+
+/* ══ VOTE ══ */
+#vote{padding:0;overflow-y:auto}
+.vote-hdr{padding:28px 20px 14px;text-align:center}
+.vote-title{
+  font-family:var(--ff-head);font-size:34px;font-weight:800;letter-spacing:1px;
+  color:var(--text);
+}
+.vote-sub{
+  font-family:var(--ff-mono);font-size:10px;color:var(--text2);
+  letter-spacing:2px;margin-top:5px;font-weight:600;
+}
+#voteList{padding:0 16px}
+.vcard{
+  background:var(--surf);border:1.5px solid var(--brd);
+  border-radius:var(--radius);padding:14px 16px;margin-bottom:8px;
+  display:flex;align-items:center;gap:14px;cursor:pointer;transition:all .18s;
+}
+.vcard:active{transform:scale(.985)}
+.vcard.picked{
+  border-color:rgba(232,54,74,.5);
+  background:rgba(232,54,74,.06);
+}
+.vavatar{
+  width:44px;height:44px;border-radius:12px;
+  background:var(--surf3);border:1.5px solid var(--brd2);
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+  flex-shrink:0;
+}
+.vname{font-size:16px;font-weight:700;flex:1;color:var(--text);letter-spacing:.1px}
+.vcheck{
+  width:22px;height:22px;border-radius:50%;
+  border:1.5px solid var(--brd2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;transition:all .18s;
+  color:transparent;
+}
+.vcard.picked .vcheck{background:var(--red);border-color:var(--red);color:#fff}
+.vcard.self-vote{opacity:.45;pointer-events:none;cursor:not-allowed}
+.vcard.disconnected-player{opacity:.4}
+.vote-word-hint{display:none;margin:0 16px 8px;background:rgba(56,189,248,.07);border:1px solid rgba(56,189,248,.2);border-radius:var(--radius-s);padding:8px 14px;align-items:center;gap:10px}
+.vwh-label{font-family:var(--ff-mono);font-size:9px;letter-spacing:2px;color:var(--text3);font-weight:700;flex-shrink:0}
+.vwh-word{font-family:var(--ff-head);font-size:16px;font-weight:800;color:var(--cyan)}
+.vote-ftr{padding:12px 16px 24px;display:flex;flex-direction:column;gap:8px}
+.vote-bar-fill.all-voted{background:var(--green)}
+
+/* ══ RESULT ══ */
+#result{justify-content:center;align-items:center;padding:32px 20px;gap:16px;text-align:center;overflow-y:auto}
+.res-icon{font-size:0;line-height:1}
+.res-icon svg{width:80px;height:80px}
+.res-title{
+  font-family:var(--ff-head);font-size:40px;font-weight:800;
+  letter-spacing:1.5px;line-height:1;
+}
+.res-win{color:var(--green)}
+.res-lose{color:var(--red2)}
+.res-detail{
+  font-size:14px;font-weight:600;color:var(--text2);
+  max-width:300px;line-height:1.6;
+}
+.res-imp-name{
+  font-family:var(--ff-head);font-size:22px;font-weight:800;
+  letter-spacing:1px;color:var(--gold);
+}
+.word-box{
+  background:var(--surf);border:1px solid var(--brd);
+  border-radius:var(--radius);padding:14px 32px;
+}
+.word-box-lbl{
+  font-family:var(--ff-mono);font-size:10px;letter-spacing:2px;
+  color:var(--text2);margin-bottom:4px;font-weight:600;
+}
+.word-box-val{
+  font-family:var(--ff-head);font-size:30px;font-weight:800;
+  letter-spacing:1.5px;color:var(--cyan);
+  text-shadow:0 0 20px rgba(56,189,248,.3);
+}
+
+.scoreboard{
+  background:var(--surf);border:1px solid var(--brd);
+  border-radius:var(--radius);padding:14px;
+  width:100%;max-width:360px;
+}
+.score-row{display:flex;align-items:center;gap:10px;padding:9px 2px;border-bottom:1px solid var(--brd)}
+.score-row:last-child{border-bottom:none}
+.s-rank{font-family:var(--ff-mono);font-size:11px;color:var(--text2);width:22px;text-align:center;font-weight:600}
+.s-name{flex:1;font-size:14px;font-weight:600;color:var(--text)}
+.s-pts{font-family:var(--ff-head);font-size:20px;font-weight:800;letter-spacing:.5px;color:var(--gold)}
+
+.btn-row{display:flex;gap:10px;width:100%;max-width:360px}
+.btn-row .btn-p,.btn-row .btn-s{flex:1;font-size:14px;padding:14px}
+
+/* ══ LEADERBOARD ══ */
+#leaderboard{justify-content:flex-start;align-items:center;overflow-y:auto}
+.lb-hdr{text-align:center;padding:40px 20px 20px}
+.lb-title{
+  font-family:var(--ff-head);font-size:32px;font-weight:800;
+  letter-spacing:2px;color:var(--gold);margin-top:12px;
+}
+.lb-sub{font-family:var(--ff-mono);font-size:10px;letter-spacing:2px;color:var(--text2);margin-top:5px;font-weight:600}
+.lb-wrap{width:100%;max-width:440px;padding:0 18px 36px;display:flex;flex-direction:column;gap:8px}
+
+.lb-row{
+  background:var(--surf);border:1px solid var(--brd);
+  border-radius:var(--radius);padding:13px 16px;
+  display:flex;align-items:center;gap:12px;
+}
+.lb-row.gold{border-color:rgba(245,200,66,.4);background:rgba(245,200,66,.05)}
+.lb-row.silver{border-color:rgba(180,180,200,.3);background:rgba(180,180,200,.04)}
+.lb-row.bronze{border-color:rgba(205,127,50,.35);background:rgba(205,127,50,.05)}
+.lb-rank{font-size:18px;width:26px;text-align:center;flex-shrink:0}
+.lb-name{font-size:15px;font-weight:700;flex:1;color:var(--text)}
+.lb-stats{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.lb-wr{font-family:var(--ff-head);font-size:18px;font-weight:800;letter-spacing:.5px}
+.lb-wr.good{color:var(--green)}
+.lb-wr.bad{color:var(--red2)}
+.lb-detail{font-family:var(--ff-mono);font-size:10px;color:var(--text2);letter-spacing:.5px;font-weight:600}
+.lb-games{font-family:var(--ff-mono);font-size:10px;color:var(--text2);margin-top:1px;font-weight:600}
+.lb-empty{
+  text-align:center;padding:48px 20px;
+  font-family:var(--ff-mono);font-size:11px;letter-spacing:2px;color:var(--text2);
+  line-height:2;font-weight:600;
+}
+
+/* word cache pill */
+.cache-pill{
+  display:inline-flex;align-items:center;gap:5px;
+  background:var(--gold-dim);border:1px solid rgba(245,200,66,.25);
+  border-radius:20px;padding:3px 9px;
+  font-family:var(--ff-mono);font-size:9px;letter-spacing:1.5px;color:var(--gold);
+  font-weight:700;
+  margin-top:0;
+}
+.cache-dot{width:5px;height:5px;border-radius:50%;background:var(--gold);flex-shrink:0}
+
+/* settings danger buttons */
+.btn-danger{
+  background:rgba(232,54,74,.07);border:1px solid rgba(232,54,74,.2);
+  border-radius:var(--radius-s);color:var(--red2);
+  font-family:var(--ff-body);font-size:12px;font-weight:700;
+  padding:10px 12px;cursor:pointer;transition:all .18s;
+  flex:1;letter-spacing:.2px;
+}
+.btn-danger:active{background:rgba(232,54,74,.15);border-color:rgba(232,54,74,.5)}
+.danger-row{display:flex;gap:8px;margin-top:6px}
+
+/* result leaderboard preview */
+.lb-preview{
+  background:var(--surf);border:1px solid var(--brd);
+  border-radius:var(--radius);padding:14px;
+  width:100%;max-width:360px;
+}
+.lb-preview-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:10px;
+}
+.lb-preview-title{font-family:var(--ff-mono);font-size:10px;letter-spacing:2px;color:var(--text2);font-weight:700}
+.lb-preview-link{
+  font-family:var(--ff-mono);font-size:9px;letter-spacing:1px;
+  color:var(--cyan);cursor:pointer;opacity:.8;
+}
+.lb-preview-link:active{opacity:1}
+
+/* ── GIGLABZ ── */
+.btn-giglabz{
+  background:var(--cyan-dim);
+  border:1px solid rgba(56,189,248,.3);
+  border-radius:var(--radius-s);color:var(--cyan);
+  font-family:var(--ff-body);font-size:13px;font-weight:700;
+  padding:10px 15px;width:100%;cursor:pointer;
+  margin-top:9px;letter-spacing:.2px;
+  transition:all .18s;text-align:left;
+}
+.btn-giglabz:active{background:rgba(56,189,248,.15)}
+
+#giglabzOverlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.8);z-index:200;
+  align-items:flex-end;justify-content:center;
+}
+#giglabzOverlay.open{display:flex;animation:fadeIn .2s ease}
+
+.giglabz-modal{
+  background:var(--surf);border:1px solid var(--brd2);
+  border-radius:26px 26px 0 0;
+  width:100%;max-width:480px;
+  max-height:82dvh;display:flex;flex-direction:column;
+  padding:22px 18px 0;
+  animation:slideUp .25s cubic-bezier(.34,1.2,.64,1);
+}
+@keyframes slideUp{from{transform:translateY(50px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+.giglabz-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
+.giglabz-title{font-family:var(--ff-head);font-size:20px;font-weight:800;letter-spacing:1px;color:var(--cyan)}
+.giglabz-sub{font-family:var(--ff-mono);font-size:9px;letter-spacing:2px;color:var(--text2);margin-top:4px;font-weight:600}
+.giglabz-close{
+  background:var(--surf2);border:1px solid var(--brd);
+  border-radius:8px;color:var(--text3);font-size:14px;
+  width:30px;height:30px;cursor:pointer;transition:color .15s;
+  display:flex;align-items:center;justify-content:center;
+}
+.giglabz-close:active{color:var(--red)}
+
+.giglabz-add-row{display:flex;gap:8px;margin-bottom:12px}
+.giglabz-add-row input{flex:1}
+
+.giglabz-list{
+  overflow-y:auto;flex:1;
+  display:grid;grid-template-columns:1fr 1fr;gap:7px;
+  padding-bottom:8px;
+}
+.giglabz-item{
+  background:var(--surf2);border:1.5px solid var(--brd);
+  border-radius:12px;padding:11px 12px;
+  display:flex;align-items:center;gap:8px;
+  cursor:pointer;transition:all .15s;position:relative;
+}
+.giglabz-item:active{transform:scale(.97)}
+.giglabz-item.selected{border-color:rgba(56,189,248,.5);background:var(--cyan-dim)}
+.giglabz-item.in-game{border-color:rgba(16,217,160,.4);background:var(--green-dim);opacity:.7;pointer-events:none}
+.gi-avatar{
+  width:32px;height:32px;border-radius:8px;
+  background:var(--surf3);border:1px solid var(--brd2);
+  display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;
+}
+.gi-name{font-size:12px;font-weight:700;flex:1;line-height:1.2;color:var(--text)}
+.gi-check{
+  width:17px;height:17px;border-radius:50%;
+  border:1.5px solid var(--brd2);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;
+  transition:all .2s;
+}
+.giglabz-item.selected .gi-check{background:var(--cyan);border-color:var(--cyan);color:#000}
+.gi-del{
+  position:absolute;top:4px;right:4px;
+  background:none;border:none;color:var(--text3);
+  font-size:10px;cursor:pointer;padding:2px 4px;line-height:1;
+  transition:color .15s;display:none;
+}
+.giglabz-item:hover .gi-del{display:block}
+.gi-del:active{color:var(--red)}
+.gi-ingame-badge{
+  position:absolute;top:4px;right:4px;
+  font-size:8px;font-family:var(--ff-mono);color:var(--green);letter-spacing:.5px;
+}
+.giglabz-ftr{padding:12px 0 22px}
+
+/* ── CONFIRM MODAL ── */
+#confirmOverlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.75);z-index:300;
+  align-items:center;justify-content:center;
+  padding:24px;
+}
+#confirmOverlay.open{display:flex;animation:fadeIn .18s ease}
+.confirm-box{
+  background:var(--surf);border:1px solid var(--brd2);
+  border-radius:var(--radius-l);
+  width:100%;max-width:340px;
+  padding:28px 24px 20px;
+  text-align:center;
+  animation:slideUp .22s cubic-bezier(.34,1.2,.64,1);
+}
+.confirm-icon{font-size:36px;margin-bottom:12px;line-height:1}
+.confirm-title{
+  font-family:var(--ff-head);font-size:18px;font-weight:800;
+  color:var(--text);letter-spacing:.5px;margin-bottom:8px;
+}
+.confirm-msg{
+  font-size:13px;font-weight:500;color:var(--text2);
+  line-height:1.6;margin-bottom:22px;
+}
+.confirm-btns{display:flex;gap:10px}
+.confirm-cancel{
+  flex:1;background:var(--surf2);border:1.5px solid var(--brd2);
+  border-radius:var(--radius-s);color:var(--text2);
+  font-family:var(--ff-body);font-size:14px;font-weight:700;
+  padding:13px;cursor:pointer;transition:all .15s;
+}
+.confirm-cancel:active{border-color:var(--brd2);color:var(--text)}
+.confirm-ok{
+  flex:1;background:linear-gradient(135deg,var(--red),#c0162a);
+  border:none;border-radius:var(--radius-s);color:#fff;
+  font-family:var(--ff-head);font-size:14px;font-weight:800;
+  padding:13px;cursor:pointer;
+  box-shadow:0 3px 14px rgba(232,54,74,.3);
+  transition:opacity .15s;
+}
+.confirm-ok:active{opacity:.85}
+
+/* ══ MULTIPLAYER SCREENS ══ */
+
+/* ── Mode Select (replaces plain home buttons) ── */
+.mode-btns{display:flex;flex-direction:column;gap:10px;width:100%;max-width:400px}
+.btn-mode{
+  background:var(--surf2);border:1.5px solid var(--brd2);
+  border-radius:var(--radius);padding:18px 20px;
+  display:flex;align-items:center;gap:14px;cursor:pointer;
+  transition:all .18s;text-align:left;width:100%;
+}
+.btn-mode:active{transform:scale(.98);border-color:var(--red)}
+.btn-mode.primary{
+  background:linear-gradient(135deg,#e8364a,#c0162a);
+  border-color:transparent;
+  box-shadow:0 4px 24px rgba(232,54,74,.3);
+}
+.btn-mode-ico{font-size:26px;flex-shrink:0}
+.btn-mode-txt{flex:1}
+.btn-mode-label{font-family:var(--ff-head);font-size:16px;font-weight:800;color:var(--text);letter-spacing:.5px}
+.btn-mode.primary .btn-mode-label{color:#fff}
+.btn-mode-desc{font-size:12px;font-weight:500;color:var(--text3);margin-top:2px}
+.btn-mode.primary .btn-mode-desc{color:rgba(255,255,255,.7)}
+.btn-mode-arrow{font-size:18px;color:var(--text3);flex-shrink:0}
+.btn-mode.primary .btn-mode-arrow{color:rgba(255,255,255,.7)}
+
+/* ── Join Room screen ── */
+#joinRoom{justify-content:flex-start;align-items:center;overflow-y:auto}
+.join-wrap{max-width:400px;width:100%;padding:40px 20px;display:flex;flex-direction:column;gap:16px;align-items:center}
+.back-btn{
+  align-self:flex-start;background:none;border:none;
+  color:var(--text2);font-family:var(--ff-body);font-size:14px;font-weight:700;
+  cursor:pointer;display:flex;align-items:center;gap:6px;padding:0;
+  margin-bottom:4px;
+}
+.back-btn:active{color:var(--text)}
+.join-title{font-family:var(--ff-head);font-size:28px;font-weight:800;letter-spacing:1px;color:var(--text);align-self:flex-start}
+.join-sub{font-size:13px;font-weight:500;color:var(--text2);align-self:flex-start;margin-top:-8px}
+.code-input{
+  background:var(--surf2);border:2px solid var(--brd2);
+  border-radius:var(--radius);color:var(--text);
+  font-family:var(--ff-head);font-size:36px;font-weight:800;
+  letter-spacing:8px;text-align:center;text-transform:uppercase;
+  padding:18px;width:100%;outline:none;
+  transition:border-color .2s,box-shadow .2s;
+}
+.code-input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(56,189,248,.12)}
+.name-input-wrap{width:100%}
+.name-label{font-family:var(--ff-mono);font-size:10px;letter-spacing:2px;color:var(--text2);font-weight:600;margin-bottom:7px}
+
+/* ── Lobby screen ── */
+#lobby{justify-content:flex-start;align-items:center;overflow-y:auto}
+.lobby-wrap{max-width:440px;width:100%;padding:28px 18px 36px;display:flex;flex-direction:column;gap:14px}
+.lobby-header{display:flex;align-items:center;justify-content:space-between}
+.room-badge{
+  background:var(--surf2);border:1.5px solid var(--brd2);
+  border-radius:10px;padding:8px 14px;
+  display:flex;flex-direction:column;align-items:center;
+}
+.room-badge-label{font-family:var(--ff-mono);font-size:8px;letter-spacing:2px;color:var(--text3);font-weight:600}
+.room-badge-code{font-family:var(--ff-head);font-size:22px;font-weight:800;color:var(--cyan);letter-spacing:4px}
+.lobby-role{font-family:var(--ff-mono);font-size:10px;letter-spacing:2px;font-weight:700}
+.lobby-role.host{color:var(--gold)}
+.lobby-role.player{color:var(--text2)}
+
+.player-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.player-tile{
+  background:var(--surf2);border:1.5px solid var(--brd);
+  border-radius:var(--radius-s);padding:12px;
+  display:flex;align-items:center;gap:10px;
+  position:relative;
+}
+.player-tile.is-host{border-color:rgba(245,200,66,.4);background:rgba(245,200,66,.05)}
+.player-tile.is-me{border-color:rgba(56,189,248,.35)}
+.pt-avatar{font-size:22px;flex-shrink:0}
+.pt-info{flex:1;min-width:0}
+.pt-name{font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pt-tag{font-family:var(--ff-mono);font-size:8px;letter-spacing:1px;font-weight:600;margin-top:1px}
+.pt-tag.host{color:var(--gold)}
+.pt-tag.you{color:var(--cyan)}
+.pt-kick{
+  position:absolute;top:4px;right:6px;
+  background:none;border:none;color:var(--text3);
+  font-size:12px;cursor:pointer;padding:2px;
+  transition:color .15s;display:none;
+}
+.player-tile:hover .pt-kick{display:block}
+.pt-kick:active{color:var(--red)}
+
+.lobby-empty{
+  text-align:center;padding:24px;
+  font-family:var(--ff-mono);font-size:10px;letter-spacing:2px;
+  color:var(--text3);line-height:2;
+}
+
+/* Host settings inside lobby */
+.lobby-settings{opacity:1;transition:opacity .2s}
+.lobby-settings.disabled{opacity:.4;pointer-events:none}
+
+/* status bar */
+.status-bar{
+  background:var(--surf2);border:1px solid var(--brd);border-radius:40px;
+  padding:8px 16px;display:flex;align-items:center;gap:8px;
+  font-family:var(--ff-mono);font-size:10px;letter-spacing:1.5px;color:var(--text2);font-weight:600;
+}
+.status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.status-dot.green{background:var(--green);box-shadow:0 0 8px rgba(16,217,160,.5)}
+.status-dot.amber{background:var(--gold);box-shadow:0 0 8px rgba(245,200,66,.5);animation:pulse-dot .9s ease-in-out infinite}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ── Waiting screen (players see while host sets up / game in progress) ── */
+#waiting{justify-content:center;align-items:center;padding:40px 24px;gap:20px;text-align:center}
+.wait-spinner{
+  width:64px;height:64px;border-radius:50%;
+  border:3px solid var(--brd2);border-top-color:var(--cyan);
+  animation:spin .9s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.wait-title{font-family:var(--ff-head);font-size:24px;font-weight:800;letter-spacing:1px;color:var(--text)}
+.wait-sub{font-size:13px;font-weight:600;color:var(--text2);max-width:280px;line-height:1.6}
+.wait-room{font-family:var(--ff-mono);font-size:12px;letter-spacing:2px;color:var(--cyan);font-weight:600}
+
+/* ── Vote tally (host sees live votes) ── */
+.vote-tally{
+  background:var(--surf2);border:1px solid var(--brd);
+  border-radius:var(--radius-s);padding:10px 14px;
+  font-family:var(--ff-mono);font-size:11px;color:var(--text2);
+  font-weight:600;letter-spacing:1px;text-align:center;margin-bottom:8px;
+}
+.vote-bar{
+  height:3px;background:var(--brd);border-radius:2px;margin-top:6px;overflow:hidden;
+}
+.vote-bar-fill{height:100%;background:var(--cyan);border-radius:2px;transition:width .4s ease}
+
+/* ── Role card (multiplayer — each person's own device) ── */
+#myRole{justify-content:flex-start;align-items:center;overflow-y:auto;padding-bottom:40px}
+.myrole-wrap{max-width:440px;width:100%;padding:28px 18px;display:flex;flex-direction:column;gap:14px;align-items:center}
+.myrole-header{text-align:center;margin-bottom:4px}
+.myrole-name{font-family:var(--ff-head);font-size:14px;font-weight:800;letter-spacing:2px;color:var(--text2)}
+.myrole-instruct{font-size:13px;font-weight:600;color:var(--text2);margin-top:4px}
+
+/* ══ QR CODE ══ */
+.qr-btn{
+  background:var(--cyan-dim);border:1px solid rgba(56,189,248,.3);
+  border-radius:var(--radius-s);color:var(--cyan);
+  font-family:var(--ff-body);font-size:12px;font-weight:700;
+  padding:8px 14px;cursor:pointer;transition:all .18s;
+  display:flex;align-items:center;gap:6px;letter-spacing:.2px;
+}
+.qr-btn:active{background:rgba(56,189,248,.2)}
+
+#qrOverlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.8);z-index:300;
+  align-items:center;justify-content:center;padding:24px;
+}
+#qrOverlay.open{display:flex;animation:fadeIn .2s ease}
+.qr-box{
+  background:var(--surf);border:1px solid var(--brd2);
+  border-radius:var(--radius-l);
+  width:100%;max-width:320px;
+  padding:28px 24px 22px;
+  text-align:center;
+  animation:slideUp .22s cubic-bezier(.34,1.2,.64,1);
+  display:flex;flex-direction:column;align-items:center;gap:14px;
+}
+.qr-title{font-family:var(--ff-head);font-size:18px;font-weight:800;letter-spacing:.5px;color:var(--text)}
+.qr-sub{font-size:12px;font-weight:600;color:var(--text2);line-height:1.5}
+.qr-canvas-wrap{
+  background:#fff;border-radius:12px;
+  padding:14px;display:inline-flex;
+  box-shadow:0 4px 20px rgba(0,0,0,.2);
+}
+.qr-canvas-wrap canvas{display:block}
+.qr-code-display{
+  font-family:var(--ff-head);font-size:28px;font-weight:800;
+  letter-spacing:6px;color:var(--cyan);
+}
+.qr-hint{font-family:var(--ff-mono);font-size:9px;letter-spacing:1.5px;color:var(--text3);font-weight:600}
+
+/* Scanner */
+#scanOverlay{
+  display:none;position:fixed;inset:0;z-index:300;
+  background:#000;flex-direction:column;align-items:center;justify-content:center;
+}
+#scanOverlay.open{display:flex;animation:fadeIn .2s ease}
+#scanVideo{
+  width:100%;max-width:440px;height:100%;max-height:440px;
+  object-fit:cover;border-radius:0;
+}
+.scan-frame{
+  position:absolute;
+  width:220px;height:220px;
+  border:3px solid var(--cyan);border-radius:18px;
+  box-shadow:0 0 0 9999px rgba(0,0,0,.55);
+  pointer-events:none;
+}
+.scan-line{
+  position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--cyan),transparent);
+  animation:scanX 2s linear infinite;
+}
+.scan-label{
+  position:absolute;bottom:100px;left:0;right:0;
+  text-align:center;font-family:var(--ff-mono);font-size:11px;
+  letter-spacing:2px;color:rgba(255,255,255,.7);font-weight:600;
+}
+.scan-cancel{
+  position:absolute;bottom:40px;
+  background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.25);
+  border-radius:30px;color:#fff;font-family:var(--ff-body);font-size:14px;font-weight:700;
+  padding:12px 32px;cursor:pointer;
+}
+
+/* ── OFFLINE SETUP ── */
+#offlineSetup{justify-content:flex-start;align-items:center;overflow-y:auto}
+.offline-wrap{max-width:440px;width:100%;padding:28px 18px 40px;display:flex;flex-direction:column;gap:14px}
+.offline-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--green-dim);border:1px solid rgba(16,217,160,.3);
+  border-radius:20px;padding:6px 14px;
+  font-family:var(--ff-mono);font-size:10px;letter-spacing:2px;
+  color:var(--green);font-weight:700;align-self:flex-start;
+}
+
+/* vote result pop — animated overlay shown between vote rounds */
+#voteResultOverlay{
+  display:none;position:fixed;inset:0;z-index:150;
+  background:rgba(0,0,0,.82);
+  align-items:center;justify-content:center;flex-direction:column;gap:16px;
+  text-align:center;padding:32px;
+}
+#voteResultOverlay.open{display:flex;animation:fadeIn .22s ease}
+.vro-icon{font-size:0}
+.vro-icon svg{width:72px;height:72px}
+.vro-title{font-family:var(--ff-head);font-size:28px;font-weight:800;letter-spacing:1px}
+.vro-sub{font-size:14px;font-weight:600;color:var(--text2);max-width:280px;line-height:1.6}
+.vro-continue{margin-top:8px}
+
+/* ══ MODE SELECT SCREENS ══ */
+#modeOffline,#modeOnline{justify-content:flex-start;align-items:center;overflow-y:auto}
+.mode-screen-wrap{max-width:440px;width:100%;padding:28px 18px 40px;display:flex;flex-direction:column;gap:14px}
+
+.mode-hero-btns{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;max-width:400px}
+.btn-hero{
+  border-radius:var(--radius-l);padding:28px 16px 22px;
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  cursor:pointer;transition:all .18s;text-align:center;
+  position:relative;overflow:hidden;
+  border:2px solid transparent;
+}
+.btn-hero:active{transform:scale(.97)}
+.btn-hero-offline{
+  background:linear-gradient(145deg,rgba(16,217,160,.12),rgba(16,217,160,.04));
+  border-color:rgba(16,217,160,.3);
+}
+.btn-hero-offline:active{border-color:rgba(16,217,160,.6)}
+.btn-hero-online{
+  background:linear-gradient(145deg,rgba(56,189,248,.12),rgba(56,189,248,.04));
+  border-color:rgba(56,189,248,.3);
+}
+.btn-hero-online:active{border-color:rgba(56,189,248,.6)}
+.btn-hero-ico{
+  width:56px;height:56px;border-radius:16px;
+  display:flex;align-items:center;justify-content:center;font-size:26px;
+  flex-shrink:0;
+}
+.btn-hero-offline .btn-hero-ico{background:rgba(16,217,160,.12);border:1.5px solid rgba(16,217,160,.25)}
+.btn-hero-online  .btn-hero-ico{background:rgba(56,189,248,.12);border:1.5px solid rgba(56,189,248,.25)}
+.btn-hero-label{
+  font-family:var(--ff-head);font-size:18px;font-weight:800;letter-spacing:1px;
+}
+.btn-hero-offline .btn-hero-label{color:var(--green)}
+.btn-hero-online  .btn-hero-label{color:var(--cyan)}
+.btn-hero-desc{font-size:11px;font-weight:600;color:var(--text3);line-height:1.5;padding:0 4px}
+
+/* Online badge on pass&play in online mode */
+.online-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.25);
+  border-radius:20px;padding:4px 10px;
+  font-family:var(--ff-mono);font-size:8px;letter-spacing:2px;color:var(--cyan);
+  font-weight:700;
+}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:24px;left:50%;
+  transform:translateX(-50%) translateY(80px);
+  background:var(--surf2);color:var(--text);
+  border:1px solid var(--brd2);
+  padding:11px 22px;border-radius:40px;
+  font-family:var(--ff-body);font-weight:600;font-size:13px;
+  z-index:999;transition:transform .28s cubic-bezier(.34,1.56,.64,1);
+  white-space:nowrap;pointer-events:none;
+  box-shadow:0 8px 32px rgba(0,0,0,.4);
+  letter-spacing:.2px;
+}
+.toast.show{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="scanline"></div>
+<button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark mode">🌙</button>
+<button class="leave-game-btn" id="leaveGameBtn" onclick="confirmLeaveGame()">← Leave</button>
+
+<!-- ═══════════════ HOME ═══════════════ -->
+<div class="screen on" id="home">
+<div class="wrap" style="padding-top:32px;padding-bottom:32px">
+
+  <div class="logo-wrap">
+    <!-- Emblem: stylised eye/mask logo -->
+    <div class="logo-emblem">
+      <svg viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="lg1" cx="50%" cy="40%" r="60%">
+            <stop offset="0%" stop-color="#ff7070"/>
+            <stop offset="100%" stop-color="#8a0d19"/>
+          </radialGradient>
+          <radialGradient id="lg2" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#e8364a"/>
+            <stop offset="100%" stop-color="#600010"/>
+          </radialGradient>
+          <filter id="glow-r">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <!-- Outer shield -->
+        <path d="M45 6 L78 20 L78 52 C78 67 62 78 45 84 C28 78 12 67 12 52 L12 20 Z"
+              fill="url(#lg2)" stroke="rgba(232,54,74,.6)" stroke-width="1.5"/>
+        <!-- Inner highlight -->
+        <path d="M45 13 L72 25 L72 51 C72 63 58 72 45 78 C32 72 18 63 18 51 L18 25 Z"
+              fill="url(#lg1)" opacity=".18"/>
+        <!-- Eye shape -->
+        <ellipse cx="45" cy="44" rx="17" ry="10" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="2" filter="url(#glow-r)"/>
+        <circle cx="45" cy="44" r="5.5" fill="rgba(255,255,255,.95)" filter="url(#glow-r)"/>
+        <circle cx="46.5" cy="42.5" r="1.8" fill="rgba(8,8,16,.9)"/>
+        <!-- Slash across eye (impostor diagonal) -->
+        <line x1="29" y1="36" x2="61" y2="52" stroke="rgba(255,112,112,.6)" stroke-width="1.5" stroke-linecap="round"/>
+        <!-- Star accents -->
+        <circle cx="22" cy="24" r="1.2" fill="rgba(255,214,10,.6)"/>
+        <circle cx="68" cy="24" r="1.2" fill="rgba(255,214,10,.6)"/>
+        <circle cx="30" cy="62" r="1" fill="rgba(255,214,10,.4)"/>
+        <circle cx="60" cy="62" r="1" fill="rgba(255,214,10,.4)"/>
+      </svg>
+    </div>
+    <div class="logo-wordmark">CODE<span>NAME</span></div>
+    <div class="logo-tagline">SECRET WORD · SOCIAL DEDUCTION</div>
+  </div>
+
+  <!-- Utility row -->
+  <div class="danger-row" style="width:100%;max-width:400px">
+    <button class="btn-danger" onclick="clearWordCache()">🗑 Clear Word Cache</button>
+  </div>
+
+  <!-- Mode selection -->
+  <div class="mode-hero-btns">
+    <button class="btn-hero btn-hero-offline" onclick="show('modeOffline')">
+      <div class="btn-hero-ico">📱</div>
+      <div class="btn-hero-label">OFFLINE</div>
+      <div class="btn-hero-desc">One device, no internet needed</div>
+    </button>
+    <button class="btn-hero btn-hero-online" onclick="show('modeOnline')">
+      <div class="btn-hero-ico">🌐</div>
+      <div class="btn-hero-label">ONLINE</div>
+      <div class="btn-hero-desc">Each player on their own phone</div>
+    </button>
+  </div>
+
+  <button class="btn-mode" onclick="showLeaderboard()" style="max-width:400px;width:100%">
+    <span class="btn-mode-ico">🏆</span>
+    <span class="btn-mode-txt">
+      <span class="btn-mode-label">LEADERBOARD</span>
+      <span class="btn-mode-desc">All-time wins, losses and stats</span>
+    </span>
+    <span class="btn-mode-arrow">→</span>
+  </button>
+</div>
+</div>
+
+<!-- ═══════════════ OFFLINE MODE ═══════════════ -->
+<div class="screen" id="modeOffline">
+<div class="mode-screen-wrap">
+  <button class="back-btn" onclick="show('home')">← Back</button>
+  <div class="join-title">Offline</div>
+  <div class="join-sub">Everything runs on this device — no internet needed</div>
+
+  <button class="btn-mode" onclick="showOfflineSetup('modeOffline')" style="border-color:rgba(16,217,160,.35);background:rgba(16,217,160,.05)">
+    <span class="btn-mode-ico">📱</span>
+    <span class="btn-mode-txt">
+      <span class="btn-mode-label" style="color:var(--green)">PASS &amp; PLAY</span>
+      <span class="btn-mode-desc">One phone, pass it around — each player sees their role privately</span>
+    </span>
+    <span class="btn-mode-arrow" style="color:var(--green2)">→</span>
+  </button>
+
+  <button class="btn-mode" onclick="showLeaderboard()">
+    <span class="btn-mode-ico">🏆</span>
+    <span class="btn-mode-txt">
+      <span class="btn-mode-label">LEADERBOARD</span>
+      <span class="btn-mode-desc">All-time wins, losses and stats</span>
+    </span>
+    <span class="btn-mode-arrow">→</span>
+  </button>
+</div>
+</div>
+
+<!-- ═══════════════ ONLINE MODE ═══════════════ -->
+<div class="screen" id="modeOnline">
+<div class="mode-screen-wrap">
+  <button class="back-btn" onclick="show('home')">← Back</button>
+  <div class="join-title">Online</div>
+  <div class="join-sub">Each player joins on their own device via Firebase</div>
+
+  <button class="btn-mode primary" onclick="showCreateRoom()">
+    <span class="btn-mode-ico">🏠</span>
+    <span class="btn-mode-txt">
+      <span class="btn-mode-label">CREATE ROOM</span>
+      <span class="btn-mode-desc">Host a game — share the room code with friends</span>
+    </span>
+    <span class="btn-mode-arrow">→</span>
+  </button>
+
+  <button class="btn-mode" onclick="showJoinRoom()">
+    <span class="btn-mode-ico">🔗</span>
+    <span class="btn-mode-txt">
+      <span class="btn-mode-label">JOIN ROOM</span>
+      <span class="btn-mode-desc">Enter a room code to join a friend's game</span>
+    </span>
+    <span class="btn-mode-arrow">→</span>
+  </button>
+
+  <button class="btn-mode" onclick="showOnlinePassPlay()" style="border-color:rgba(56,189,248,.25);background:rgba(56,189,248,.04)">
+    <span class="btn-mode-ico">📱</span>
+    <span class="btn-mode-txt">
+      <span class="btn-mode-label" style="color:var(--cyan2)">PASS &amp; PLAY</span>
+      <span class="btn-mode-desc">One device but connected — scores sync to leaderboard</span>
+    </span>
+    <span class="btn-mode-arrow" style="color:var(--cyan)">→</span>
+  </button>
+
+  <button class="btn-mode" onclick="showLeaderboard()">
+    <span class="btn-mode-ico">🏆</span>
+    <span class="btn-mode-txt">
+      <span class="btn-mode-label">LEADERBOARD</span>
+      <span class="btn-mode-desc">All-time wins, losses and stats</span>
+    </span>
+    <span class="btn-mode-arrow">→</span>
+  </button>
+</div>
+</div>
+
+<!-- ═══════════════ OFFLINE SETUP ═══════════════ -->
+<div class="screen" id="offlineSetup">
+<div class="offline-wrap">
+  <button class="back-btn" onclick="show(OFFLINE_FROM||'modeOffline')">← Back</button>
+  <div class="join-title">Pass &amp; Play</div>
+  <div class="offline-badge">📱 OFFLINE · ONE DEVICE</div>
+
+  <!-- Players -->
+  <div class="card-box">
+    <div class="lbl">Players <span id="offlinePCount" style="color:var(--cyan)">0 / 20</span></div>
+    <div class="row">
+      <input type="text" id="offlinePlayerInput" placeholder="Enter player name" maxlength="16" autocomplete="off" autocorrect="off">
+      <button class="btn-add" onclick="offlineAddPlayer()">+</button>
+    </div>
+    <button class="btn-giglabz" onclick="openOfflineGiglabz()">👥 Giglabz</button>
+    <div class="chips-wrap" id="offlineChips"></div>
+  </div>
+
+  <!-- Categories -->
+  <div class="card-box">
+    <div class="lbl">Word Categories <span id="offlineCachePill" class="cache-pill" style="display:none"><span class="cache-dot"></span><span id="offlineCacheCount"></span></span></div>
+    <div class="cat-grid" id="offlineCatGrid"></div>
+  </div>
+
+  <!-- Settings -->
+  <div class="card-box">
+    <div class="lbl">Settings</div>
+    <div class="srow">
+      <span class="slabel">🦹 Imposters</span>
+      <div class="stepper">
+        <button class="stepbtn" onclick="offlineAdj('imp',-1)">−</button>
+        <span class="sval" id="offlineImpVal">1</span>
+        <button class="stepbtn" onclick="offlineAdj('imp',1)">+</button>
+      </div>
+    </div>
+    <div class="srow">
+      <span class="slabel">🔄 Vote Rounds</span>
+      <div class="stepper">
+        <button class="stepbtn" onclick="offlineAdj('rounds',-1)">−</button>
+        <span class="sval" id="offlineRoundsVal">3</span>
+        <button class="stepbtn" onclick="offlineAdj('rounds',1)">+</button>
+      </div>
+    </div>
+    <div class="srow">
+      <span class="slabel">💡 Imposter Hints</span>
+      <div class="stepper">
+        <button class="stepbtn" onclick="offlineAdj('hint',-1)">−</button>
+        <span class="sval" id="offlineHintVal">1</span>
+        <button class="stepbtn" onclick="offlineAdj('hint',1)">+</button>
+      </div>
+    </div>
+    <div class="srow">
+      <span class="slabel">👁 Vote Reveal</span>
+      <button class="stepbtn" id="offlineRevealToggle" onclick="offlineAdj('reveal')" style="width:auto;min-width:52px;padding:0 14px;font-size:12px;letter-spacing:.5px;font-weight:700;color:var(--green);border-color:rgba(16,217,160,.5)">ON</button>
+    </div>
+  </div>
+
+  <button class="btn-p" onclick="offlineStartGame()" style="width:100%">▶ START GAME</button>
+</div>
+</div>
+
+<!-- ═══════════════ VOTE ROUND RESULT OVERLAY ═══════════════ -->
+<div id="voteResultOverlay">
+  <div class="vro-icon" id="vroIcon"></div>
+  <div class="vro-title" id="vroTitle"></div>
+  <div class="vro-sub" id="vroSub"></div>
+  <div id="vroVoteList" style="display:none;width:100%;max-width:320px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:10px 14px;max-height:200px;overflow-y:auto"></div>
+  <button class="btn-p vro-continue" id="vroContinueBtn" style="min-width:200px"></button>
+  <div id="vroWaitBar" style="display:none;align-items:center;gap:8px;font-family:var(--ff-mono);font-size:11px;letter-spacing:1px;color:var(--text3)">
+    <div class="status-dot amber"></div><span>Waiting for host…</span>
+  </div>
+</div>
+
+<!-- ═══════════════ REVEAL ═══════════════ -->
+<div class="screen" id="reveal">
+  <div class="rv-header">
+    <div class="rv-player-label">PLAYER</div>
+    <div class="rv-name" id="rvName">ALEX</div>
+    <div class="rv-inst" id="rvInst">Slide up to see your role — keep it secret!</div>
+  </div>
+
+  <div class="card-zone">
+    <div class="card" id="roleCard">
+      <!-- Back face (always visible beneath) -->
+      <div class="card-back-face" id="cardBack">
+        <div class="lock-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="rgba(240,240,248,.35)"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="rgba(240,240,248,.35)"/>
+          </svg>
+        </div>
+        <div class="slide-hint-txt">Your role is hidden</div>
+        <div class="slide-hint-sub">SLIDE UP TO REVEAL</div>
+      </div>
+      <!-- Front face (clips in from bottom) -->
+      <div class="card-face" id="cardFace"></div>
+      <!-- Drag handle -->
+      <div class="slide-track" id="slideTrack">
+        <div class="slide-pill" id="slidePill">
+          <span class="slide-arrow">↑</span>
+          <span>SLIDE TO REVEAL</span>
+          <span class="slide-arrow">↑</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rv-footer">
+    <div class="dots" id="dots"></div>
+    <button class="btn-p" id="rvNextBtn" onclick="nextReveal()" style="display:none;width:100%">NEXT PLAYER →</button>
+  </div>
+</div>
+
+
+<!-- ═══════════════ VOTE ═══════════════ -->
+<div class="screen" id="vote">
+  <div class="vote-hdr">
+    <div class="vote-title">🗳 VOTE</div>
+    <div class="vote-sub" id="voteRoundLabel">ROUND 1 OF 3 · WHO IS THE IMPOSTER?</div>
+    <div class="vote-tally" id="voteTallyBar" style="display:none">
+      <span id="voteTallyTxt">0 / 0 voted</span>
+      <div class="vote-bar"><div class="vote-bar-fill" id="voteFill" style="width:0%"></div></div>
+    </div>
+  </div>
+  <div class="vote-word-hint" id="voteWordHint"><span class="vwh-label">SECRET WORD</span><span class="vwh-word" id="voteWordHintVal"></span></div>
+  <div id="voteList"></div>
+  <div class="vote-ftr" style="display:flex;flex-direction:column;gap:9px">
+    <!-- All players (including host) see confirm + skip until they vote -->
+    <div id="votePlayerActions" style="display:none;flex-direction:column;gap:9px">
+      <button class="btn-p" id="voteConfirmBtn" onclick="submitMyVote()" style="width:100%">CONFIRM VOTE ✓</button>
+      <button class="btn-s" id="voteSkipBtn" onclick="skipMyVote()" style="width:100%">⏭ SKIP MY VOTE</button>
+      <div class="status-bar" id="voteWaitBar" style="display:none;justify-content:center">
+        <div class="status-dot amber"></div><span>Vote submitted — waiting for others…</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════ RESULT ═══════════════ -->
+<div class="screen" id="result">
+  <div class="res-icon" id="resIcon">🎉</div>
+  <div class="res-title" id="resTitle">TOWN WINS</div>
+  <div class="res-detail" id="resDetail"></div>
+  <div class="res-imp-name" id="resImpName"></div>
+  <div class="word-box">
+    <div class="word-box-lbl">SECRET WORD WAS</div>
+    <div class="word-box-val" id="resWord"></div>
+  </div>
+  <div class="scoreboard">
+    <div class="lbl" style="margin-bottom:6px">🎮 SESSION SCORES</div>
+    <div id="scoreList"></div>
+  </div>
+  <div class="lb-preview" id="lbPreview">
+    <div class="lb-preview-hdr">
+      <div class="lb-preview-title">🏆 ALL-TIME LEADERBOARD</div>
+      <div class="lb-preview-link" onclick="showLeaderboard()">VIEW ALL →</div>
+    </div>
+    <div id="lbPreviewList"></div>
+  </div>
+  <div class="btn-row">
+    <button class="btn-p" id="playAgainBtn" onclick="onPlayAgain()" style="display:none">PLAY AGAIN</button>
+    <button class="btn-s" id="newGameBtn" onclick="onNewGame()">NEW GAME</button>
+  </div>
+</div>
+
+<!-- ═══════════════ LEADERBOARD ═══════════════ -->
+<div class="screen" id="leaderboard">
+  <div class="lb-hdr">
+    <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
+      <rect x="18" y="8" width="16" height="36" rx="3" fill="var(--gold)" opacity=".9"/>
+      <rect x="4" y="20" width="14" height="24" rx="3" fill="var(--gold)" opacity=".6"/>
+      <rect x="34" y="16" width="14" height="28" rx="3" fill="var(--gold)" opacity=".7"/>
+      <circle cx="26" cy="5" r="3.5" fill="var(--gold2)"/>
+    </svg>
+    <div class="lb-title">LEADERBOARD</div>
+    <div class="lb-sub">ALL-TIME WINS · LOSSES · GAMES</div>
+  </div>
+  <div class="lb-wrap">
+    <div id="lbFullList"></div>
+    <button class="btn-s" id="lbBackBtn" onclick="show(lbPrevScreen||'home')" style="width:100%">← BACK TO HOME</button>
+  </div>
+</div>
+
+<!-- ═══════════════ JOIN ROOM ═══════════════ -->
+<div class="screen" id="joinRoom">
+<div class="join-wrap">
+  <button class="back-btn" onclick="show('modeOnline')">← Back</button>
+  <div class="join-title">Join a Room</div>
+  <div class="join-sub">Scan the host's QR code, or enter the code manually</div>
+
+  <!-- Scan button -->
+  <button class="btn-p" onclick="startScanner()" style="width:100%;background:linear-gradient(135deg,var(--cyan),#0284c7)">
+    📷 SCAN QR CODE
+  </button>
+
+  <div style="display:flex;align-items:center;gap:10px;width:100%">
+    <div style="flex:1;height:1px;background:var(--brd)"></div>
+    <div style="font-family:var(--ff-mono);font-size:10px;color:var(--text3);letter-spacing:2px;font-weight:600">OR</div>
+    <div style="flex:1;height:1px;background:var(--brd)"></div>
+  </div>
+
+  <input class="code-input" id="joinCode" maxlength="4" placeholder="XXXX" autocomplete="off" autocorrect="off" spellcheck="false" oninput="this.value=this.value.toUpperCase()">
+  <div class="name-input-wrap">
+    <div class="name-label">YOUR NAME</div>
+    <input type="text" id="joinName" placeholder="Enter your name" maxlength="16" autocomplete="off" autocorrect="off">
+  </div>
+  <button class="btn-p" onclick="joinRoom()" style="width:100%">JOIN ROOM →</button>
+</div>
+</div>
+
+<!-- ═══════════════ LOBBY ═══════════════ -->
+<div class="screen" id="lobby">
+<div class="lobby-wrap">
+  <div class="lobby-header">
+    <div class="room-badge" style="cursor:pointer" onclick="showQR()">
+      <div class="room-badge-label">ROOM CODE · TAP FOR QR</div>
+      <div class="room-badge-code" id="lobbyCode">----</div>
+      <div style="font-family:var(--ff-mono);font-size:8px;color:var(--cyan);letter-spacing:1px;margin-top:4px;font-weight:700">📷 SHOW QR</div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+      <div class="lobby-role" id="lobbyRoleLabel">HOST</div>
+      <div class="status-bar">
+        <div class="status-dot green" id="lobbyStatusDot"></div>
+        <span id="lobbyStatusTxt">CONNECTED</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Players -->
+  <div class="card-box">
+    <div class="lbl">Players <span id="lobbyPCount" style="color:var(--cyan)">0 / 20</span></div>
+    <div class="player-grid" id="playerGrid"></div>
+    <div class="lobby-empty" id="lobbyEmpty" style="display:none">Waiting for players to join…</div>
+  </div>
+
+  <!-- Settings (host only) -->
+  <div class="card-box lobby-settings" id="lobbySettings">
+    <div class="lbl">Settings <span style="color:var(--gold);font-size:9px">HOST ONLY</span></div>
+    <div class="srow">
+      <span class="slabel">🦹 Imposters</span>
+      <div class="stepper">
+        <button class="stepbtn" onclick="adjRoom('imp',-1)">−</button>
+        <span class="sval" id="rImpVal">1</span>
+        <button class="stepbtn" onclick="adjRoom('imp',1)">+</button>
+      </div>
+    </div>
+    <div class="srow">
+      <span class="slabel">🔄 Vote Rounds</span>
+      <div class="stepper">
+        <button class="stepbtn" onclick="adjRoom('rounds',-1)">−</button>
+        <span class="sval" id="rRoundsVal">3</span>
+        <button class="stepbtn" onclick="adjRoom('rounds',1)">+</button>
+      </div>
+    </div>
+    <div class="srow">
+      <span class="slabel">💡 Hint Count</span>
+      <div class="stepper">
+        <button class="stepbtn" onclick="adjRoom('hint',-1)">−</button>
+        <span class="sval" id="rHintVal">1</span>
+        <button class="stepbtn" onclick="adjRoom('hint',1)">+</button>
+      </div>
+    </div>
+    <div class="srow">
+      <span class="slabel">👁 Vote Reveal</span>
+      <button class="stepbtn" id="rRevealToggle" onclick="adjRoom('reveal')" style="width:auto;min-width:52px;padding:0 14px;font-size:12px;letter-spacing:.5px;font-weight:700">ON</button>
+    </div>
+    <!-- Categories (host only) -->
+    <div style="margin-top:12px">
+      <div class="lbl" style="margin-bottom:8px">Word Categories</div>
+      <div class="cat-grid" id="lobbyCatGrid"></div>
+    </div>
+  </div>
+
+  <!-- Host start / Player waiting -->
+  <div id="lobbyHostActions" style="display:none;flex-direction:column;gap:10px">
+    <button class="btn-p" onclick="hostStartGame()" style="width:100%">▶ START GAME</button>
+    <button class="btn-s" onclick="leaveRoom()" style="width:100%">Leave Room</button>
+  </div>
+  <div id="lobbyPlayerActions" style="display:none;flex-direction:column;gap:10px">
+    <div class="status-bar" style="justify-content:center">
+      <div class="status-dot amber"></div>
+      <span>Waiting for host to start…</span>
+    </div>
+    <button class="btn-s" onclick="leaveRoom()" style="width:100%">Leave Room</button>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════ MY ROLE (per-device reveal) ═══════════════ -->
+<div class="screen" id="myRole">
+<div class="myrole-wrap">
+  <div class="myrole-header">
+    <div class="myrole-name" id="myRoleName"></div>
+    <div class="myrole-instruct" id="myRoleInst">Slide up to see your role — keep it secret!</div>
+  </div>
+  <div class="card-zone" style="padding:0">
+    <div class="card" id="myRoleCard">
+      <div class="card-back-face">
+        <div class="lock-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="rgba(240,240,248,.35)"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="rgba(240,240,248,.35)"/>
+          </svg>
+        </div>
+        <div class="slide-hint-txt">Your role is hidden</div>
+        <div class="slide-hint-sub">SLIDE UP TO REVEAL</div>
+      </div>
+      <div class="card-face" id="myRoleFace"></div>
+      <div class="slide-track" id="myRoleSlideTrack">
+        <div class="slide-pill" id="myRoleSlidePill">
+          <span class="slide-arrow">↑</span>
+          <span>SLIDE TO REVEAL</span>
+          <span class="slide-arrow">↑</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button class="btn-p" id="myRoleDoneBtn" onclick="playerReadyAfterReveal()" style="display:none;width:100%">I'M READY ✓</button>
+  <div class="status-bar" id="myRoleWaitBar" style="display:none;justify-content:center">
+    <div class="status-dot amber"></div>
+    <span>Waiting for all players to be ready…</span>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════ WAITING ═══════════════ -->
+<div class="screen" id="waiting">
+  <div class="wait-spinner"></div>
+  <div class="wait-title" id="waitTitle">Waiting…</div>
+  <div class="wait-sub" id="waitSub">Please hold on</div>
+  <div class="wait-room" id="waitRoom"></div>
+</div>
+<div id="giglabzOverlay" onclick="closeGiglabz(event)">
+  <div class="giglabz-modal">
+    <div class="giglabz-hdr">
+      <div>
+        <div class="giglabz-title">👥 Giglabz</div>
+        <div class="giglabz-sub">Tap to select · Add to session</div>
+      </div>
+      <button class="giglabz-close" onclick="closeGiglabzBtn()">✕</button>
+    </div>
+
+    <div class="giglabz-add-row">
+      <input type="text" id="giglabzInput" placeholder="Add new member…" maxlength="20" autocomplete="off" autocorrect="off">
+      <button class="btn-add" onclick="addGiglabzMember()">+</button>
+    </div>
+
+    <div id="giglabzList" class="giglabz-list"></div>
+
+    <div class="giglabz-ftr">
+      <button class="btn-p" onclick="addSelectedToGame()" style="font-size:15px;padding:13px">✓ Add Selected to Game</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ CONFIRM MODAL ═══════════════ -->
+<div id="confirmOverlay">
+  <div class="confirm-box">
+    <div class="confirm-icon" id="confirmIcon">⚠️</div>
+    <div class="confirm-title" id="confirmTitle">Are you sure?</div>
+    <div class="confirm-msg" id="confirmMsg"></div>
+    <div class="confirm-btns">
+      <button class="confirm-cancel" onclick="closeConfirm()">Cancel</button>
+      <button class="confirm-ok" id="confirmOk">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ QR CODE OVERLAY ═══════════════ -->
+<div id="qrOverlay" onclick="closeQR(event)">
+  <div class="qr-box" style="position:relative">
+    <button onclick="document.getElementById('qrOverlay').classList.remove('open')" style="position:absolute;top:10px;right:12px;background:none;border:none;font-size:20px;color:var(--text3);cursor:pointer;line-height:1;padding:4px 6px;border-radius:6px;transition:color .15s" onmouseenter="this.style.color='var(--text)'" onmouseleave="this.style.color='var(--text3)'">✕</button>
+    <div class="qr-title">Scan to Join</div>
+    <div class="qr-canvas-wrap"><canvas id="qrCanvas"></canvas></div>
+    <div class="qr-code-display" id="qrCodeText">----</div>
+    <div class="qr-sub">Scan with camera app, or enter the code manually</div>
+    <div class="qr-hint">TAP OUTSIDE OR ✕ TO CLOSE</div>
+  </div>
+</div>
+
+<!-- ═══════════════ QR SCANNER OVERLAY ═══════════════ -->
+<div id="scanOverlay">
+  <video id="scanVideo" autoplay playsinline muted></video>
+  <div class="scan-frame">
+    <div class="scan-line"></div>
+  </div>
+  <div class="scan-label">POINT AT THE QR CODE</div>
+  <button class="scan-cancel" onclick="stopScanner()">Cancel</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ════════════════════════════════════════════════════════════════
+//  CODENAME — Multiplayer Engine
+//  Firebase loaded lazily — only when online play is requested.
+//  Offline / Pass & Play works with zero network calls.
+// ════════════════════════════════════════════════════════════════
+
+const firebaseConfig = {
+  apiKey:            "AIzaSyCrG49X4hEQ7OIHkEyd4kuBTBHep3gkIe8",
+  authDomain:        "codename-7e96b.firebaseapp.com",
+  databaseURL:       "https://codename-7e96b-default-rtdb.firebaseio.com",
+  projectId:         "codename-7e96b",
+  storageBucket:     "codename-7e96b.firebasestorage.app",
+  messagingSenderId: "185540416442",
+  appId:             "1:185540416442:web:22e079938f501e3841c383"
+};
+
+let rtdb = null;
+let firebaseReady = false;
+let firebaseLoading = false;
+
+function initFirebase() {
+  return new Promise((resolve, reject) => {
+    if (firebaseReady) { resolve(); return; }
+    if (firebaseLoading) {
+      // Poll until ready
+      const iv = setInterval(() => {
+        if (firebaseReady) { clearInterval(iv); resolve(); }
+      }, 80);
+      return;
+    }
+    firebaseLoading = true;
+
+    // Dynamically inject Firebase SDK scripts
+    function loadScript(src) {
+      return new Promise((res, rej) => {
+        const s = document.createElement('script');
+        s.src = src;
+        s.onload = res;
+        s.onerror = () => rej(new Error(`Failed to load ${src}`));
+        document.head.appendChild(s);
+      });
+    }
+
+    loadScript('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js')
+      .then(() => loadScript('https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js'))
+      .then(() => {
+        firebase.initializeApp(firebaseConfig);
+        rtdb = firebase.database();
+        firebaseReady = true;
+        firebaseLoading = false;
+        resolve();
+      })
+      .catch(err => {
+        firebaseLoading = false;
+        reject(err);
+      });
+  });
+}
+
+// ══════════════ WORD / HINT DATA ══════════════
+const WORDS = {
+  "🍕 Food":        ["Pizza","Sushi","Burger","Biryani","Chocolate","Mango","Ice Cream","Samosa","Pasta","Tacos","Curry","Noodles","Paneer","Dosa","Kebab","Butter Chicken"],
+  "⚽ Sports":      ["Cricket","Football","Tennis","Chess","Swimming","Boxing","Badminton","Basketball","Wrestling","Golf","Kabaddi","Hockey","Volleyball","Table Tennis","Archery"],
+  "🏙 Places":      ["Goa","Mumbai","Paris","Tokyo","Amazon","Himalayas","Dubai","New York","Kolkata","Taj Mahal","Jaipur","Kerala","Venice","Singapore","Varanasi"],
+  "🎥 Hollywood":   ["Avatar","Titanic","Inception","Avengers","Joker","Jurassic Park","Home Alone","Interstellar","The Dark Knight","Forrest Gump","Fight Club","Gladiator"],
+  "🐘 Animals":     ["Lion","Elephant","Penguin","Shark","Peacock","Cobra","Tiger","Dolphin","Parrot","Cheetah","Gorilla","Kangaroo","Wolf","Owl","Chameleon"],
+  "💼 Jobs":        ["Doctor","Pilot","Teacher","Chef","Hacker","Astronaut","Detective","Lawyer","Engineer","Actor","Soldier","Farmer","Scientist","Photographer","Barber"],
+  "🎮 Games":       ["PUBG","Ludo","Uno","Minecraft","FIFA","Carrom","Antakshari","Snake","Teen Patti","Free Fire","Among Us","Jenga","GTA","Valorant","Candy Crush"],
+  "🎵 Music":       ["Guitar","DJ","Rap","Drums","Flute","Singer","Concert","Tabla","Harmonium","Saxophone","Piano","Orchestra"],
+  "🎬 Bollywood":   ["Shah Rukh Khan","Salman Khan","Amitabh Bachchan","Deepika Padukone","Ranveer Singh","Alia Bhatt","Hrithik Roshan","Dhoom","DDLJ","Lagaan","3 Idiots","ZNMD"],
+  "🎉 Festivals":   ["Diwali","Holi","Eid","Navratri","Durga Puja","Ganesh Chaturthi","Onam","Pongal","Baisakhi","Raksha Bandhan","Lohri","Makar Sankranti"],
+  "🍢 Street Food": ["Pani Puri","Vada Pav","Chole Bhature","Pav Bhaji","Bhel Puri","Chaat","Idli","Dhokla","Jalebi","Lassi","Masala Chai","Pakora","Misal Pav","Kachori"],
+  "🏏 Cricket":     ["Sachin Tendulkar","Virat Kohli","MS Dhoni","Rohit Sharma","Jasprit Bumrah","IPL","Eden Gardens","Wankhede","Yorker","Googly","Test Match","World Cup"],
+  "📺 Indian OTT":  ["Mirzapur","Sacred Games","Panchayat","Scam 1992","Kota Factory","TVF Pitchers","Bigg Boss","KBC","Kapil Sharma Show","Taarak Mehta","Roadies","Shark Tank India"],
+};
+
+const HINTS = {
+  // 🍕 Food
+  "Pizza":            ["Slice","Mozzarella","Oven","Naples","Pepperoni"],
+  "Sushi":            ["Nori","Wasabi","Roll","Chopstick","Raw"],
+  "Burger":           ["Patty","Bun","Grill","Ketchup","Stack"],
+  "Biryani":          ["Saffron","Dum","Basmati","Aromatic","Layered"],
+  "Chocolate":        ["Cocoa","Melt","Dark","Wrapper","Valentine"],
+  "Mango":            ["Alphonso","Pulpy","King","Aam","Summer"],
+  "Ice Cream":        ["Scoop","Cone","Vanilla","Sundae","Melt"],
+  "Samosa":           ["Potato","Triangle","Chutney","Crispy","Fold"],
+  "Pasta":            ["Sauce","Fork","Al Dente","Shapes","Boil"],
+  "Tacos":            ["Shell","Salsa","Mexico","Filling","Crunch"],
+  "Curry":            ["Turmeric","Simmer","Gravy","Spice","Ladle"],
+  "Noodles":          ["Slurp","Broth","Wok","Strand","Ramen"],
+  "Paneer":           ["Cottage","Cube","Makhani","Crumble","Milk"],
+  "Dosa":             ["Batter","Tawa","Coconut","Ferment","Crisp"],
+  "Kebab":            ["Skewer","Marinade","Charcoal","Smoke","Mughal"],
+  "Butter Chicken":   ["Orange","Cream","Tandoor","Punjab","Gravy"],
+  // ⚽ Sports
+  "Cricket":          ["Wicket","Leather","Boundary","Pitch","Over"],
+  "Football":         ["Goal","Offside","Header","Cleat","Whistle"],
+  "Tennis":           ["Serve","Deuce","Baseline","Grand Slam","Love"],
+  "Chess":            ["King","Check","64","Strategy","Rook"],
+  "Swimming":         ["Stroke","Lane","Goggles","Butterfly","Lap"],
+  "Boxing":           ["Jab","Canvas","Round","Corner","Knockout"],
+  "Badminton":        ["Shuttle","Smash","Rally","Feather","Grip"],
+  "Basketball":       ["Dribble","Hoop","Rebound","Layup","Bounce"],
+  "Wrestling":        ["Takedown","Mat","Pin","Tap","Grapple"],
+  "Golf":             ["Par","Birdie","Fairway","Putt","Caddie"],
+  "Kabaddi":          ["Raid","Breath","Touch","Tag","Tackle"],
+  "Hockey":           ["Drag","Flick","Penalty","Field","Stick"],
+  "Volleyball":       ["Spike","Block","Serve","Net","Rally"],
+  "Table Tennis":     ["Paddle","Spin","Fast","Net","Bounce"],
+  "Archery":          ["Bow","Target","Quiver","Release","Bullseye"],
+  // 🏙 Places
+  "Goa":              ["Beach","Portuguese","Carnival","Cashew","Coastal"],
+  "Mumbai":           ["Dabbawalas","Locals","Bollywood","Sea","Crowd"],
+  "Paris":            ["Eiffel","Croissant","Fashion","Louvre","Romance"],
+  "Tokyo":            ["Sakura","Bullet","Neon","Harajuku","Dense"],
+  "Amazon":           ["Canopy","Tribe","River","Jaguar","Oxygen"],
+  "Himalayas":        ["Peak","Yak","Glacier","Monastery","Trek"],
+  "Dubai":            ["Burj","Gold","Sheikh","Desert","Skyscraper"],
+  "New York":         ["Statue","Subway","Broadway","Skyline","Iconic"],
+  "Kolkata":          ["Tram","Rosogolla","Eden","Heritage","Yellow"],
+  "Taj Mahal":        ["Marble","Shah Jahan","Agra","Sunrise","Symmetry"],
+  "Jaipur":           ["Pink","Fort","Elephant","Rajput","Desert"],
+  "Kerala":           ["Backwater","Houseboat","Spice","Ayurveda","Coconut"],
+  "Venice":           ["Canal","Gondola","Mask","Flood","Italy"],
+  "Singapore":        ["Merlion","Tiny","Strict","Clean","Orchard"],
+  "Varanasi":         ["Ganga","Ghats","Moksha","Silk","Oldest"],
+  // 🎥 Hollywood
+  "Avatar":           ["Pandora","Na'vi","Cameron","Blue","Unobtanium"],
+  "Titanic":          ["Iceberg","DiCaprio","Ship","1912","Tragedy"],
+  "Inception":        ["Dream","Top","Nolan","Layers","Gravity"],
+  "Avengers":         ["Snap","Assemble","Thanos","Marvel","Endgame"],
+  "Joker":            ["Arthur","Clown","Staircase","Gotham","Dark"],
+  "Jurassic Park":    ["Dinosaur","DNA","Island","Amber","Escape"],
+  "Home Alone":       ["Trap","Christmas","Macaulay","Burglar","Kid"],
+  "Interstellar":     ["Wormhole","Cooper","Nolan","Black Hole","Time"],
+  "The Dark Knight":  ["Ledger","Harvey","Gotham","Nolan","Chaos"],
+  "Forrest Gump":     ["Run","Chocolates","Bench","Shrimp","Feather"],
+  "Fight Club":       ["Tyler","Rules","Soap","Underground","Twist"],
+  "Gladiator":        ["Arena","Rome","Russell","Emperor","Sword"],
+  // 🐘 Animals
+  "Lion":             ["Mane","Pride","Roar","Savanna","King"],
+  "Elephant":         ["Trunk","Memory","Tusk","Herd","Stomp"],
+  "Penguin":          ["Waddle","Tuxedo","Antarctica","Dive","Huddle"],
+  "Shark":            ["Fin","Jaw","Deep","Ambush","Teeth"],
+  "Peacock":          ["Plume","Display","National","Iridescent","Fan"],
+  "Cobra":            ["Hood","Venom","Sway","Basket","Deadly"],
+  "Tiger":            ["Stripe","Bengal","Stealth","Endangered","Pounce"],
+  "Dolphin":          ["Click","Sonar","Leap","Pod","Smart"],
+  "Parrot":           ["Mimic","Tropical","Beak","Cage","Colorful"],
+  "Cheetah":          ["Spotted","Dash","Savanna","Lean","Sprint"],
+  "Gorilla":          ["Chest","Troop","Silverback","Knuckle","Primate"],
+  "Kangaroo":         ["Pouch","Joey","Hop","Australia","Box"],
+  "Wolf":             ["Pack","Howl","Alpha","Moon","Hunt"],
+  "Owl":              ["Nocturnal","Wisdom","Swivel","Silent","Pellet"],
+  "Chameleon":        ["Camouflage","Tongue","Lizard","Slow","Adapt"],
+  // 💼 Jobs
+  "Doctor":           ["Stethoscope","Diagnosis","Scrubs","Rounds","Oath"],
+  "Pilot":            ["Cockpit","Altitude","Uniform","Clearance","Wing"],
+  "Teacher":          ["Chalk","Lesson","Grade","Blackboard","Mentor"],
+  "Chef":             ["Apron","Knife","Flame","Roux","Tasting"],
+  "Hacker":           ["Terminal","Code","Breach","Dark","Proxy"],
+  "Astronaut":        ["Zero-G","Orbit","Module","Launch","Suit"],
+  "Detective":        ["Magnifier","Badge","Clue","Interrogate","Trail"],
+  "Lawyer":           ["Brief","Plead","Bar","Gavel","Objection"],
+  "Engineer":         ["Blueprint","Circuit","Specs","Build","System"],
+  "Actor":            ["Audition","Script","Spotlight","Method","Character"],
+  "Soldier":          ["Barracks","Salute","Camouflage","Deploy","Duty"],
+  "Farmer":           ["Plow","Sow","Harvest","Soil","Season"],
+  "Scientist":        ["Lab","Hypothesis","Beaker","Discover","Publish"],
+  "Photographer":     ["Shutter","Lens","Frame","Aperture","Capture"],
+  "Barber":           ["Scissors","Trim","Cape","Chair","Lather"],
+  // 🎮 Games
+  "PUBG":             ["Drop","Loot","Zone","Squad","Chicken"],
+  "Ludo":             ["Dice","Token","Safe","Home","Board"],
+  "Uno":              ["Reverse","Skip","Wild","Draw","Shout"],
+  "Minecraft":        ["Block","Creeper","Craft","Sandbox","Build"],
+  "FIFA":             ["Manager","Ultimate","Transfer","Career","Club"],
+  "Carrom":           ["Powder","Pocket","Strike","Finger","Board"],
+  "Antakshari":       ["Letter","Song","Hum","Bolly","End"],
+  "Snake":            ["Nokia","Pixel","Eat","Grow","Retro"],
+  "Teen Patti":       ["Blind","Show","Trail","Bet","Sequence"],
+  "Free Fire":        ["Booyah","Mobile","Island","Survive","Garena"],
+  "Among Us":         ["Crewmate","Emergency","Vent","Task","Meeting"],
+  "Jenga":            ["Pull","Tower","Wobble","Block","Careful"],
+  "GTA":              ["Heist","Wanted","Steal","City","Rockstar"],
+  "Valorant":         ["Spike","Clutch","Agent","Aim","Abilities"],
+  "Candy Crush":      ["Match","Sweet","Level","Lives","Saga"],
+  // 🎵 Music
+  "Guitar":           ["String","Fret","Strum","Neck","Pick"],
+  "DJ":               ["Mix","Turntable","Bass","Drop","Club"],
+  "Rap":              ["Verse","Flow","Rhyme","Battle","Hook"],
+  "Drums":            ["Beat","Sticks","Kit","Rhythm","Fill"],
+  "Flute":            ["Breath","Hole","Krishna","Bamboo","Melody"],
+  "Singer":           ["Pitch","Mic","Vocal","Range","Stage"],
+  "Concert":          ["Crowd","Setlist","Encore","Stage","Loud"],
+  "Tabla":            ["Bayan","Dayan","Taal","Ustad","Indian"],
+  "Harmonium":        ["Pump","Keys","Reed","Devotion","Fold"],
+  "Saxophone":        ["Jazz","Brass","Curve","Blow","Alto"],
+  "Piano":            ["Keys","Ivory","Pedal","Classical","Concert"],
+  "Orchestra":        ["Conductor","Baton","Strings","Symphony","Hall"],
+  // 🎬 Bollywood
+  "Shah Rukh Khan":   ["Arms","Dimple","Outsider","Romance","King"],
+  "Salman Khan":      ["Dabangg","Tiger","Charity","Muscle","Bhai"],
+  "Amitabh Bachchan": ["Baritone","Big B","Angry","Legend","KBC"],
+  "Deepika Padukone": ["Dimple","Global","Tall","Olympics","Graceful"],
+  "Ranveer Singh":    ["Energy","Wild","Costume","Gully","Loud"],
+  "Alia Bhatt":       ["SOTY","Gully","RRR","Intense","Young"],
+  "Hrithik Roshan":   ["Greek","Dance","Krrish","War","Six-pack"],
+  "Dhoom":            ["Bike","Heist","Chase","Style","Thriller"],
+  "DDLJ":             ["Train","Mustard","Simran","Raj","Kajol"],
+  "Lagaan":           ["Aamir","Village","British","Bet","1893"],
+  "3 Idiots":         ["Rancho","Aamir","College","Engineer","Friends"],
+  "ZNMD":             ["Spain","Farhan","Skydive","Bullfight","Trio"],
+  // 🎉 Festivals
+  "Diwali":           ["Diya","Lakshmi","Crackers","October","Sweets"],
+  "Holi":             ["Gulal","Spring","Water","Bhang","Color"],
+  "Eid":              ["Seviyan","Namaz","Crescent","Biryani","Embrace"],
+  "Navratri":         ["Garba","Nine","Goddess","Fasting","Ahmedabad"],
+  "Durga Puja":       ["Pandal","Bengal","Idol","Dhunuchi","Autumn"],
+  "Ganesh Chaturthi": ["Modak","Visarjan","Maharashtra","Bappa","Trunk"],
+  "Onam":             ["Pookalam","Boat","Sadya","Kerala","August"],
+  "Pongal":           ["Kolam","Sugarcane","Sun","Tamil","Harvest"],
+  "Baisakhi":         ["Bhangra","Harvest","Sikh","Punjab","Spring"],
+  "Raksha Bandhan":   ["Thread","Wrist","Sibling","Sweets","Bond"],
+  "Lohri":            ["Bonfire","Punjab","Winter","Rewri","Drum"],
+  "Makar Sankranti":  ["Kite","Sesame","January","Harvest","Sun"],
+  // 🍢 Street Food
+  "Pani Puri":        ["Hollow","Tamarind","Burst","Jaljeera","Water"],
+  "Vada Pav":         ["Batata","Bun","Chutney","Mumbai","Local"],
+  "Chole Bhature":    ["Chickpea","Fried","North","Fluffy","Punjab"],
+  "Pav Bhaji":        ["Butter","Mash","Stall","Bun","Masala"],
+  "Bhel Puri":        ["Puffed","Beach","Tangy","Kurmura","Crunch"],
+  "Chaat":            ["Tamarind","Crispy","Delhi","Tangy","Mixed"],
+  "Idli":             ["Steam","Sambar","Soft","South","Round"],
+  "Dhokla":           ["Steamed","Gujarat","Spongy","Yellow","Savory"],
+  "Jalebi":           ["Spiral","Syrup","Crispy","Orange","Hot"],
+  "Lassi":            ["Yogurt","Punjab","Frothy","Thick","Chilled"],
+  "Masala Chai":      ["Ginger","Cardamom","Kadak","Milk","Sip"],
+  "Pakora":           ["Onion","Monsoon","Batter","Crispy","Dip"],
+  "Misal Pav":        ["Sprout","Spicy","Maharashtra","Gravy","Bun"],
+  "Kachori":          ["Stuffed","Rajasthan","Flaky","Pea","Fried"],
+  // 🏏 Cricket
+  "Sachin Tendulkar": ["Master","100","Mumbai","Gods","Retire"],
+  "Virat Kohli":      ["Chase","Fitness","Aggressive","King","Captain"],
+  "MS Dhoni":         ["Helicopter","Calm","Finisher","Yellow","CSK"],
+  "Rohit Sharma":     ["Hitman","Double","Opener","145","Elegant"],
+  "Jasprit Bumrah":   ["Action","Yorker","Slinger","Pace","Wrist"],
+  "IPL":              ["Franchise","Auction","T20","Cheer","Season"],
+  "Eden Gardens":     ["Kolkata","Crowd","Floodlight","Historic","Roar"],
+  "Wankhede":         ["Sea","Mumbai","Final","2011","Capacity"],
+  "Yorker":           ["Full","Toe","Pace","Unplayable","Base"],
+  "Googly":           ["Spin","Wrist","Deceive","Leg","Turn"],
+  "Test Match":       ["5-Day","Whites","Stamina","Draw","Classic"],
+  "World Cup":        ["Trophy","Nation","Final","Glory","ODI"],
+  // 📺 Indian OTT
+  "Mirzapur":         ["Gangster","Guddu","Kaleen","Amazon","Season"],
+  "Sacred Games":     ["Gaitonde","Netflix","Sartaj","Mumbai","Crime"],
+  "Panchayat":        ["Village","IAS","TVF","UP","Abhishek"],
+  "Scam 1992":        ["Harshad","Market","Bombay","Sony","Bull"],
+  "Kota Factory":     ["JEE","Black-White","Pressure","TVF","Study"],
+  "TVF Pitchers":     ["Startup","Naveen","TVF","Delhi","Office"],
+  "Bigg Boss":        ["House","Drama","Evict","Weekly","Salman"],
+  "KBC":              ["Crore","Hot Seat","Lifeline","Amitabh","Question"],
+  "Kapil Sharma Show":["Laugh","Guest","Couch","Comedy","Viral"],
+  "Taarak Mehta":     ["Gokuldham","Society","Long","Daily","Friends"],
+  "Roadies":          ["Bike","Gang","Task","Youth","Reality"],
+  "Shark Tank India": ["Investment","Pitch","Equity","Startup","Shark"],
+};
+
+const AVATARS = ["🙂","😊","😄","🤗","😎","🧐","🤔","😏","🙃","🥸","🧑","👩","🧔","👱","🙋","🤵","🧕","😺","🦊","🐧"];
+
+// ══════════════ LOCAL PERSISTENCE ══════════════
+const DB = {
+  WORD_CACHE_KEY: 'wi_word_cache',
+  LEADERBOARD_KEY: 'wi_leaderboard',
+  THEME_KEY: 'wi_theme',
+  loadWordCache() { try { return new Set(JSON.parse(localStorage.getItem(this.WORD_CACHE_KEY)||'[]')); } catch { return new Set(); } },
+  saveWordCache(c) { try { localStorage.setItem(this.WORD_CACHE_KEY,JSON.stringify([...c])); } catch {} },
+  addWord(w) { const c=this.loadWordCache(); c.add(w); this.saveWordCache(c); updateOfflineCachePill(); },
+  clearWordCache() { try { localStorage.removeItem(this.WORD_CACHE_KEY); } catch {} updateOfflineCachePill(); },
+  availableWords(cats) { const used=this.loadWordCache(); const all=[]; cats.forEach(cat=>(WORDS[cat]||[]).forEach(w=>all.push({word:w,cat}))); return all.filter(e=>!used.has(e.word)); },
+  // Leaderboard is stored in Firebase at /leaderboard/<playerName>
+  // Falls back to a local cache so offline results still persist locally
+  // and are flushed to Firebase the next time the app is online.
+  async loadLeaderboard() {
+    if (rtdb) {
+      try {
+        const snap = await rtdb.ref('leaderboard').get();
+        return snap.exists() ? snap.val() : {};
+      } catch(e) {}
+    }
+    try { return JSON.parse(localStorage.getItem(this.LEADERBOARD_KEY)||'{}'); } catch { return {}; }
+  },
+  async recordResult(players, outcome) {
+    // Build the per-player deltas
+    const updates = {};
+    players.forEach(p => {
+      const key = p.name.replace(/[.#$\[\]]/g, '_'); // Firebase key-safe name
+      updates[key] = updates[key] || { wins:0, losses:0, games:0, agentWins:0, imposterWins:0 };
+      const e = updates[key]; e.games++;
+      if (outcome === 'agents_win') { if (!p.isImposter) { e.wins++; e.agentWins++; } else e.losses++; }
+      else { if (p.isImposter) { e.wins++; e.imposterWins++; } else e.losses++; }
+    });
+    if (rtdb) {
+      try {
+        // Merge atomically: read current values then write back incremented totals
+        const snap = await rtdb.ref('leaderboard').get();
+        const current = snap.exists() ? snap.val() : {};
+        const merged = {};
+        Object.entries(updates).forEach(([key, delta]) => {
+          const cur = current[key] || { wins:0, losses:0, games:0, agentWins:0, imposterWins:0 };
+          merged[key] = {
+            wins:        (cur.wins||0)        + delta.wins,
+            losses:      (cur.losses||0)      + delta.losses,
+            games:       (cur.games||0)       + delta.games,
+            agentWins:   (cur.agentWins||0)   + delta.agentWins,
+            imposterWins:(cur.imposterWins||0) + delta.imposterWins,
+          };
+        });
+        await rtdb.ref('leaderboard').update(merged);
+        return;
+      } catch(e) { console.warn('Firebase leaderboard write failed, falling back to localStorage', e); }
+    }
+    // Offline fallback: accumulate in localStorage
+    try {
+      const lb = JSON.parse(localStorage.getItem(this.LEADERBOARD_KEY)||'{}');
+      Object.entries(updates).forEach(([key, delta]) => {
+        const cur = lb[key] || { wins:0, losses:0, games:0, agentWins:0, imposterWins:0 };
+        lb[key] = {
+          wins:        (cur.wins||0)        + delta.wins,
+          losses:      (cur.losses||0)      + delta.losses,
+          games:       (cur.games||0)       + delta.games,
+          agentWins:   (cur.agentWins||0)   + delta.agentWins,
+          imposterWins:(cur.imposterWins||0) + delta.imposterWins,
+        };
+      });
+      localStorage.setItem(this.LEADERBOARD_KEY, JSON.stringify(lb));
+    } catch {}
+  },
+};
+
+// ══════════════ APP STATE ══════════════
+let ME = {};           // { id, name, avatar }
+let ROOM = null;       // current room code
+let IS_HOST = false;
+let ROOM_STATE = {};   // mirror of Firebase room state
+let roomRef = null;    // Firebase ref for current room
+let listeners = [];    // cleanup handles
+
+// Local settings (host syncs these to Firebase)
+let selCats = new Set(Object.keys(WORDS));
+let selVote = null;
+
+// ══════════════ SESSION PERSISTENCE (rejoin support) ══════════════
+const SESSION_KEY = 'cn_session';
+
+function saveSession() {
+  try {
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify({
+      me: ME, room: ROOM, isHost: IS_HOST
+    }));
+  } catch {}
+}
+
+function clearSession() {
+  try { sessionStorage.removeItem(SESSION_KEY); } catch {}
+}
+
+function loadSession() {
+  try {
+    const raw = sessionStorage.getItem(SESSION_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+
+// ══════════════ UTIL: Generate IDs ══════════════
+function uid() { return Math.random().toString(36).slice(2,10); }
+function roomCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+  return Array.from({length:4}, () => chars[Math.floor(Math.random()*chars.length)]).join('');
+}
+
+// ══════════════ UTIL: Firebase listeners mgmt ══════════════
+function addListener(ref, event, cb) {
+  ref.on(event, cb);
+  listeners.push({ref, event, cb});
+}
+function clearListeners() {
+  listeners.forEach(({ref, event, cb}) => ref.off(event, cb));
+  listeners = [];
+  roomRef = null;
+}
+
+// ══════════════ UI HELPERS ══════════════
+const GAME_SCREENS = ['reveal','myRole','vote','waiting','result'];
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  window.scrollTo(0, 0);
+  document.getElementById('leaveGameBtn').classList.toggle('visible', GAME_SCREENS.includes(id));
+}
+
+function confirmLeaveGame() {
+  const isOnline = !!ROOM;
+  const msg = isOnline && IS_HOST
+    ? 'This will close the room and disconnect all players.'
+    : isOnline
+    ? 'You will be removed from the current game.'
+    : 'The current game will end and progress will be lost.';
+  showConfirm('🚪', 'Leave Game?', msg, doLeaveGame);
+}
+
+function doLeaveGame() {
+  if (ROOM) {
+    if (IS_HOST) {
+      roomRef.remove().finally(() => {
+        clearListeners(); ROOM = null; IS_HOST = false; ROOM_STATE = {};
+        OFFLINE = false; OL = {};
+        clearSession();
+        show('home');
+      });
+    } else {
+      roomRef.child(`players/${ME.id}`).remove().finally(() => {
+        clearListeners(); ROOM = null; IS_HOST = false; ROOM_STATE = {};
+        clearSession();
+        show('home');
+      });
+    }
+  } else {
+    OFFLINE = false; ONLINE_PASSPLAY = false; OL = {};
+    show('home');
+  }
+}
+
+let toastTimer;
+function toast(msg, duration = 2600) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), duration);
+}
+
+function showConfirm(icon, title, msg, onOk) {
+  document.getElementById('confirmIcon').textContent = icon;
+  document.getElementById('confirmTitle').textContent = title;
+  document.getElementById('confirmMsg').textContent = msg;
+  document.getElementById('confirmOk').onclick = () => { closeConfirm(); onOk(); };
+  document.getElementById('confirmOverlay').classList.add('open');
+}
+function closeConfirm() { document.getElementById('confirmOverlay').classList.remove('open'); }
+
+// ══════════════ THEME ══════════════
+function initTheme() {
+  const saved = localStorage.getItem(DB.THEME_KEY) || 'dark';
+  applyTheme(saved, false);
+}
+function applyTheme(theme, animate = true) {
+  if (!animate) document.documentElement.style.setProperty('transition','none');
+  document.documentElement.setAttribute('data-theme', theme);
+  document.getElementById('themeToggle').textContent = theme === 'dark' ? '🌙' : '☀️';
+  try { localStorage.setItem(DB.THEME_KEY, theme); } catch {}
+  if (!animate) requestAnimationFrame(() => document.documentElement.style.removeProperty('transition'));
+}
+function toggleTheme() {
+  const c = document.documentElement.getAttribute('data-theme') || 'dark';
+  applyTheme(c === 'dark' ? 'light' : 'dark');
+}
+
+// ══════════════ WORD CACHE UI ══════════════
+// updateCachePill removed — #cachePill doesn't exist in the DOM.
+// updateOfflineCachePill() handles the offline setup screen pill.
+function clearWordCache() {
+  const size = DB.loadWordCache().size;
+  if (size === 0) return toast('Word cache is already empty');
+  showConfirm('🗑','Clear Word Cache',`Remove all ${size} used words? Every word becomes available again.`,
+    () => { DB.clearWordCache(); toast('Word cache cleared! ✓'); });
+}
+
+
+// ══════════════ LEADERBOARD ══════════════
+let lbPrevScreen = 'home';
+async function showLeaderboard() {
+  const cur = [...document.querySelectorAll('.screen.on')].map(s=>s.id)[0];
+  lbPrevScreen = cur || 'home';
+  show('leaderboard');
+  const btn = document.getElementById('lbBackBtn');
+  if (btn) btn.textContent = lbPrevScreen === 'home' ? '← BACK TO HOME' : '← BACK';
+  await renderLeaderboard('lbFullList');
+}
+async function renderLeaderboard(containerId) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = '<div class="lb-empty">Loading…</div>';
+  const lb = await DB.loadLeaderboard();
+  const entries = Object.entries(lb)
+    .map(([name,s]) => ({name,...s, wr: s.games ? Math.round((s.wins/s.games)*100) : 0}))
+    .sort((a,b) => b.wins-a.wins || b.wr-a.wr);
+  if (!entries.length) { el.innerHTML = '<div class="lb-empty">NO GAMES RECORDED YET<br><br>Play a game to see stats here!</div>'; return; }
+  const medals = ['gold','silver','bronze'];
+  el.innerHTML = entries.map((e,i) => `
+    <div class="lb-row ${medals[i]||''}">
+      <div class="lb-rank">${['🥇','🥈','🥉'][i]||(i+1)+'.'}</div>
+      <div><div class="lb-name">${e.name}</div>
+      <div class="lb-games">${e.games} game${e.games!==1?'s':''} · 🕵️${e.agentWins||0}W 🦹${e.imposterWins||0}W</div></div>
+      <div class="lb-stats">
+        <div class="lb-wr ${e.wr>=50?'good':'bad'}">${e.wr}%</div>
+        <div class="lb-detail">${e.wins}W · ${e.losses}L</div>
+      </div>
+    </div>`).join('');
+}
+
+// ══════════════ GIGLABZ ══════════════
+const GIGLABZ_KEY = 'giglabz_members';
+const DEFAULT_GIGLABZ = ["Rahul N","Pratik M","Pratik K","Himanshu S","Harshad S","Bhojraj S","Deepak P","Bhagyesh W","Inderpal S","Shivam P","Prachit P","Omkar K","Krishna S"];
+const MEMBER_AVATARS = ["🧑","👦","👩","🧔","👱","🙋","🤵","👲","🧕","👨","🧒","👧","🙎"];
+let giglabzMembers = [];
+let giglabzSelected = new Set();
+
+function loadGiglabz() {
+  try {
+    const s = localStorage.getItem(GIGLABZ_KEY);
+    const parsed = s ? JSON.parse(s) : null;
+    giglabzMembers = (Array.isArray(parsed) && parsed.length > 0) ? parsed : [...DEFAULT_GIGLABZ];
+  } catch { giglabzMembers = [...DEFAULT_GIGLABZ]; }
+}
+function saveGiglabz() { try { localStorage.setItem(GIGLABZ_KEY, JSON.stringify(giglabzMembers)); } catch {} }
+function openGiglabz() {
+  giglabzSelected.clear();
+  document.getElementById('giglabzInput').value = '';
+  renderGiglabzList();
+  document.getElementById('giglabzOverlay').classList.add('open');
+}
+function closeGiglabzBtn() { document.getElementById('giglabzOverlay').classList.remove('open'); }
+function closeGiglabz(e) { if (e.target===document.getElementById('giglabzOverlay')) closeGiglabzBtn(); }
+function renderGiglabzList() {
+  // In multiplayer, "in game" means already in the room's player list
+  const inRoom = IS_HOST ? Object.values(ROOM_STATE.players||{}).map(p=>p.name) : [];
+  const list = document.getElementById('giglabzList');
+  list.innerHTML = giglabzMembers.map((name,i) => {
+    const inGame = inRoom.includes(name);
+    const sel = giglabzSelected.has(name);
+    const avatar = MEMBER_AVATARS[i % MEMBER_AVATARS.length];
+    let cls = 'giglabz-item';
+    if (inGame) cls += ' in-game'; else if (sel) cls += ' selected';
+    const badge = inGame
+      ? `<span class="gi-ingame-badge">✓ in room</span>`
+      : `<button class="gi-del" onclick="deleteGiglabzMember(event,${i})">✕</button>`;
+    return `<div class="${cls}" onclick="toggleGiglabz('${name.replace(/'/g,"\\'")}')">
+      <div class="gi-avatar">${avatar}</div>
+      <div class="gi-name">${name}</div>
+      <div class="gi-check">${sel?'✓':''}</div>${badge}</div>`;
+  }).join('');
+}
+function toggleGiglabz(name) {
+  const inRoom = Object.values(ROOM_STATE.players||{}).map(p=>p.name);
+  if (inRoom.includes(name)) return;
+  if (giglabzSelected.has(name)) giglabzSelected.delete(name); else giglabzSelected.add(name);
+  renderGiglabzList();
+}
+function addGiglabzMember() {
+  const inp = document.getElementById('giglabzInput');
+  const name = inp.value.trim();
+  if (!name) return;
+  if (giglabzMembers.find(m=>m.toLowerCase()===name.toLowerCase())) return toast('Already in list!');
+  giglabzMembers.push(name); saveGiglabz(); inp.value = ''; renderGiglabzList();
+}
+function deleteGiglabzMember(e,i) {
+  e.stopPropagation();
+  giglabzSelected.delete(giglabzMembers[i]);
+  giglabzMembers.splice(i,1); saveGiglabz(); renderGiglabzList();
+}
+// In multiplayer, "add selected" = join as those players (host adds them as bot/preset names)
+// For simplicity: host can pre-fill their own name from giglabz
+function addSelectedToGame() {
+  // Not used in multiplayer flow — giglabz used to pick your own name
+  closeGiglabzBtn();
+  toast('Join the room with your name via Join Room');
+}
+
+// ══════════════ PRESENCE: CANCEL onDisconnect WHEN BACKGROUNDED ══════════════
+// Mobile browsers (iOS/Android) drop the Firebase WebSocket almost immediately
+// when the screen locks or the tab is backgrounded. Firebase's onDisconnect hook
+// then fires and removes the player/room before they have a chance to return.
+//
+// Fix: cancel the onDisconnect hook the moment the page hides, and re-register
+// it only once the page is visible again (i.e. the user is still in the room).
+
+function registerDisconnectHandlers() {
+  if (!ROOM || !rtdb) return;
+  // Host disconnect removes the whole room (cleanup for abandoned rooms).
+  // Player disconnect only marks them as disconnected — never removes the node.
+  // This prevents the player from being ejected mid-game due to a brief network drop.
+  if (IS_HOST) {
+    rtdb.ref(`rooms/${ROOM}`).onDisconnect().remove();
+  }
+  if (ME && ME.id) {
+    // Use set() with the full player record so Firebase never creates a bare
+    // {disconnected:true} stub if the node is missing. Pull current values from
+    // ROOM_STATE so score/ready/vote are up-to-date at registration time.
+    const currentPlayer = ROOM_STATE?.players?.[ME.id] || {};
+    const disconnectRecord = {
+      id:       ME.id,
+      name:     ME.name,
+      avatar:   ME.avatar,
+      isHost:   IS_HOST,
+      score:    currentPlayer.score    ?? 0,
+      ready:    currentPlayer.ready    ?? false,
+      vote:     currentPlayer.vote     ?? null,
+      disconnected: true,
+    };
+    rtdb.ref(`rooms/${ROOM}/players/${ME.id}`).onDisconnect().set(disconnectRecord);
+  }
+}
+
+function cancelDisconnectHandlers() {
+  if (!ROOM || !rtdb) return;
+  if (IS_HOST) {
+    rtdb.ref(`rooms/${ROOM}`).onDisconnect().cancel();
+  }
+  if (ME && ME.id) {
+    rtdb.ref(`rooms/${ROOM}/players/${ME.id}`).onDisconnect().cancel();
+  }
+}
+
+// When returning to foreground, clear the disconnected flag if it was set
+async function clearDisconnectedFlag() {
+  if (!ROOM || !rtdb || !ME?.id) return;
+  try {
+    const snap = await rtdb.ref(`rooms/${ROOM}/players/${ME.id}/disconnected`).get();
+    if (snap.exists() && snap.val() === true) {
+      await rtdb.ref(`rooms/${ROOM}/players/${ME.id}/disconnected`).remove();
+    }
+  } catch {}
+}
+
+document.addEventListener('visibilitychange', () => {
+  if (!ROOM) return; // not in an online room
+  if (document.visibilityState === 'hidden') {
+    // Page going to background / screen locked: cancel the hook so Firebase
+    // does not mark us as disconnected while we are suspended.
+    cancelDisconnectHandlers();
+  } else {
+    // Page returned to foreground: clear any disconnected flag and re-register.
+    clearDisconnectedFlag();
+    registerDisconnectHandlers();
+  }
+});
+
+// ══════════════ HOME / INIT ══════════════
+function init() {
+  document.getElementById('giglabzInput')?.addEventListener('keydown', e => { if (e.key==='Enter') addGiglabzMember(); });
+  document.getElementById('offlinePlayerInput')?.addEventListener('keydown', e => { if (e.key==='Enter') offlineAddPlayer(); });
+}
+
+// ══════════════ CREATE ROOM ══════════════
+async function showCreateRoom() {
+  // Show loading state while Firebase SDKs load (first time only)
+  show('waiting');
+  document.getElementById('waitTitle').textContent = 'Connecting…';
+  document.getElementById('waitSub').textContent = 'Loading online services';
+  document.getElementById('waitRoom').textContent = '';
+
+  try {
+    await initFirebase();
+  } catch (err) {
+    show('home');
+    toast('No internet connection — online play unavailable');
+    return;
+  }
+
+  const name = await promptName('HOST NAME', 'What should we call you?');
+  if (!name) { show('modeOnline'); return; }
+  ME = { id: uid(), name, avatar: AVATARS[Math.floor(Math.random()*AVATARS.length)] };
+
+  const code = roomCode();
+  ROOM = code;
+  IS_HOST = true;
+
+  const settings = { imp:1, rounds:3, hintCount:1, revealVotes:true, cats: Object.keys(WORDS) };
+
+  const roomData = {
+    code,
+    host: ME.id,
+    settings,
+    status: 'lobby',   // lobby | revealing | voting | result
+    players: {
+      [ME.id]: { ...ME, isHost: true, score: 0, ready: false, vote: null }
+    },
+    game: null,
+    votes: {},
+    createdAt: Date.now(),
+  };
+
+  try {
+    await rtdb.ref(`rooms/${code}`).set(roomData);
+    subscribeToRoom(code);
+    registerDisconnectHandlers();
+    saveSession();
+    showLobby();
+  } catch(err) {
+    toast('Failed to create room. Check your Firebase config.');
+    console.error(err);
+  }
+}
+
+// ══════════════ JOIN ROOM ══════════════
+function showJoinRoom() { show('joinRoom'); }
+
+async function joinRoom() {
+  const code = document.getElementById('joinCode').value.trim().toUpperCase();
+  const name = document.getElementById('joinName').value.trim();
+  if (code.length !== 4) return toast('Enter a 4-letter room code');
+  if (!name) return toast('Enter your name');
+
+  show('waiting');
+  document.getElementById('waitTitle').textContent = 'Connecting…';
+  document.getElementById('waitSub').textContent = 'Loading online services';
+  document.getElementById('waitRoom').textContent = '';
+
+  try {
+    await initFirebase();
+  } catch (err) {
+    show('joinRoom');
+    toast('No internet connection — cannot join room');
+    return;
+  }
+
+  document.getElementById('waitTitle').textContent = 'Joining room…';
+  document.getElementById('waitSub').textContent = `Looking for room ${code}`;
+
+  try {
+    const snap = await rtdb.ref(`rooms/${code}`).get();
+    if (!snap.exists()) { show('joinRoom'); return toast(`Room ${code} not found`); }
+    const data = snap.val();
+
+    // ── Rejoin: same name already exists in this room ──
+    const existingPlayer = Object.values(data.players||{}).find(
+      p => p.name.toLowerCase() === name.toLowerCase()
+    );
+    if (existingPlayer) {
+      // Restore identity from the existing player record
+      ME = { id: existingPlayer.id, name: existingPlayer.name, avatar: existingPlayer.avatar };
+      ROOM = code;
+      IS_HOST = (data.host === existingPlayer.id);
+
+      // If onDisconnect removed the player node, put it back
+      if (!data.players[existingPlayer.id]) {
+        await rtdb.ref(`rooms/${code}/players/${existingPlayer.id}`).set(existingPlayer);
+      }
+
+      subscribeToRoom(code);
+      registerDisconnectHandlers();
+      clearDisconnectedFlag();
+      saveSession();
+      // onRoomUpdate will route to the correct screen immediately
+      toast(`Welcome back, ${ME.name}!`);
+      return;
+    }
+
+    // ── Fresh join: only allowed in lobby ──
+    if (data.status !== 'lobby') { show('joinRoom'); return toast('That game has already started'); }
+    const playerCount = Object.keys(data.players||{}).length;
+    if (playerCount >= 20) { show('joinRoom'); return toast('Room is full (20 players)'); }
+
+    ME = { id: uid(), name, avatar: AVATARS[Math.floor(Math.random()*AVATARS.length)] };
+    ROOM = code;
+    IS_HOST = false;
+
+    await rtdb.ref(`rooms/${code}/players/${ME.id}`).set({
+      ...ME, isHost: false, score: 0, ready: false, vote: null
+    });
+    subscribeToRoom(code);
+    registerDisconnectHandlers();
+    saveSession();
+    showLobby();
+  } catch(err) {
+    show('joinRoom');
+    toast('Error joining room. Try again.');
+    console.error(err);
+  }
+}
+
+// ══════════════ SUBSCRIBE TO ROOM ══════════════
+function subscribeToRoom(code) {
+  clearListeners();
+  roomRef = rtdb.ref(`rooms/${code}`);
+  addListener(roomRef, 'value', snap => {
+    if (!snap.exists()) { handleRoomDeleted(); return; }
+    const raw = snap.val();
+    // Sanitise: strip any player stub that lacks a name (can appear if onDisconnect
+    // fires before the full player record was written, or due to stale set() payloads)
+    if (raw.players) {
+      Object.keys(raw.players).forEach(pid => {
+        if (!raw.players[pid]?.name) delete raw.players[pid];
+      });
+    }
+    ROOM_STATE = raw;
+    onRoomUpdate(ROOM_STATE);
+  });
+}
+
+function handleRoomDeleted() {
+  clearListeners();
+  clearSession();
+  ROOM = null; IS_HOST = false; ROOM_STATE = {};
+  toast('Room was closed by the host');
+  show('home');
+}
+
+function onRoomUpdate(state) {
+  // Sync lobby settings display
+  if (document.getElementById('lobby').classList.contains('on')) renderLobby(state);
+  // Route to correct screen based on game status
+  const currentScreen = [...document.querySelectorAll('.screen.on')].map(s=>s.id)[0];
+  const status = state.status;
+
+  if (status === 'lobby' && !['home','lobby','joinRoom'].includes(currentScreen)) {
+    showLobby();
+  } else if (status === 'lobby') {
+    renderLobby(state);
+  } else if (status === 'revealing') {
+    if (!['myRole'].includes(currentScreen)) showMyRole(state);
+    checkAllReady(state);
+  } else if (status === 'voting') {
+    const vr = state.game?.voteResult;
+    if (vr && !document.getElementById('voteResultOverlay').classList.contains('open')) {
+      // Vote result is ready — show overlay on every client
+      if (!['vote'].includes(currentScreen)) showVoteScreen(state);
+      else renderVoteScreen(state);
+      showOnlineVoteResultOverlay(vr, state);
+    } else if (vr && document.getElementById('voteResultOverlay').classList.contains('open')) {
+      // Overlay already open with this result — do nothing, avoid re-triggering tally
+    } else if (!vr && document.getElementById('voteResultOverlay').classList.contains('open')) {
+      // Host cleared the result (advanced round) — close overlay and re-render
+      closeVoteResultOverlay();
+      renderVoteScreen(state);
+    } else if (!['vote'].includes(currentScreen)) {
+      showVoteScreen(state);
+    } else {
+      renderVoteScreen(state);
+    }
+  } else if (status === 'result') {
+    if (!['result'].includes(currentScreen)) showResultScreen(state);
+  }
+}
+
+// ══════════════ LOBBY ══════════════
+function showLobby() {
+  show('lobby');
+  document.getElementById('lobbyCode').textContent = ROOM;
+  document.getElementById('lobbyRoleLabel').textContent = IS_HOST ? 'HOST' : 'PLAYER';
+  document.getElementById('lobbyRoleLabel').className = `lobby-role ${IS_HOST ? 'host' : 'player'}`;
+
+  // Build lobby category grid for host
+  if (IS_HOST) {
+    const cg = document.getElementById('lobbyCatGrid');
+    cg.innerHTML = '';
+    Object.keys(WORDS).forEach(k => {
+      const b = document.createElement('div');
+      b.className = 'cat-btn on';
+      b.textContent = k;
+      b.onclick = () => {
+        if (selCats.has(k)) { if (selCats.size<=1) return toast('Need at least 1 category'); selCats.delete(k); b.classList.remove('on'); }
+        else { selCats.add(k); b.classList.add('on'); }
+        // Sync to Firebase
+        roomRef.child('settings/cats').set([...selCats]);
+      };
+      cg.appendChild(b);
+    });
+  }
+
+  document.getElementById('lobbySettings').classList.toggle('disabled', !IS_HOST);
+  document.getElementById('lobbyHostActions').style.display = IS_HOST ? 'flex' : 'none';
+  document.getElementById('lobbyPlayerActions').style.display = IS_HOST ? 'none' : 'flex';
+
+  if (ROOM_STATE) renderLobby(ROOM_STATE);
+}
+
+function renderLobby(state) {
+  const players = Object.values(state.players || {});
+  const s = state.settings || {};
+
+  // Player count
+  document.getElementById('lobbyPCount').textContent = `${players.length} / 20`;
+
+  // Player grid
+  const grid = document.getElementById('playerGrid');
+  const empty = document.getElementById('lobbyEmpty');
+  if (players.length === 0) {
+    grid.innerHTML = ''; empty.style.display = 'block';
+  } else {
+    empty.style.display = 'none';
+    grid.innerHTML = players.map(p => {
+      const isMe = p.id === ME.id;
+      const canKick = IS_HOST && !isMe;
+      return `<div class="player-tile ${p.isHost?'is-host':''} ${isMe?'is-me':''}">
+        <div class="pt-avatar">${p.avatar}</div>
+        <div class="pt-info">
+          <div class="pt-name">${p.name}</div>
+          <div class="pt-tag ${p.isHost?'host':isMe?'you':''}">${p.isHost?'HOST':isMe?'YOU':''}</div>
+        </div>
+        ${canKick ? `<button class="pt-kick" onclick="kickPlayer('${p.id}','${p.name.replace(/'/g,"\\'")}')">✕</button>` : ''}
+      </div>`;
+    }).join('');
+  }
+
+  // Sync settings display (host-authoritative)
+  if (document.getElementById('rImpVal'))    document.getElementById('rImpVal').textContent    = s.imp || 1;
+  if (document.getElementById('rRoundsVal')) document.getElementById('rRoundsVal').textContent = s.rounds || 3;
+  if (document.getElementById('rHintVal'))   document.getElementById('rHintVal').textContent   = s.hintCount || 1;
+  const revealBtn = document.getElementById('rRevealToggle');
+  if (revealBtn) {
+    const on = s.revealVotes !== false;
+    revealBtn.textContent = on ? 'ON' : 'OFF';
+    revealBtn.style.color = on ? 'var(--green)' : 'var(--text2)';
+    revealBtn.style.borderColor = on ? 'rgba(16,217,160,.5)' : '';
+  }
+}
+
+async function adjRoom(type, d) {
+  if (!IS_HOST) return;
+  const s = ROOM_STATE.settings || {};
+  if (type === 'reveal') {
+    await roomRef.child('settings/revealVotes').set(!(s.revealVotes !== false));
+    return;
+  }
+  let val;
+  if (type === 'imp')    val = Math.max(1, Math.min(6, (s.imp||1) + d));
+  else if (type === 'rounds') val = Math.max(1, Math.min(5, (s.rounds||3) + d));
+  else                   val = Math.max(1, Math.min(3, (s.hintCount||1) + d));
+  const key = type === 'imp' ? 'imp' : type === 'rounds' ? 'rounds' : 'hintCount';
+  await roomRef.child(`settings/${key}`).set(val);
+}
+
+async function kickPlayer(playerId, playerName) {
+  if (!IS_HOST) return;
+  showConfirm('👟','Kick Player',`Remove ${playerName} from the room?`, async () => {
+    await roomRef.child(`players/${playerId}`).remove();
+    toast(`${playerName} was kicked`);
+  });
+}
+
+async function leaveRoom() {
+  if (IS_HOST) {
+    showConfirm('🚪','Close Room','This will remove all players and end the game.',async () => {
+      await roomRef.remove();
+      clearListeners(); ROOM=null; IS_HOST=false; ROOM_STATE={};
+      clearSession();
+      show('home');
+    });
+  } else {
+    await roomRef.child(`players/${ME.id}`).remove();
+    clearListeners(); ROOM=null; IS_HOST=false; ROOM_STATE={};
+    clearSession();
+    show('home');
+  }
+}
+
+// ══════════════ HOST: START GAME ══════════════
+let _gameStarting = false;
+async function hostStartGame() {
+  if (_gameStarting) return;
+  _gameStarting = true;
+  try {
+  const players = Object.values(ROOM_STATE.players || {});
+  const s = ROOM_STATE.settings || {};
+  if (players.length < 3) { _gameStarting = false; return toast('Need at least 3 players'); }
+  if ((s.imp||1) >= players.length) { _gameStarting = false; return toast('Too many imposters for this player count'); }
+
+  const cats = s.cats || Object.keys(WORDS);
+  let available = DB.availableWords(cats);
+  if (available.length === 0) {
+    const usedCache = DB.loadWordCache();
+    cats.forEach(cat => (WORDS[cat]||[]).forEach(w => usedCache.delete(w)));
+    DB.saveWordCache(usedCache);
+    updateOfflineCachePill();
+    available = DB.availableWords(cats);
+  }
+  const pick = available[Math.floor(Math.random() * available.length)];
+  DB.addWord(pick.word);
+
+  const allHints = HINTS[pick.word] || ['Related','Similar','Nearby','Connected','Close'];
+  const hintCount = s.hintCount || 1;
+  const impCount  = s.imp || 1;
+
+  // Shuffle the full hint pool once, then deal non-overlapping slices to each imposter
+  const shuffledHints = [...allHints].sort(() => Math.random() - .5);
+  // If there aren't enough unique hints for every imposter, cycle with offset
+  const getHintsForImposter = (idx) => {
+    const hints = [];
+    for (let i = 0; i < hintCount; i++) {
+      hints.push(shuffledHints[(idx * hintCount + i) % shuffledHints.length]);
+    }
+    return hints;
+  };
+
+  // Assign roles
+  const shuffled = [...players].sort(() => Math.random()-.5);
+  const imposterIds = new Set(shuffled.slice(0, impCount).map(p=>p.id));
+  const imposterList = [...imposterIds];
+
+  const roles = {};
+  players.forEach(p => {
+    if (imposterIds.has(p.id)) {
+      const impIdx = imposterList.indexOf(p.id);
+      // Names of all OTHER imposters (so this player knows their allies)
+      const coImposters = players
+        .filter(q => imposterIds.has(q.id) && q.id !== p.id)
+        .map(q => q.name);
+      roles[p.id] = {
+        isImposter: true,
+        reveal: { type: 'imposter', hints: getHintsForImposter(impIdx), coImposters }
+      };
+    } else {
+      roles[p.id] = {
+        isImposter: false,
+        reveal: { type: 'agent', word: pick.word }
+      };
+    }
+  });
+
+  const gameData = {
+    word: pick.word,
+    cat: pick.cat,
+    imposterIds: [...imposterIds],
+    roles,
+    settings: { imp: impCount, rounds: s.rounds||3, hintCount },
+    voteRound: 1,
+    eliminated: [],
+    readyCount: 0,
+    votes: {},
+    outcome: null,
+  };
+
+  // Reset player ready & vote states
+  const playerUpdates = {};
+  players.forEach(p => { playerUpdates[`players/${p.id}/ready`] = false; playerUpdates[`players/${p.id}/vote`] = null; });
+
+  await roomRef.update({ ...playerUpdates, game: gameData, status: 'revealing', votes: {} });
+  } finally { _gameStarting = false; }
+}
+
+// ══════════════ MY ROLE SCREEN (each player's device) ══════════════
+function showMyRole(state) {
+  show('myRole');
+  const myRole = state.game?.roles?.[ME.id];
+  if (!myRole) { show('waiting'); return; }
+
+  document.getElementById('myRoleName').textContent = ME.name.toUpperCase();
+  document.getElementById('myRoleInst').textContent = 'Slide up to see your role — keep it secret!';
+  document.getElementById('myRoleDoneBtn').style.display = 'none';
+  document.getElementById('myRoleWaitBar').style.display = 'none';
+
+  // Reset card
+  const face = document.getElementById('myRoleFace');
+  face.innerHTML = ''; face.style.transition = 'none';
+  face.style.setProperty('--reveal-pct','0%');
+  face.className = 'card-face';
+  document.getElementById('myRoleSlideTrack').className = 'slide-track';
+  document.getElementById('myRoleSlidePill').style.opacity = '1';
+
+  // Build content
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    if (myRole.isImposter) {
+      const coImposters = myRole.reveal?.coImposters || [];
+      const coSection = coImposters.length > 0
+        ? `<div class="co-imp-section">
+             <div class="co-imp-label">YOUR ${coImposters.length > 1 ? 'ALLIES' : 'ALLY'}</div>
+             <div class="co-imp-chips">${coImposters.map(n=>`<div class="co-imp-chip">🦹 ${n}</div>`).join('')}</div>
+           </div>`
+        : '';
+      face.classList.add('imp-face');
+      const chips = myRole.reveal.hints.map(h=>`<div class="hint-chip">${h}</div>`).join('');
+      face.innerHTML = `<div class="role-emblem">${SVG_IMPOSTER}</div><div class="role-lbl">IMPOSTER</div><div class="hint-label">YOUR ${myRole.reveal.hints.length>1?'HINTS':'HINT'}</div><div class="hint-chips">${chips}</div><div class="hint-note">Blend in — you don't know the real secret word!</div>${coSection}`;
+    } else {
+      face.classList.add('agt-face');
+      face.innerHTML = `<div class="role-emblem">${SVG_AGENT}</div><div class="role-lbl">AGENT</div><div class="secret-label">SECRET WORD</div><div class="secret-word">${myRole.reveal?.word||state.game?.word}</div><div class="agent-note">Describe it without saying it — give clues!</div>`;
+    }
+    attachSlide('myRoleCard', 'myRoleFace', 'myRoleSlideTrack', 'myRoleSlidePill', onMyRoleRevealed);
+  }));
+}
+
+function onMyRoleRevealed() {
+  document.getElementById('myRoleInst').textContent = 'Remember your role — tap ready when done!';
+  document.getElementById('myRoleDoneBtn').style.display = 'block';
+}
+
+async function playerReadyAfterReveal() {
+  document.getElementById('myRoleDoneBtn').style.display = 'none';
+  document.getElementById('myRoleWaitBar').style.display = 'flex';
+  await roomRef.child(`players/${ME.id}/ready`).set(true);
+
+  // Host checks if all are ready → move to voting
+  if (IS_HOST) {
+    const players = Object.values(ROOM_STATE.players||{});
+    // Small delay to let Firebase propagate
+    setTimeout(async () => {
+      const snap = await roomRef.child('players').get();
+      const ps = Object.values(snap.val()||{});
+      if (ps.every(p=>p.ready)) await moveToVoting();
+    }, 800);
+  }
+}
+
+// Also host auto-detects when all ready via subscription
+async function checkAllReady(state) {
+  if (!IS_HOST) return;
+  const players = Object.values(state.players||{});
+  if (players.length > 0 && players.every(p=>p.ready)) {
+    await moveToVoting();
+  }
+}
+
+let _movingToVoting = false;
+async function moveToVoting() {
+  if (_movingToVoting) return;
+  _movingToVoting = true;
+  try { await roomRef.update({ status:'voting', 'game/votes': {} }); }
+  finally { _movingToVoting = false; }
+}
+
+// ══════════════ VOTE SCREEN ══════════════
+function showVoteScreen(state) {
+  show('vote');
+  renderVoteScreen(state);
+}
+
+function renderVoteScreen(state) {
+  const g = state.game || {};
+  const s = g.settings || {};
+  const players = Object.values(state.players||{});
+  const eliminated = g.eliminated || [];
+  const active = players.filter(p => !eliminated.includes(p.id));
+
+  document.getElementById('voteRoundLabel').textContent =
+    `VOTE ROUND ${g.voteRound||1} OF ${s.rounds||3} · WHO IS THE IMPOSTER?`;
+
+  // Reset online vote buttons (guard against offline mode having overridden them)
+  const confirmBtn = document.getElementById('voteConfirmBtn');
+  if (confirmBtn) { confirmBtn.textContent = 'CONFIRM VOTE ✓'; confirmBtn.onclick = submitMyVote; }
+  const voteSkipBtn = document.getElementById('voteSkipBtn');
+  if (voteSkipBtn) { voteSkipBtn.textContent = '⏭ SKIP MY VOTE'; voteSkipBtn.onclick = skipMyVote; voteSkipBtn.style.display = ''; }
+  const offlineSkip = document.getElementById('offlineSkipBtn');
+  if (offlineSkip) offlineSkip.style.display = 'none';
+
+  // Fix #18: show secret word to non-imposters; hide from imposters
+  const myRole = state.game?.roles?.[ME.id];
+  const hintEl = document.getElementById('voteWordHint');
+  if (hintEl) {
+    if (myRole && !myRole.isImposter) {
+      document.getElementById('voteWordHintVal').textContent = g.word || '';
+      hintEl.style.display = 'flex';
+    } else {
+      hintEl.style.display = 'none';
+    }
+  }
+
+  // Build vote list — disconnected players shown greyed out and non-voteable
+  selVote = null;
+  document.getElementById('voteList').innerHTML = active.map((p,i) => {
+    const voted = g.votes?.[ME.id] === p.id;
+    const isMe = p.id === ME.id;
+    const isDisconnected = !!p.disconnected;
+    const classes = [
+      'vcard',
+      voted ? 'picked' : '',
+      isMe ? 'self-vote' : '',
+      isDisconnected ? 'disconnected-player' : '',
+    ].filter(Boolean).join(' ');
+    return `<div class="${classes}" id="vc${i}" onclick="selectVote(${i},'${p.id}')">
+      <div class="vavatar" style="${isDisconnected?'opacity:.35':''}">${p.avatar}</div>
+      <div class="vname">${p.name}${isMe?' (you)':''}${isDisconnected?' 📵':''}</div>
+      <div class="vcheck" id="vch${i}">${voted?'✓':''}</div>
+    </div>`;
+  }).join('');
+
+  // Everyone sees the action panel; hide it and show wait bar once they've voted
+  const myVote = g.votes?.[ME.id];
+  document.getElementById('votePlayerActions').style.display = myVote ? 'none' : 'flex';
+  document.getElementById('voteWaitBar').style.display = myVote ? 'flex' : 'none';
+  document.getElementById('voteTallyBar').style.display = 'block';
+
+  updateVoteTally(state);
+
+  // Restore previous selection
+  if (myVote && myVote !== 'skip') {
+    const idx = active.findIndex(p=>p.id===myVote);
+    if (idx >= 0) { selVote = {index:idx, pid:myVote}; }
+  }
+}
+
+
+async function submitMyVote() {
+  if (!selVote) return toast('Select someone to vote out!');
+  await roomRef.child(`game/votes/${ME.id}`).set(selVote.pid);
+  document.getElementById('votePlayerActions').style.display = 'none';
+  document.getElementById('voteWaitBar').style.display = 'flex';
+}
+
+async function skipMyVote() {
+  // Write sentinel so host knows this player abstained
+  await roomRef.child(`game/votes/${ME.id}`).set('skip');
+  document.getElementById('votePlayerActions').style.display = 'none';
+  document.getElementById('voteWaitBar').style.display = 'flex';
+}
+
+function updateVoteTally(state) {
+  const g = state.game || {};
+  const players = Object.values(state.players||{});
+  const eliminated = g.eliminated || [];
+  // Disconnected players cannot vote — exclude them from the required total
+  // so they don't block the round from completing when everyone else has voted.
+  const active = players.filter(p=>!eliminated.includes(p.id));
+  const votingActive = active.filter(p=>!p.disconnected);
+  const votes = g.votes || {};
+  const voteCount = Object.keys(votes).length;
+  const total = votingActive.length;
+  const allVoted = total > 0 && voteCount >= total;
+  document.getElementById('voteTallyTxt').textContent = allVoted
+    ? `All ${total} voted ✓`
+    : `${voteCount} / ${total} voted`;
+  document.getElementById('voteTallyTxt').style.color = allVoted ? 'var(--green)' : '';
+  const fill = document.getElementById('voteFill');
+  fill.style.width = total ? `${(voteCount/total)*100}%` : '0%';
+  fill.classList.toggle('all-voted', allVoted);
+
+  // Host auto-triggers reveal when everyone has voted or skipped.
+  // Guard: skip if voteResult is already written (reveal already in progress).
+  if (IS_HOST && allVoted && !state.game?.voteResult) checkAllVoted(state);
+}
+
+// Auto-triggered by updateVoteTally when all active players have a vote entry
+let _checkAllVotedGuard = false;
+function checkAllVoted(state) {
+  if (_checkAllVotedGuard) return;
+  _checkAllVotedGuard = true;
+  // Delay lets the final Firebase vote write propagate before we tally.
+  // The guard is NOT reset by the timer — it stays locked until advanceVoteRound
+  // clears votes in Firebase, at which point allVoted becomes false and the guard
+  // is explicitly reset by resetVoteGuards().
+  setTimeout(() => { hostRevealVotes(); }, 600);
+}
+
+function resetVoteGuards() {
+  _checkAllVotedGuard = false;
+  _revealingVotes = false;
+}
+
+let _revealingVotes = false;
+async function hostRevealVotes() {
+  if (_revealingVotes) return;
+  _revealingVotes = true;
+  // _revealingVotes stays true until resetVoteGuards() is called by advanceVoteRound/hostEndGame
+
+  const g = ROOM_STATE.game || {};
+  const players = Object.values(ROOM_STATE.players||{});
+  const eliminated = g.eliminated || [];
+  const active = players.filter(p=>!eliminated.includes(p.id));
+  const votes = g.votes || {};
+
+  // Tally votes — 'skip' entries and disconnected players are abstentions
+  const tally = {};
+  active.filter(p=>!p.disconnected).forEach(p => { tally[p.id] = 0; });
+  Object.values(votes).forEach(pid => { if (pid !== 'skip' && tally[pid]!==undefined) tally[pid]++; });
+
+  const sorted = Object.entries(tally).sort(([,a],[,b])=>b-a);
+  const [topId, topCount] = sorted[0] || [null, 0];
+  const tied = sorted.filter(([,c])=>c===topCount).length > 1;
+
+  const revealOn = (ROOM_STATE.settings?.revealVotes !== false);
+  const breakdown = revealOn ? buildVoteBreakdown(active, votes, players) : null;
+
+  let voteResult;
+  if (tied || !topId) {
+    voteResult = { type:'skip', title:'Tied Vote!', sub:'No one eliminated — next round…',
+      action:'advance', eliminatedId:null, breakdown: breakdown||'' };
+  } else {
+    const topPlayer = active.find(p=>p.id===topId);
+    const isImposter = (g.imposterIds||[]).includes(topId);
+    const eliminated2 = [...eliminated, topId];
+    if (isImposter) {
+      const aliveImposters = (g.imposterIds||[]).filter(id=>!eliminated2.includes(id));
+      if (aliveImposters.length === 0) {
+        voteResult = { type:'win', title:`${topPlayer?.name} caught!`, sub:'All imposters eliminated — Agents win!',
+          action:'end', outcome:'agents_win', eliminated: eliminated2, breakdown: breakdown||'' };
+      } else {
+        voteResult = { type:'win', title:`${topPlayer?.name} was an imposter!`, sub:'One down — keep voting!',
+          action:'advance', eliminatedId: topId, eliminated: eliminated2, breakdown: breakdown||'' };
+      }
+    } else {
+      voteResult = { type:'lose', title:`${topPlayer?.name} was innocent`, sub:'Wrong call — the imposter is still out there.',
+        action:'advance', eliminatedId: topId, eliminated: eliminated2, breakdown: breakdown||'' };
+    }
+  }
+
+  // Write result to Firebase — all clients will show the overlay via onRoomUpdate
+  await roomRef.child('game/voteResult').set(voteResult);
+}
+
+async function advanceVoteRound(eliminatedId, g, players) {
+  const eliminated = g.eliminated || [];
+  const alive = players.filter(p=>!eliminated.includes(p.id));
+  const aliveImposters = (g.imposterIds||[]).filter(id=>!eliminated.includes(id));
+  const aliveAgents = alive.filter(p=>!aliveImposters.includes(p.id));
+
+  if (aliveImposters.length >= aliveAgents.length) { await hostEndGame('imp_majority', eliminated, g, players); return; }
+
+  const settings = g.settings || {};
+  if ((g.voteRound||1) >= (settings.rounds||3)) { await hostEndGame('imp_survived', eliminated, g, players); return; }
+
+  // Next round — reset votes; guards reset so next round can trigger
+  resetVoteGuards();
+  const updates = { 'game/voteRound': (g.voteRound||1)+1, 'game/votes': {}, 'game/eliminated': eliminated };
+  await roomRef.update(updates);
+  // Keep status as voting — subscribers re-render
+}
+
+async function hostEndGame(outcome, eliminated, g, players) {
+  // Compute scores
+  const scoreUpdates = {};
+  players.forEach(p => {
+    const wasImposter = (g.imposterIds||[]).includes(p.id);
+    let delta = 0;
+    if (outcome==='agents_win' && !wasImposter) delta = 2;
+    else if ((outcome==='imp_majority'||outcome==='imp_survived') && wasImposter) delta = 3;
+    scoreUpdates[`players/${p.id}/score`] = (p.score||0) + delta;
+  });
+
+  resetVoteGuards();
+  // DB.recordResult is now called in showResultScreen for ALL clients (fixes #7)
+  await roomRef.update({
+    ...scoreUpdates,
+    status: 'result',
+    'game/outcome': outcome,
+    'game/eliminated': eliminated,
+    'game/voteResult': null,
+  });
+}
+
+// ══════════════ RESULT SCREEN ══════════════
+async function showResultScreen(state) {
+  show('result');
+  const g = state.game || {};
+  const players = Object.values(state.players||{});
+  const outcome = g.outcome;
+  const imposterIds = g.imposterIds || [];
+  const imposters = players.filter(p=>imposterIds.includes(p.id)).map(p=>p.name).join(' & ');
+  // Fix #9: was/were grammar for multiple imposters
+  const wasWere = imposters.includes(' & ') ? 'were' : 'was';
+
+  const SVG_WIN = `<svg width="80" height="80" viewBox="0 0 80 80" fill="none"><circle cx="40" cy="40" r="36" fill="rgba(16,217,160,.12)" stroke="var(--green)" stroke-width="2"/><path d="M24 40l10 10 22-22" stroke="var(--green)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  const SVG_LOSE = `<svg width="80" height="80" viewBox="0 0 80 80" fill="none"><circle cx="40" cy="40" r="36" fill="rgba(232,54,74,.12)" stroke="var(--red)" stroke-width="2"/><path d="M40 16L47 32H63L51 42L56 58L40 48L24 58L29 42L17 32H33Z" stroke="var(--red2)" stroke-width="2" stroke-linejoin="round" fill="rgba(232,54,74,.25)"/></svg>`;
+
+  if (outcome==='agents_win') {
+    document.getElementById('resIcon').innerHTML = SVG_WIN;
+    document.getElementById('resTitle').className='res-title res-win';
+    document.getElementById('resTitle').textContent='AGENTS WIN!';
+    document.getElementById('resDetail').textContent=`${imposters} ${wasWere} voted out — the agents save the day!`;
+  } else if (outcome==='imp_majority') {
+    document.getElementById('resIcon').innerHTML = SVG_LOSE;
+    document.getElementById('resTitle').className='res-title res-lose';
+    document.getElementById('resTitle').textContent='IMPOSTERS WIN!';
+    document.getElementById('resDetail').textContent=`Too many agents eliminated — ${imposters} ${wasWere === 'were' ? 'take' : 'takes'} control!`;
+  } else {
+    document.getElementById('resIcon').innerHTML = SVG_LOSE;
+    document.getElementById('resTitle').className='res-title res-lose';
+    document.getElementById('resTitle').textContent='IMPOSTERS WIN!';
+    document.getElementById('resDetail').textContent=`${imposters} survived all vote rounds!`;
+  }
+
+  document.getElementById('resImpName').textContent = `🕵️ Imposter${imposterIds.length > 1 ? 's' : ''}: ${imposters}`;
+  document.getElementById('resWord').textContent = g.word || '';
+
+  // Word cache — every client tracks used words locally
+  if (g.word) DB.addWord(g.word);
+
+  // Leaderboard — only host writes to avoid concurrent-write races.
+  // All clients read after a short delay to let the host write land first.
+  if (IS_HOST && outcome && imposterIds.length) {
+    const lbPlayers = players.map(p => ({
+      name: p.name,
+      isImposter: imposterIds.includes(p.id),
+      score: p.score || 0,
+    }));
+    await DB.recordResult(lbPlayers, outcome);
+  }
+
+  // Session scores — read from the state snapshot (scores written by hostEndGame)
+  const sorted = [...players].sort((a,b)=>(b.score||0)-(a.score||0));
+  document.getElementById('scoreList').innerHTML = sorted.map((p,i)=>`
+    <div class="score-row">
+      <div class="s-rank">${['🥇','🥈','🥉'][i]||(i+1)+'.'}</div>
+      <div class="s-name">${p.name}${imposterIds.includes(p.id)?' 🦹':''}${(g.eliminated||[]).includes(p.id)?' ☠️':''}</div>
+      <div class="s-pts">${p.score||0}</div>
+    </div>`).join('');
+
+  // Leaderboard preview — non-hosts wait briefly for the host's write to arrive
+  if (!IS_HOST) await new Promise(r => setTimeout(r, 1200));
+  await renderLeaderboard('lbPreviewList');
+  const rows = document.getElementById('lbPreviewList').querySelectorAll('.lb-row');
+  rows.forEach((r,i) => { if (i>=5) r.remove(); });
+
+  // Show play again only for host
+  document.getElementById('playAgainBtn').style.display = IS_HOST ? 'block' : 'none';
+}
+
+async function hostPlayAgain() {
+  // Reset room to lobby, keep players & scores
+  const updates = { status:'lobby', game: null, votes:{} };
+  const players = Object.values(ROOM_STATE.players||{});
+  players.forEach(p => { updates[`players/${p.id}/ready`] = false; updates[`players/${p.id}/vote`] = null; });
+  await roomRef.update(updates);
+}
+
+// ══════════════ SLIDE-TO-REVEAL (generic, works for both local and multiplayer reveal) ══════════════
+const SVG_AGENT = `<svg viewBox="0 0 52 52" fill="none"><circle cx="26" cy="18" r="9" stroke="var(--green)" stroke-width="2.2" fill="none"/><path d="M10 44c0-8.84 7.16-16 16-16s16 7.16 16 16" stroke="var(--green)" stroke-width="2.2" stroke-linecap="round" fill="none"/><circle cx="26" cy="18" r="4" fill="var(--green)" opacity=".7"/><path d="M20 36l3 5 3-3 3 3 3-5" stroke="var(--green2)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>`;
+const SVG_IMPOSTER = `<svg viewBox="0 0 52 52" fill="none"><path d="M26 6L32 18H44L34 26L38 38L26 30L14 38L18 26L8 18H20Z" stroke="var(--red2)" stroke-width="2" stroke-linejoin="round" fill="rgba(232,54,74,.15)"/><circle cx="26" cy="22" r="4" fill="var(--red2)" opacity=".8"/><path d="M20 32 Q26 38 32 32" stroke="var(--red2)" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg>`;
+
+const IS_TOUCH = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+
+function attachSlide(cardId, faceId, trackId, pillId, onComplete) {
+  const track = document.getElementById(trackId);
+  const face  = document.getElementById(faceId);
+  const card  = document.getElementById(cardId);
+  let revealed = false;
+
+  // Update pill label for non-touch devices
+  const pillSpan = track.querySelector('.slide-pill span:not(.slide-arrow)');
+  if (pillSpan && !IS_TOUCH) pillSpan.textContent = 'CLICK TO REVEAL';
+
+  const cardH = () => card.getBoundingClientRect().height || 420;
+  let startY = null, startPct = 0, live = false, dragMoved = false;
+
+  function pct(y) { return Math.min(100, Math.max(0, startPct + ((startY-y)/cardH())*100)); }
+  function onStart(y) { if (revealed) return; startY=y; startPct=parseFloat(face.style.getPropertyValue('--reveal-pct')||'0'); live=true; dragMoved=false; }
+  function onMove(y) {
+    if (!live||revealed) return;
+    if (Math.abs(y - startY) > 8) dragMoved = true;
+    const p = pct(y);
+    face.style.setProperty('--reveal-pct', p+'%');
+    document.getElementById(pillId).style.opacity = Math.max(0, 1-p/40)+'';
+    if (p>=80) doReveal();
+  }
+  function onEnd(y) {
+    if (!live) return; live=false; if (revealed) return;
+    // On non-touch: a click (no significant drag) immediately reveals
+    if (!IS_TOUCH && !dragMoved) { doReveal(); return; }
+    if (pct(y)<80) {
+      face.style.transition='clip-path .3s cubic-bezier(.34,1.56,.64,1)';
+      face.style.setProperty('--reveal-pct','0%');
+      document.getElementById(pillId).style.opacity='1';
+      setTimeout(()=>face.style.transition='',350);
+    } else doReveal();
+  }
+  function doReveal() {
+    if (revealed) return; revealed=true;
+    face.classList.add('revealed');
+    face.style.setProperty('--reveal-pct','100%');
+    document.getElementById(trackId).classList.add('done');
+    if (onComplete) onComplete();
+    document.onmousemove=null; document.onmouseup=null;
+  }
+
+  track.ontouchstart = e => onStart(e.touches[0].clientY);
+  track.ontouchmove  = e => { e.preventDefault(); onMove(e.touches[0].clientY); };
+  track.ontouchend   = e => onEnd(e.changedTouches[0].clientY);
+  track.onmousedown  = e => onStart(e.clientY);
+  document.onmousemove = e => { if (live) onMove(e.clientY); };
+  document.onmouseup   = e => { if (live) onEnd(e.clientY); };
+}
+
+// ══════════════ NAME PROMPT HELPER ══════════════
+function promptName(label, subtitle) {
+  return new Promise(resolve => {
+    showConfirm('👤', label, subtitle, () => {});
+    const msg = document.getElementById('confirmMsg');
+    msg.innerHTML = `<input type="text" id="namePromptInput" placeholder="Your name" maxlength="16" autocomplete="off" style="width:100%;margin-top:8px" autocorrect="off">`;
+    // Cancel resolves with null so the caller can handle gracefully
+    document.querySelector('.confirm-cancel').onclick = () => { closeConfirm(); resolve(null); };
+    document.getElementById('confirmOk').onclick = () => {
+      const val = document.getElementById('namePromptInput')?.value.trim();
+      if (!val) { toast('Please enter a name'); return; }
+      closeConfirm();
+      resolve(val);
+    };
+    document.getElementById('namePromptInput')?.focus();
+    document.getElementById('namePromptInput')?.addEventListener('keydown', e => {
+      if (e.key==='Enter') document.getElementById('confirmOk').click();
+    });
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+//  OFFLINE PASS & PLAY MODE
+// ══════════════════════════════════════════════════════════
+
+let OFFLINE = false;   // true while in offline mode
+let ONLINE_PASSPLAY = false; // true = pass&play via online route (requires Firebase)
+let OL = {};           // offline game state
+let olPlayers = [];    // offline player name list
+let olSelCats = new Set(Object.keys(WORDS));
+let olS = { imp:1, rounds:3, hintCount:1, revealVotes:true };
+let OFFLINE_FROM = 'modeOffline'; // which mode screen launched offline setup
+
+// ── Entry: Online Pass & Play — requires Firebase init first ──
+async function showOnlinePassPlay() {
+  show('waiting');
+  document.getElementById('waitTitle').textContent = 'Connecting…';
+  document.getElementById('waitSub').textContent   = 'Loading online services';
+  document.getElementById('waitRoom').textContent  = '';
+  try {
+    await initFirebase();
+  } catch (err) {
+    show('modeOnline');
+    toast('No internet connection — use Offline Pass & Play instead');
+    return;
+  }
+  ONLINE_PASSPLAY = true;
+  showOfflineSetup('modeOnline');
+}
+
+// ── Setup screen ──
+function showOfflineSetup(from) {
+  OFFLINE = true;
+  if (from !== 'modeOnline') ONLINE_PASSPLAY = false; // pure offline — clear online flag
+  OFFLINE_FROM = from || OFFLINE_FROM;
+  olPlayers = [];
+  olSelCats = new Set(Object.keys(WORDS));
+  olS = { imp:1, rounds:3, hintCount:1 };
+  renderOfflineChips();
+  buildOfflineCatGrid();
+  updateOfflineCachePill();
+  // Update badge to reflect online or offline mode
+  const badge = document.querySelector('#offlineSetup .offline-badge');
+  if (badge) {
+    badge.textContent = ONLINE_PASSPLAY
+      ? '🌐 ONLINE · PASS & PLAY'
+      : '📱 OFFLINE · ONE DEVICE';
+    badge.style.background    = ONLINE_PASSPLAY ? 'rgba(56,189,248,.1)'  : 'var(--green-dim)';
+    badge.style.borderColor   = ONLINE_PASSPLAY ? 'rgba(56,189,248,.3)'  : 'rgba(16,217,160,.3)';
+    badge.style.color         = ONLINE_PASSPLAY ? 'var(--cyan)'          : 'var(--green)';
+  }
+  show('offlineSetup');
+}
+
+function buildOfflineCatGrid() {
+  const cg = document.getElementById('offlineCatGrid');
+  cg.innerHTML = '';
+  Object.keys(WORDS).forEach(k => {
+    const b = document.createElement('div');
+    b.className = 'cat-btn on';
+    b.textContent = k;
+    b.onclick = () => {
+      if (olSelCats.has(k)) {
+        if (olSelCats.size <= 1) return toast('Need at least 1 category');
+        olSelCats.delete(k); b.classList.remove('on');
+      } else { olSelCats.add(k); b.classList.add('on'); }
+    };
+    cg.appendChild(b);
+  });
+}
+
+function offlineAdj(type, d) {
+  if (type === 'imp')    { olS.imp       = Math.max(1, Math.min(6, olS.imp + d));       document.getElementById('offlineImpVal').textContent    = olS.imp; }
+  else if (type === 'rounds') { olS.rounds  = Math.max(1, Math.min(5, olS.rounds + d)); document.getElementById('offlineRoundsVal').textContent = olS.rounds; }
+  else if (type === 'hint') { olS.hintCount = Math.max(1, Math.min(3, olS.hintCount + d)); document.getElementById('offlineHintVal').textContent = olS.hintCount; }
+  else if (type === 'reveal') {
+    olS.revealVotes = !olS.revealVotes;
+    const btn = document.getElementById('offlineRevealToggle');
+    btn.textContent = olS.revealVotes ? 'ON' : 'OFF';
+    btn.style.color = olS.revealVotes ? 'var(--green)' : 'var(--text2)';
+    btn.style.borderColor = olS.revealVotes ? 'rgba(16,217,160,.5)' : '';
+  }
+}
+
+function offlineAddPlayer() {
+  const inp = document.getElementById('offlinePlayerInput');
+  const name = inp.value.trim();
+  if (!name) return;
+  if (olPlayers.length >= 20) return toast('Max 20 players');
+  if (olPlayers.find(p => p.toLowerCase() === name.toLowerCase())) return toast('Name already added');
+  olPlayers.push(name); inp.value = '';
+  renderOfflineChips();
+}
+function offlineRemovePlayer(i) { olPlayers.splice(i, 1); renderOfflineChips(); }
+function renderOfflineChips() {
+  document.getElementById('offlineChips').innerHTML = olPlayers.map((p, i) =>
+    `<span class="chip">${p}<button class="chip-x" onclick="offlineRemovePlayer(${i})">✕</button></span>`
+  ).join('');
+  document.getElementById('offlinePCount').textContent = `${olPlayers.length} / 20`;
+}
+
+function updateOfflineCachePill() {
+  const used = DB.loadWordCache();
+  const total = Object.values(WORDS).flat().length;
+  const pill = document.getElementById('offlineCachePill');
+  const countEl = document.getElementById('offlineCacheCount');
+  if (!pill) return;
+  if (used.size === 0) { pill.style.display = 'none'; }
+  else { pill.style.display = 'inline-flex'; countEl.textContent = `${used.size}/${total} USED`; }
+}
+
+// Giglabz for offline mode — add selected directly to olPlayers
+function openOfflineGiglabz() {
+  giglabzSelected.clear();
+  document.getElementById('giglabzInput').value = '';
+  // Temporarily patch addSelectedToGame for offline context
+  window._giglabzMode = 'offline';
+  renderOfflineGiglabzList();
+  document.getElementById('giglabzOverlay').classList.add('open');
+}
+function renderOfflineGiglabzList() {
+  const list = document.getElementById('giglabzList');
+  list.innerHTML = giglabzMembers.map((name, i) => {
+    const inGame = olPlayers.includes(name);
+    const sel = giglabzSelected.has(name);
+    const avatar = MEMBER_AVATARS[i % MEMBER_AVATARS.length];
+    let cls = 'giglabz-item';
+    if (inGame) cls += ' in-game'; else if (sel) cls += ' selected';
+    const badge = inGame
+      ? `<span class="gi-ingame-badge">✓ added</span>`
+      : `<button class="gi-del" onclick="deleteGiglabzMember(event,${i})">✕</button>`;
+    return `<div class="${cls}" onclick="toggleOfflineGiglabz('${name.replace(/'/g,"\\'")}')">
+      <div class="gi-avatar">${avatar}</div>
+      <div class="gi-name">${name}</div>
+      <div class="gi-check">${sel?'✓':''}</div>${badge}</div>`;
+  }).join('');
+}
+function toggleOfflineGiglabz(name) {
+  if (olPlayers.includes(name)) return;
+  if (giglabzSelected.has(name)) giglabzSelected.delete(name); else giglabzSelected.add(name);
+  renderOfflineGiglabzList();
+}
+
+// Override addSelectedToGame to handle both modes
+function addSelectedToGame() {
+  if (window._giglabzMode === 'offline') {
+    let added = 0, skipped = 0;
+    giglabzSelected.forEach(name => {
+      if (olPlayers.length >= 20) { skipped++; return; }
+      if (olPlayers.find(p => p.toLowerCase() === name.toLowerCase())) return;
+      olPlayers.push(name); added++;
+    });
+    renderOfflineChips();
+    closeGiglabzBtn();
+    window._giglabzMode = null;
+    if (added > 0 && skipped === 0) toast(`${added} player${added>1?'s':''} added! 🎉`);
+    else if (added > 0) toast(`${added} added, ${skipped} skipped (max 20)`);
+    else toast('No new players to add');
+  } else {
+    closeGiglabzBtn();
+    toast('Use Join Room to enter with your name');
+  }
+}
+
+// ── Start offline game ──
+function offlineStartGame() {
+  if (olPlayers.length < 3) return toast('Need at least 3 players');
+  if (olS.imp >= olPlayers.length) return toast('Too many imposters for player count');
+
+  const cats = [...olSelCats];
+  let available = DB.availableWords(cats);
+  if (available.length === 0) {
+    toast('All words used! Cycling cache for selected categories…');
+    const usedCache = DB.loadWordCache();
+    cats.forEach(cat => (WORDS[cat]||[]).forEach(w => usedCache.delete(w)));
+    DB.saveWordCache(usedCache);
+    updateOfflineCachePill();
+    updateOfflineCachePill();
+    available = DB.availableWords(cats);
+  }
+
+  const pick = available[Math.floor(Math.random() * available.length)];
+  DB.addWord(pick.word);
+  updateOfflineCachePill();
+
+  const allHints = HINTS[pick.word] || ['Related','Similar','Nearby','Connected','Close'];
+  const hintCount = olS.hintCount;
+
+  // Shuffle hint pool once, deal non-overlapping slices per imposter
+  const shuffledHints = [...allHints].sort(()=>Math.random()-.5);
+  const getHintsForImposter = (idx) => {
+    const hints = [];
+    for (let i = 0; i < hintCount; i++) {
+      hints.push(shuffledHints[(idx * hintCount + i) % shuffledHints.length]);
+    }
+    return hints;
+  };
+
+  // Assign imposters
+  const shuffledNames = [...olPlayers].sort(()=>Math.random()-.5);
+  const imposterNames = shuffledNames.slice(0, olS.imp);
+  const imposterSet = new Set(imposterNames);
+
+  // Build player objects, shuffle reveal order
+  const builtPlayers = olPlayers.map((name, i) => ({
+    id: uid(), name,
+    avatar: AVATARS[i % AVATARS.length],
+    isImposter: imposterSet.has(name),
+    score: OL.players?.find(p=>p.name===name)?.score || 0,
+  }));
+
+  // Build per-player hints map and co-imposter map (keyed by player id)
+  const playerHints = {};
+  const playerCoImposters = {};
+  let impIdx = 0;
+  builtPlayers.forEach(p => {
+    if (p.isImposter) {
+      playerHints[p.id] = getHintsForImposter(impIdx++);
+    }
+  });
+  // Co-imposters: for each imposter, list all OTHER imposters' names
+  builtPlayers.filter(p => p.isImposter).forEach(p => {
+    playerCoImposters[p.id] = builtPlayers
+      .filter(q => q.isImposter && q.id !== p.id)
+      .map(q => q.name);
+  });
+
+  for (let i = builtPlayers.length-1; i>0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [builtPlayers[i], builtPlayers[j]] = [builtPlayers[j], builtPlayers[i]];
+  }
+
+  OL = {
+    players: builtPlayers,
+    playerHints,
+    playerCoImposters,
+    word: pick.word, cat: pick.cat,
+    settings: { ...olS },
+    revealIdx: 0, cardShown: false,
+    voteRound: 1,
+    eliminated: [],
+    round: (OL.round||0) + 1,
+  };
+
+  offlineShowReveal();
+}
+
+// ── Offline Reveal (pass-and-play using the shared reveal screen) ──
+function offlineShowReveal() {
+  show('reveal');
+  OL.revealIdx = 0;
+  OL.cardShown = false;
+  offlineRenderReveal();
+}
+
+function offlineRenderReveal() {
+  const p = OL.players[OL.revealIdx];
+  document.getElementById('rvName').textContent = p.name.toUpperCase();
+  document.getElementById('rvInst').textContent = 'Slide up to see your role — keep it secret!';
+
+  // Wipe face immediately
+  const face = document.getElementById('cardFace');
+  face.innerHTML = '';
+  face.style.transition = 'none';
+  face.style.setProperty('--reveal-pct','0%');
+  face.className = 'card-face';
+  document.getElementById('slideTrack').className = 'slide-track';
+  document.getElementById('slidePill').style.opacity = '1';
+  document.getElementById('rvNextBtn').style.display = 'none';
+  OL.cardShown = false;
+
+  // Progress dots
+  document.getElementById('dots').innerHTML = OL.players.map((_,i) => {
+    let c = 'dot';
+    if (i < OL.revealIdx) c += ' done';
+    else if (i === OL.revealIdx) c += ' cur';
+    return `<div class="${c}"></div>`;
+  }).join('');
+
+  // Inject content after paint
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    if (p.isImposter) {
+      const myHints = OL.playerHints[p.id] || [];
+      const coImposters = OL.playerCoImposters?.[p.id] || [];
+      const coSection = coImposters.length > 0
+        ? `<div class="co-imp-section">
+             <div class="co-imp-label">YOUR ${coImposters.length > 1 ? 'ALLIES' : 'ALLY'}</div>
+             <div class="co-imp-chips">${coImposters.map(n=>`<div class="co-imp-chip">🦹 ${n}</div>`).join('')}</div>
+           </div>`
+        : '';
+      face.classList.add('imp-face');
+      const chips = myHints.map(h=>`<div class="hint-chip">${h}</div>`).join('');
+      face.innerHTML = `<div class="role-emblem">${SVG_IMPOSTER}</div><div class="role-lbl">IMPOSTER</div><div class="hint-label">YOUR ${myHints.length>1?'HINTS':'HINT'}</div><div class="hint-chips">${chips}</div><div class="hint-note">Blend in — you don't know the real secret word!</div>${coSection}`;
+    } else {
+      face.classList.add('agt-face');
+      face.innerHTML = `<div class="role-emblem">${SVG_AGENT}</div><div class="role-lbl">AGENT</div><div class="secret-label">SECRET WORD</div><div class="secret-word">${OL.word}</div><div class="agent-note">Describe it without saying it — give clues!</div>`;
+    }
+    attachSlide('roleCard','cardFace','slideTrack','slidePill', offlineOnRevealed);
+  }));
+}
+
+function offlineOnRevealed() {
+  OL.cardShown = true;
+  document.getElementById('rvInst').textContent = 'Remember your role — pass the phone!';
+  const btn = document.getElementById('rvNextBtn');
+  btn.style.display = 'block';
+  btn.textContent = OL.revealIdx < OL.players.length-1 ? 'NEXT PLAYER →' : '🗳 START VOTING';
+}
+
+function nextReveal() {
+  // Used by BOTH offline and online (online passes through to showVote)
+  const face = document.getElementById('cardFace');
+  face.style.transition = 'none';
+  face.style.setProperty('--reveal-pct','0%');
+  face.innerHTML = '';
+  face.className = 'card-face';
+  document.onmousemove = null;
+  document.onmouseup = null;
+
+  if (OFFLINE) {
+    OL.revealIdx++;
+    if (OL.revealIdx >= OL.players.length) offlineShowVote();
+    else { OL.cardShown = false; offlineRenderReveal(); }
+  } else {
+    // online: shouldn't be triggered in multiplayer (each device has own card)
+    // but kept for safety
+  }
+}
+
+// ── Offline Vote ──
+let olSelVote = null;
+
+function offlineShowVote() {
+  olSelVote = null;
+  show('vote');
+  const active = OL.players.filter(p=>!OL.eliminated.includes(p.id));
+
+  document.getElementById('voteRoundLabel').textContent =
+    `VOTE ROUND ${OL.voteRound} OF ${OL.settings.rounds} · WHO IS THE IMPOSTER?`;
+  document.getElementById('voteTallyBar').style.display = 'none';
+
+  // Hide secret word during voting — imposters must not see it; word is revealed on the result screen
+  const hintEl = document.getElementById('voteWordHint');
+  if (hintEl) hintEl.style.display = 'none';
+
+  // Offline: show single-vote UI
+  document.getElementById('votePlayerActions').style.display = 'flex';
+  document.getElementById('voteWaitBar').style.display = 'none';
+  // Repurpose confirm + skip buttons for offline flow
+  const offlineConfirmBtn = document.getElementById('voteConfirmBtn');
+  if (offlineConfirmBtn) { offlineConfirmBtn.textContent = 'CONFIRM VOTE ✓'; offlineConfirmBtn.onclick = offlineSubmitVote; }
+  // Hide the online skip button — offline has its own appended skip button below
+  const onlineSkipBtn = document.getElementById('voteSkipBtn');
+  if (onlineSkipBtn) onlineSkipBtn.style.display = 'none';
+
+  // Skip button — add to vote footer for offline
+  let skipBtn = document.getElementById('offlineSkipBtn');
+  if (!skipBtn) {
+    skipBtn = document.createElement('button');
+    skipBtn.id = 'offlineSkipBtn';
+    skipBtn.className = 'btn-s';
+    skipBtn.style.width = '100%';
+    skipBtn.textContent = '⏭ SKIP THIS ROUND';
+    document.getElementById('votePlayerActions').appendChild(skipBtn);
+  }
+  skipBtn.style.display = 'block';
+  skipBtn.onclick = offlineSkipVote;
+
+  document.getElementById('voteList').innerHTML = active.map((p,i) => `
+    <div class="vcard" id="vc${i}" onclick="offlineSelectVote(${i},'${p.id}')">
+      <div class="vavatar">${p.avatar}</div>
+      <div class="vname">${p.name}</div>
+      <div class="vcheck" id="vch${i}"></div>
+    </div>`).join('');
+}
+
+function offlineSelectVote(i, pid) {
+  document.querySelectorAll('.vcard').forEach((c,j)=>{
+    c.classList.remove('picked');
+    const vch = document.getElementById(`vch${j}`);
+    if (vch) vch.textContent='';
+  });
+  olSelVote = {index:i, pid};
+  document.getElementById(`vc${i}`).classList.add('picked');
+  document.getElementById(`vch${i}`).textContent = '✓';
+}
+
+function offlineSubmitVote() {
+  if (!olSelVote) return toast('Select someone to vote out!');
+  const active = OL.players.filter(p=>!OL.eliminated.includes(p.id));
+  const voted = active.find(p=>p.id===olSelVote.pid);
+  if (!voted) return;
+
+  OL.eliminated.push(voted.id);
+  const isImposter = voted.isImposter;
+  const reveal = olS.revealVotes !== false;
+
+  if (!reveal) {
+    const aliveImposters = OL.players.filter(p=>p.isImposter && !OL.eliminated.includes(p.id));
+    if (isImposter && aliveImposters.length === 0) {
+      showVoteResultOverlay('win', `${voted.name} was voted out.`, 'The game is over — find out who was who!', () => offlineShowResult('agents_win'));
+    } else {
+      showVoteResultOverlay('skip', `${voted.name} was voted out.`, 'Next round…', () => offlineAdvanceRound());
+    }
+    return;
+  }
+
+  if (isImposter) {
+    const aliveImposters = OL.players.filter(p=>p.isImposter && !OL.eliminated.includes(p.id));
+    if (aliveImposters.length === 0) {
+      showVoteResultOverlay('win', `${voted.name} was the imposter!`, 'Agents catch the imposter and save the day!', () => offlineShowResult('agents_win'));
+      return;
+    }
+    showVoteResultOverlay('win', `${voted.name} was an imposter!`, 'One down — keep voting!', () => offlineAdvanceRound());
+  } else {
+    showVoteResultOverlay('lose', `${voted.name} was innocent…`, 'Wrong call — the imposter is still out there.', () => offlineAdvanceRound());
+  }
+}
+
+function offlineSkipVote() {
+  showVoteResultOverlay('skip','Round Skipped','No one eliminated this round.',()=>offlineAdvanceRound());
+}
+
+function offlineAdvanceRound() {
+  const alive = OL.players.filter(p=>!OL.eliminated.includes(p.id));
+  const aliveImposters = alive.filter(p=>p.isImposter);
+  const aliveAgents = alive.filter(p=>!p.isImposter);
+
+  if (aliveImposters.length >= aliveAgents.length) {
+    offlineShowResult('imp_majority'); return;
+  }
+  if (OL.voteRound >= OL.settings.rounds) {
+    offlineShowResult('imp_survived'); return;
+  }
+  OL.voteRound++;
+  offlineShowVote();
+}
+
+// ── Vote Result Overlay (animated reveal between rounds) ──
+function buildVoteBreakdown(active, votes, players) {
+  if (!votes || Object.keys(votes).length === 0) return null;
+  const playerMap = {};
+  players.forEach(p => { playerMap[p.id] = p; });
+
+  // Group voter names under each candidate (Among Us style)
+  const grouped = {};
+  active.forEach(p => { grouped[p.id] = []; });
+  Object.entries(votes).forEach(([voterId, targetId]) => {
+    if (grouped[targetId] !== undefined) grouped[targetId].push(voterId);
+  });
+
+  const rows = Object.entries(grouped)
+    .sort(([,a],[,b]) => b.length - a.length)
+    .map(([targetId, voterIds]) => {
+      const target = playerMap[targetId];
+      if (!target) return '';
+      const count = voterIds.length;
+      const chips = voterIds.map(vid => {
+        const v = playerMap[vid];
+        return v ? `<span style="background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:3px 9px;font-size:11px;font-weight:600;color:var(--text2);white-space:nowrap">${v.name}</span>` : '';
+      }).join('');
+      const countColor = count >= 2 ? 'var(--red2)' : count === 1 ? 'var(--gold)' : 'var(--text3)';
+      return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06)">
+        <span style="font-size:13px;font-weight:700;color:var(--text);min-width:72px;flex-shrink:0">${target.name}</span>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;flex:1">${count ? chips : '<span style="color:var(--text3);font-size:11px;font-style:italic">no votes</span>'}</div>
+        <span style="font-family:var(--ff-mono);font-size:15px;font-weight:800;color:${countColor};flex-shrink:0">${count}</span>
+      </div>`;
+    }).filter(Boolean).join('');
+
+  return `<div style="font-family:var(--ff-mono);font-size:9px;letter-spacing:2px;color:var(--text3);font-weight:700;margin-bottom:8px">VOTE BREAKDOWN</div>${rows}`;
+}
+
+// ── Online vote result overlay: driven by Firebase game/voteResult ──
+function showOnlineVoteResultOverlay(vr, state) {
+  const g = state.game || {};
+  const players = Object.values(state.players||{});
+  _renderVoteOverlayContent(vr.type, vr.title, vr.sub, vr.breakdown);
+
+  const continueBtn = document.getElementById('vroContinueBtn');
+  const waitBar = document.getElementById('vroWaitBar');
+
+  if (IS_HOST) {
+    continueBtn.style.display = '';
+    continueBtn.textContent = 'CONTINUE →';
+    waitBar.style.display = 'none';
+    continueBtn.onclick = async () => {
+      closeVoteResultOverlay();
+      // Clear voteResult first so non-hosts see overlay close
+      await roomRef.child('game/voteResult').remove();
+      if (vr.action === 'end') {
+        await hostEndGame(vr.outcome, vr.eliminated || g.eliminated || [], g, players);
+      } else {
+        const eliminated = vr.eliminated || g.eliminated || [];
+        await advanceVoteRound(vr.eliminatedId || null, {...g, eliminated}, players);
+      }
+    };
+  } else {
+    continueBtn.style.display = 'none';
+    waitBar.style.display = 'flex';
+  }
+
+  document.getElementById('voteResultOverlay').classList.add('open');
+}
+
+// ── Offline / local vote result overlay (pass-and-play) ──
+function showVoteResultOverlay(type, title, sub, onContinue, breakdownHtml) {
+  _renderVoteOverlayContent(type, title, sub, breakdownHtml||'');
+  const continueBtn = document.getElementById('vroContinueBtn');
+  const waitBar = document.getElementById('vroWaitBar');
+  continueBtn.style.display = '';
+  continueBtn.textContent = 'CONTINUE →';
+  waitBar.style.display = 'none';
+  continueBtn.onclick = () => { closeVoteResultOverlay(); onContinue(); };
+  document.getElementById('voteResultOverlay').classList.add('open');
+}
+
+function _renderVoteOverlayContent(type, title, sub, breakdownHtml) {
+  const SVG_WIN_SM = `<svg width="72" height="72" viewBox="0 0 72 72" fill="none"><circle cx="36" cy="36" r="32" fill="rgba(16,217,160,.15)" stroke="var(--green)" stroke-width="2"/><path d="M20 36l10 10 22-22" stroke="var(--green)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  const SVG_LOSE_SM = `<svg width="72" height="72" viewBox="0 0 72 72" fill="none"><circle cx="36" cy="36" r="32" fill="rgba(232,54,74,.12)" stroke="var(--red)" stroke-width="2"/><path d="M24 24l24 24M48 24L24 48" stroke="var(--red2)" stroke-width="3.5" stroke-linecap="round"/></svg>`;
+  const SVG_SKIP_SM = `<svg width="72" height="72" viewBox="0 0 72 72" fill="none"><circle cx="36" cy="36" r="32" fill="rgba(245,200,66,.1)" stroke="var(--gold)" stroke-width="2"/><path d="M24 36h24M42 28l8 8-8 8" stroke="var(--gold)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+  document.getElementById('vroIcon').innerHTML = type==='win' ? SVG_WIN_SM : type==='lose' ? SVG_LOSE_SM : SVG_SKIP_SM;
+  document.getElementById('vroTitle').textContent = title;
+  document.getElementById('vroTitle').style.color = type==='win' ? 'var(--green)' : type==='lose' ? 'var(--red2)' : 'var(--gold)';
+  document.getElementById('vroSub').textContent = sub;
+  const vl = document.getElementById('vroVoteList');
+  if (breakdownHtml) { vl.innerHTML = breakdownHtml; vl.style.display = 'block'; }
+  else { vl.style.display = 'none'; }
+}
+
+function closeVoteResultOverlay() {
+  document.getElementById('voteResultOverlay').classList.remove('open');
+  // Note: _revealingVotes and _checkAllVotedGuard are reset by resetVoteGuards()
+  // when the round actually advances, not when the overlay closes visually.
+}
+
+// ── Offline Result ──
+async function offlineShowResult(outcome) {
+  // Score update
+  OL.players.forEach(p => {
+    if (outcome==='agents_win' && !p.isImposter) p.score += 2;
+    else if ((outcome==='imp_majority'||outcome==='imp_survived') && p.isImposter) p.score += 3;
+  });
+
+  await DB.recordResult(OL.players, outcome);
+
+  const imposters = OL.players.filter(p=>p.isImposter).map(p=>p.name).join(' & ');
+  show('result');
+
+  const SVG_WIN = `<svg width="80" height="80" viewBox="0 0 80 80" fill="none"><circle cx="40" cy="40" r="36" fill="rgba(16,217,160,.12)" stroke="var(--green)" stroke-width="2"/><path d="M24 40l10 10 22-22" stroke="var(--green)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  const SVG_LOSE = `<svg width="80" height="80" viewBox="0 0 80 80" fill="none"><circle cx="40" cy="40" r="36" fill="rgba(232,54,74,.12)" stroke="var(--red)" stroke-width="2"/><path d="M40 16L47 32H63L51 42L56 58L40 48L24 58L29 42L17 32H33Z" stroke="var(--red2)" stroke-width="2" stroke-linejoin="round" fill="rgba(232,54,74,.25)"/></svg>`;
+
+  if (outcome==='agents_win') {
+    document.getElementById('resIcon').innerHTML = SVG_WIN;
+    document.getElementById('resTitle').className='res-title res-win';
+    document.getElementById('resTitle').textContent='AGENTS WIN!';
+    document.getElementById('resDetail').textContent=`${imposters} was caught — agents save the day!`;
+  } else if (outcome==='imp_majority') {
+    document.getElementById('resIcon').innerHTML = SVG_LOSE;
+    document.getElementById('resTitle').className='res-title res-lose';
+    document.getElementById('resTitle').textContent='IMPOSTERS WIN!';
+    document.getElementById('resDetail').textContent=`Too many agents eliminated — ${imposters} takes control!`;
+  } else {
+    document.getElementById('resIcon').innerHTML = SVG_LOSE;
+    document.getElementById('resTitle').className='res-title res-lose';
+    document.getElementById('resTitle').textContent='IMPOSTERS WIN!';
+    document.getElementById('resDetail').textContent=`${imposters} survived all ${OL.settings.rounds} vote rounds!`;
+  }
+
+  document.getElementById('resImpName').textContent = `🕵️ Imposter: ${imposters}`;
+  document.getElementById('resWord').textContent = OL.word;
+
+  const sorted = [...OL.players].sort((a,b)=>b.score-a.score);
+  document.getElementById('scoreList').innerHTML = sorted.map((p,i)=>`
+    <div class="score-row">
+      <div class="s-rank">${['🥇','🥈','🥉'][i]||(i+1)+'.'}</div>
+      <div class="s-name">${p.name}${p.isImposter?' 🦹':''}${OL.eliminated.includes(p.id)?' ☠️':''}</div>
+      <div class="s-pts">${p.score}</div>
+    </div>`).join('');
+
+  await renderLeaderboard('lbPreviewList');
+  const rows = document.getElementById('lbPreviewList').querySelectorAll('.lb-row');
+  rows.forEach((r,i)=>{ if (i>=5) r.remove(); });
+
+  // Show appropriate buttons
+  document.getElementById('playAgainBtn').style.display = 'block';
+  document.getElementById('newGameBtn').textContent = 'NEW GAME';
+}
+
+// ── Result button routing (online vs offline) ──
+function onPlayAgain() {
+  if (OFFLINE) {
+    // Keep same players, start a new round
+    offlineStartGame();
+  } else {
+    hostPlayAgain();
+  }
+}
+function onNewGame() {
+  if (OFFLINE) {
+    const dest = OFFLINE_FROM || 'modeOffline';
+    OFFLINE = false;
+    ONLINE_PASSPLAY = false;
+    OL = {};
+    show(dest);
+  } else {
+    leaveRoom();
+  }
+}
+
+// Patch selectVote to be mode-aware (online uses selectVote, offline uses offlineSelectVote)
+function selectVote(i, pid) {
+  document.querySelectorAll('.vcard').forEach((c,j)=>{
+    c.classList.remove('picked');
+    const vch = document.getElementById(`vch${j}`);
+    if (vch) vch.textContent='';
+  });
+  selVote = {index:i, pid};
+  document.getElementById(`vc${i}`).classList.add('picked');
+  document.getElementById(`vch${i}`).textContent='✓';
+}
+
+// ══════════════════════════════════════════════════════════
+//  END OFFLINE MODE
+// ══════════════════════════════════════════════════════════
+
+// ══════════════════════════════════════════════════════════
+//  QR CODE MODULE
+//  Generation: qrcodejs loaded from CDN on first use
+//  Scanning: BarcodeDetector API with jsQR camera stream fallback
+// ══════════════════════════════════════════════════════════
+
+// (Custom QR generator removed — replaced by qrcodejs CDN library in showQR)
+
+// ── QR Display ──
+async function showQR() {
+  if (!ROOM) return;
+  document.getElementById('qrCodeText').textContent = ROOM;
+  document.getElementById('qrOverlay').classList.add('open');
+  try {
+    if (!window.QRCode) {
+      await new Promise((res, rej) => {
+        const s = document.createElement('script');
+        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+        s.onload = res; s.onerror = rej;
+        document.head.appendChild(s);
+      });
+    }
+    const wrap = document.querySelector('.qr-canvas-wrap');
+    wrap.innerHTML = '';
+    new QRCode(wrap, { text: ROOM, width: 200, height: 200, colorDark: '#000000', colorLight: '#ffffff' });
+  } catch(err) {
+    console.error('QR generation failed:', err);
+  }
+}
+
+function closeQR(e) {
+  if (e.target === document.getElementById('qrOverlay')) {
+    document.getElementById('qrOverlay').classList.remove('open');
+  }
+}
+
+// ── QR Scanner ──
+let scanStream = null;
+let scanTimer  = null;
+
+async function startScanner() {
+  // First try BarcodeDetector (Chrome Android, Chrome desktop)
+  if ('BarcodeDetector' in window) {
+    try {
+      const bd = new BarcodeDetector({ formats: ['qr_code'] });
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment' }
+      });
+      scanStream = stream;
+      const video = document.getElementById('scanVideo');
+      video.srcObject = stream;
+      document.getElementById('scanOverlay').classList.add('open');
+
+      async function detect() {
+        if (!scanStream) return;
+        try {
+          const barcodes = await bd.detect(video);
+          if (barcodes.length > 0) {
+            const raw = barcodes[0].rawValue.trim().toUpperCase().replace(/[^A-Z]/g,'');
+            const code = raw.slice(-4); // take last 4 chars in case of full URL
+            if (code.length === 4) {
+              stopScanner();
+              document.getElementById('joinCode').value = code;
+              toast(`Room code ${code} scanned! ✓`);
+              return;
+            }
+          }
+        } catch(e) {}
+        scanTimer = requestAnimationFrame(detect);
+      }
+      video.onloadedmetadata = () => detect();
+      return;
+    } catch(err) {
+      console.warn('BarcodeDetector failed:', err);
+    }
+  }
+
+  // Fallback: jsQR canvas scanning (Firefox, Safari, older browsers)
+  if (!navigator.mediaDevices?.getUserMedia) {
+    toast('Camera not available — enter code manually');
+    return;
+  }
+  try {
+    if (!window.jsQR) {
+      await new Promise((res, rej) => {
+        const s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js';
+        s.onload = res;
+        s.onerror = () => rej(new Error('jsQR load failed'));
+        document.head.appendChild(s);
+      });
+    }
+    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+    scanStream = stream;
+    const video = document.getElementById('scanVideo');
+    video.srcObject = stream;
+    document.getElementById('scanOverlay').classList.add('open');
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    function detect() {
+      if (!scanStream) return;
+      if (video.readyState === video.HAVE_ENOUGH_DATA) {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const result = jsQR(imageData.data, imageData.width, imageData.height);
+        if (result) {
+          const raw = result.data.trim().toUpperCase().replace(/[^A-Z]/g, '');
+          const code = raw.slice(-4);
+          if (code.length === 4) {
+            stopScanner();
+            document.getElementById('joinCode').value = code;
+            toast(`Room code ${code} scanned! ✓`);
+            return;
+          }
+        }
+      }
+      scanTimer = requestAnimationFrame(detect);
+    }
+    video.onloadedmetadata = () => detect();
+  } catch(err) {
+    console.warn('Camera fallback failed:', err);
+    toast('Camera access denied — enter code manually');
+  }
+}
+
+function stopScanner() {
+  if (scanStream) { scanStream.getTracks().forEach(t=>t.stop()); scanStream=null; }
+  if (scanTimer)  { cancelAnimationFrame(scanTimer); scanTimer=null; }
+  document.getElementById('scanOverlay').classList.remove('open');
+  const video = document.getElementById('scanVideo');
+  video.srcObject = null;
+}
+
+// ── Boot ──
+initTheme();
+loadGiglabz();
+init();
+tryAutoRejoin();
+
+async function tryAutoRejoin() {
+  const session = loadSession();
+  if (!session || !session.room || !session.me) return;
+
+  const { me, room, isHost } = session;
+
+  show('waiting');
+  document.getElementById('waitTitle').textContent = 'Reconnecting…';
+  document.getElementById('waitSub').textContent = `Rejoining room ${room}`;
+  document.getElementById('waitRoom').textContent = '';
+
+  try {
+    await initFirebase();
+    const snap = await rtdb.ref(`rooms/${room}`).get();
+    if (!snap.exists()) {
+      clearSession();
+      show('home');
+      return;
+    }
+    const data = snap.val();
+
+    // Verify our player slot is still valid (name match in room data or host match)
+    const ourEntry = Object.values(data.players||{}).find(
+      p => p.id === me.id || p.name.toLowerCase() === me.name.toLowerCase()
+    );
+    if (!ourEntry && data.host !== me.id) {
+      // We're not in the room anymore and not the host — can't rejoin silently
+      clearSession();
+      show('home');
+      return;
+    }
+
+    // Use the most up-to-date player record if available, otherwise fall back to session
+    const player = ourEntry || me;
+    ME = { id: player.id, name: player.name, avatar: player.avatar };
+    ROOM = room;
+    IS_HOST = (data.host === player.id);
+
+    // If onDisconnect removed us, restore our node
+    if (!data.players?.[ME.id]) {
+      await rtdb.ref(`rooms/${room}/players/${ME.id}`).set({
+        ...player,
+        isHost: IS_HOST,
+        score: player.score || 0,
+        ready: player.ready || false,
+        vote: player.vote || null,
+      });
+    }
+
+    subscribeToRoom(room);
+    registerDisconnectHandlers();
+    clearDisconnectedFlag();
+    saveSession();
+    // onRoomUpdate will immediately route to the right screen
+    toast(`Welcome back, ${ME.name}!`);
+  } catch(err) {
+    console.warn('Auto-rejoin failed:', err);
+    clearSession();
+    show('home');
+  }
+}
+</script>
+</body>
+</html>
