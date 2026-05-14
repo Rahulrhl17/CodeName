@@ -1733,6 +1733,16 @@ function initFirebase() {
   });
 }
 
+// ══════════════ UTILITIES ══════════════
+function fisherYates(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 // ══════════════ WORD / HINT DATA ══════════════
 const WORDS = {
   "🍕 Food":        ["Pizza","Sushi","Burger","Biryani","Chocolate","Mango","Ice Cream","Samosa","Pasta","Tacos","Curry","Noodles","Paneer","Dosa","Kebab","Butter Chicken"],
@@ -2766,7 +2776,7 @@ async function hostStartGame() {
   const impCount  = s.imp || 1;
 
   // Shuffle the full hint pool once, then deal non-overlapping slices to each imposter
-  const shuffledHints = [...allHints].sort(() => Math.random() - .5);
+  const shuffledHints = fisherYates(allHints);
   // If there aren't enough unique hints for every imposter, cycle with offset
   const getHintsForImposter = (idx) => {
     const hints = [];
@@ -2777,7 +2787,7 @@ async function hostStartGame() {
   };
 
   // Assign roles
-  const shuffled = [...players].sort(() => Math.random()-.5);
+  const shuffled = fisherYates(players);
   const imposterIds = new Set(shuffled.slice(0, impCount).map(p=>p.id));
   const imposterList = [...imposterIds];
 
@@ -2932,7 +2942,7 @@ async function hostRerollWord() {
   const hintCount = s.hintCount || 1;
   const imposterIds = new Set(g.imposterIds || []);
   const imposterList = [...imposterIds];
-  const shuffledHints = [...allHints].sort(() => Math.random() - .5);
+  const shuffledHints = fisherYates(allHints);
   const getHintsForImposter = (idx) => {
     const hints = [];
     for (let i = 0; i < hintCount; i++) {
@@ -3628,7 +3638,7 @@ function offlineStartGame() {
   const hintCount = olS.hintCount;
 
   // Shuffle hint pool once, deal non-overlapping slices per imposter
-  const shuffledHints = [...allHints].sort(()=>Math.random()-.5);
+  const shuffledHints = fisherYates(allHints);
   const getHintsForImposter = (idx) => {
     const hints = [];
     for (let i = 0; i < hintCount; i++) {
@@ -3638,7 +3648,7 @@ function offlineStartGame() {
   };
 
   // Assign imposters
-  const shuffledNames = [...olPlayers].sort(()=>Math.random()-.5);
+  const shuffledNames = fisherYates(olPlayers);
   const imposterNames = shuffledNames.slice(0, olS.imp);
   const imposterSet = new Set(imposterNames);
 
