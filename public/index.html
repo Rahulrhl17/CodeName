@@ -1295,7 +1295,13 @@ input[type=text]::placeholder{color:var(--text3);font-weight:400}
 
   <!-- Categories -->
   <div class="card-box">
-    <div class="lbl">Word Categories <span id="offlineCachePill" class="cache-pill" style="display:none"><span class="cache-dot"></span><span id="offlineCacheCount"></span></span></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:6px">
+      <div class="lbl" style="margin:0">Word Categories <span id="offlineCachePill" class="cache-pill" style="display:none"><span class="cache-dot"></span><span id="offlineCacheCount"></span></span></div>
+      <div style="display:flex;gap:4px;flex-shrink:0">
+        <button class="stepbtn" onclick="offlineCatSelectAll()" style="width:auto;padding:0 10px;font-size:10px;letter-spacing:.5px;font-weight:700">ALL</button>
+        <button class="stepbtn" onclick="offlineCatSelectNone()" style="width:auto;padding:0 10px;font-size:10px;letter-spacing:.5px;font-weight:700">NONE</button>
+      </div>
+    </div>
     <div class="cat-grid" id="offlineCatGrid"></div>
   </div>
 
@@ -1541,7 +1547,13 @@ input[type=text]::placeholder{color:var(--text3);font-weight:400}
     </div>
     <!-- Categories (host only) -->
     <div style="margin-top:12px">
-      <div class="lbl" style="margin-bottom:8px">Word Categories</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:6px">
+        <div class="lbl" style="margin:0">Word Categories</div>
+        <div style="display:flex;gap:4px;flex-shrink:0">
+          <button class="stepbtn" onclick="lobbyCatSelectAll()" style="width:auto;padding:0 10px;font-size:10px;letter-spacing:.5px;font-weight:700">ALL</button>
+          <button class="stepbtn" onclick="lobbyCatSelectNone()" style="width:auto;padding:0 10px;font-size:10px;letter-spacing:.5px;font-weight:700">NONE</button>
+        </div>
+      </div>
       <div class="cat-grid" id="lobbyCatGrid"></div>
     </div>
   </div>
@@ -1736,199 +1748,217 @@ const WORDS = {
   "🍢 Street Food": ["Pani Puri","Vada Pav","Chole Bhature","Pav Bhaji","Bhel Puri","Chaat","Idli","Dhokla","Jalebi","Lassi","Masala Chai","Pakora","Misal Pav","Kachori"],
   "🏏 Cricket":     ["Sachin Tendulkar","Virat Kohli","MS Dhoni","Rohit Sharma","Jasprit Bumrah","IPL","Eden Gardens","Wankhede","Yorker","Googly","Test Match","World Cup"],
   "📺 Indian OTT":  ["Mirzapur","Sacred Games","Panchayat","Scam 1992","Kota Factory","TVF Pitchers","Bigg Boss","KBC","Kapil Sharma Show","Taarak Mehta","Roadies","Shark Tank India"],
+  "🏙 Mumbai":      ["Local Train","Mumbai Metro","Vada Pav","Dabbawalas","Marine Drive","Dharavi","Gateway of India","Juhu Beach","Bandra Worli Sea Link","Bombay Stock Exchange","Auto Rickshaw","Colaba Causeway","Elephanta Caves","Siddhivinayak Temple","Haji Ali Dargah","Lalbaugcha Raja"],
 };
 
 const HINTS = {
-  // 🍕 Food
-  "Pizza":            ["Round with cheese on top","Cut into triangles","Comes in a flat box","Baked in a hot oven","You pick your toppings"],
-  "Sushi":            ["Raw fish on sticky rice","Wrapped in dark seaweed","Eaten with chopsticks","Dipped in soy sauce","Served on a wooden board"],
-  "Burger":           ["Two buns with a patty inside","You hold it with both hands","Lettuce and tomato stacked","Eaten at fast food places","Ketchup drips out the side"],
-  "Biryani":          ["Rice cooked with spices","Slow cooked in a sealed pot","Saffron gives it yellow colour","Served with raita on the side","Meat layered between rice"],
-  "Chocolate":        ["Melts in your mouth","Comes in a foil wrapper","Sweet and slightly bitter","Given as a gift on Valentine's","Made from cocoa beans"],
-  "Mango":            ["Yellow and very juicy","Tastes sweet in summer","You peel the skin off","Has a big flat seed inside","King of all fruits"],
-  "Ice Cream":        ["Served in a cone or cup","Melts fast in the heat","You lick it with your tongue","Kept in a freezer","Comes in many flavours"],
-  "Samosa":           ["Triangle shaped and fried","Stuffed with spiced potato","Eaten with green chutney","Crispy on the outside","Sold at every chai stall"],
-  "Pasta":            ["Boiled in salted water","Comes in many shapes","Covered in tomato sauce","Twirled on a fork","Italian dish served hot"],
-  "Tacos":            ["Filling wrapped in a shell","Can be soft or crunchy","You put salsa on top","Mexican street food","Held in one hand"],
-  "Curry":            ["Thick spiced gravy","Scooped with rice or bread","Smells strongly of spices","Simmers on the stove","Always better the next day"],
-  "Noodles":          ["Long thin strands you slurp","Cooked in boiling water","Served in a bowl of broth","Eaten with chopsticks","Common in Chinese food"],
-  "Paneer":           ["White cubes of fresh cheese","Made by curdling milk","Doesn't melt when cooked","Used in butter gravy","Soft and slightly rubbery"],
-  "Dosa":             ["Very thin and crispy crepe","Made from fermented batter","Served with coconut chutney","Cooked on a flat iron pan","Comes from South India"],
-  "Kebab":            ["Meat grilled on a skewer","Charcoal gives it smoky flavour","Marinated overnight in spices","Served with onion rings","You bite it off the stick"],
-  "Butter Chicken":   ["Creamy orange coloured gravy","Chicken cooked in a clay oven","Very popular in Punjab","Eaten with butter naan","Mildly spiced and rich"],
-  // ⚽ Sports
-  "Cricket":          ["Batsman defends three wooden stumps","Ball hit to the boundary scores four","Played over overs and innings","White clothing in the longer format","Hugely popular in India"],
-  "Football":         ["Kicked into a net to score","Eleven players on each side","Yellow card means a warning","Offside rule confuses everyone","Played on a large grass field"],
-  "Tennis":           ["Racket hits a fuzzy yellow ball","Serve starts every point","Scoring goes 15 30 40 game","Played on clay grass or hard court","Singles or doubles format"],
-  "Chess":            ["64 black and white squares","Each piece moves differently","Check puts the king in danger","Game ends with checkmate","Requires deep strategic thinking"],
-  "Swimming":         ["Race through lanes in a pool","Touch the wall to finish","Goggles protect your eyes","Butterfly stroke is the hardest","Competitive at the Olympics"],
-  "Boxing":           ["Punches thrown inside a ring","Referee stops the bout for knockouts","Fighters wear padded gloves","Rounds last three minutes each","Dodge and counterpunch to win"],
-  "Badminton":        ["Feathered shuttlecock over a net","Smash is the fastest shot","Played indoors to avoid wind","Light carbon fibre rackets","India has won Olympic medals"],
-  "Basketball":       ["Ball bounced and thrown into a hoop","Three pointer from far away","Tall players have an advantage","Five on each team","Fast paced indoor sport"],
-  "Wrestling":        ["Two athletes grapple on a mat","Pin your opponent's shoulders down","No strikes allowed in Olympic style","Strength and technique matter","Very old Olympic sport"],
-  "Golf":             ["Hit a small ball into a tiny hole","Fewer shots wins the round","Played over 18 holes on grass","Caddie carries your bag","Silence required when someone swings"],
-  "Kabaddi":          ["Raider holds their breath and chants","Touch opponents and run back","Played on a dirt or mud court","Very popular in Indian villages","Team sport with tackling"],
-  "Hockey":           ["Curved stick hits a flat puck or ball","India won many Olympic golds","Played on grass or artificial turf","Goalkeeper wears heavy padding","Drag flick is a powerful shot"],
-  "Volleyball":       ["Six players rotate positions","Spike the ball over the net","Three touches allowed per side","Libero wears a different colour","Beach version is also popular"],
-  "Table Tennis":     ["Tiny ball on a small table","Bat has rubber on both sides","Fast rallies with lots of spin","China dominates this sport","Played in offices and schools"],
-  "Archery":          ["Arrow released from a bow","Bullseye scores the most points","Bowstring pulled back to the cheek","Quiver holds extra arrows","Requires steady breathing"],
-  // 🏙 Places
-  "Goa":              ["Famous for its sandy beaches","Portuguese forts all over","Cashew feni is the local drink","Very popular at New Year","Small coastal state in India"],
-  "Mumbai":           ["Dabbawalas deliver lunches daily","Local trains are always packed","Bollywood is based here","City that never really sleeps","On the coast of the Arabian Sea"],
-  "Paris":            ["Eiffel Tower is the landmark","Croissants for breakfast","Fashion capital of the world","Louvre holds the Mona Lisa","Known as the city of love"],
-  "Tokyo":            ["Cherry blossoms in spring","Bullet trains run on the second","Neon lights in every street","Most populated city on earth","Vending machines everywhere"],
-  "Amazon":           ["Largest tropical rainforest","River runs through Brazil","Jaguar lives here","Produces lots of the world's oxygen","Deforestation is a big problem"],
-  "Himalayas":        ["World's highest mountain range","Snow covers the peaks all year","Yaks carry loads on the trails","Monks live in mountain monasteries","Trekkers come from all over the world"],
-  "Dubai":            ["Burj Khalifa is the tallest building","Built in the middle of a desert","Gold sold in the souks","Tourists come for luxury shopping","Tax free shopping destination"],
-  "New York":         ["Statue of Liberty in the harbour","Subway runs all night","Broadway shows every evening","Times Square never goes dark","Iconic yellow taxis on every block"],
-  "Kolkata":          ["Old yellow trams still running","Rosogolla was invented here","Eden Gardens cricket stadium","Colonial architecture everywhere","City of Joy is its nickname"],
-  "Taj Mahal":        ["White marble mausoleum","Shah Jahan built it for his wife","Located in Agra","Perfectly symmetrical from every side","Looks pink at sunrise"],
-  "Jaipur":           ["Called the Pink City","Amber Fort on the hilltop","Elephants used to carry royals","Rajput kings built the palaces","Hot desert climate"],
-  "Kerala":           ["Houseboat rides through backwaters","Coconut trees line every road","Spices grow in the hills","Famous for Ayurveda massage","God's Own Country is its slogan"],
-  "Venice":           ["City built on water","Gondola rides through narrow canals","No cars allowed anywhere","Colourful carnival masks","Italy's floating city"],
-  "Singapore":        ["Very small but very wealthy","Merlion is the famous statue","Strict rules and heavy fines","Changi airport is world class","Gardens by the Bay at night"],
-  "Varanasi":         ["Oldest continuously lived-in city","Pilgrims bathe in the Ganga","Ghats line the riverbank","Silk sarees are woven here","Hindus come to seek moksha"],
-  // 🎥 Hollywood
-  "Avatar":           ["Alien planet covered in blue forest","Blue skinned tall creatures","Director James Cameron","Highest grossing film ever","Sequel came out years later"],
-  "Titanic":          ["Famous ship hit an iceberg","Jack and Rose love story","DiCaprio holds her on the bow","Sank on its very first voyage","Ship breaks in half at the end"],
-  "Inception":        ["Heist takes place inside dreams","Spinning top to test reality","Christopher Nolan directed it","Dream inside a dream inside a dream","Gravity bends in the hotel corridor"],
-  "Avengers":         ["All Marvel heroes team up","Thanos wipes out half the universe","Assemble is the rallying cry","Endgame was the finale","Snap of the fingers changes everything"],
-  "Joker":            ["Clown who becomes a villain","Staircase dancing scene is iconic","Set in Gotham City","Arthur Fleck is his real name","Dark and disturbing origin story"],
-  "Jurassic Park":    ["Dinosaurs brought back using DNA","Tourists trapped on an island","T-Rex chases a jeep","Raptors open door handles","Amber fossil contained the key"],
-  "Home Alone":       ["Eight year old left by himself","Christmas holiday movie","Booby traps set for the burglars","Macaulay Culkin's famous role","Two robbers called the Wet Bandits"],
-  "Interstellar":     ["Astronauts travel through a wormhole","Black hole called Gargantua","Father leaves his daughter behind","Time moves slower near the black hole","Christopher Nolan film"],
-  "The Dark Knight":  ["Heath Ledger played the villain","Two Face flips a coin","Gotham City under threat","Why so serious is the quote","Nolan's best Batman film"],
-  "Forrest Gump":     ["Life is like a box of chocolates","He runs across America","Bench at a bus stop narrates story","Shrimp business with Bubba","Tom Hanks in the lead role"],
-  "Fight Club":       ["First rule is never talk about it","Underground fighting ring","Twist is the biggest shock","Tyler Durden is the alter ego","Made from soap and chemicals"],
-  "Gladiator":        ["Roman slave fights in the arena","Are you not entertained quote","Russell Crowe in the lead","Emperor orders the execution","Revenge drives the story"],
-  // 🐘 Animals
-  "Lion":             ["Large cat with a fluffy mane","Lives in groups called prides","Loud roar heard from far away","King of the jungle nickname","Hunts on the African savanna"],
-  "Elephant":         ["Largest land animal","Long trunk used to drink and grab","Has big ivory tusks","Never forgets according to the saying","Lives in herds led by females"],
-  "Penguin":          ["Black and white bird that cannot fly","Waddles when it walks","Lives in Antarctica","Dives very well in cold water","Huddles together to stay warm"],
-  "Shark":            ["Large fin sticking out of water","Many rows of sharp teeth","Smells blood from far away","Apex predator of the ocean","Jaws movie made people scared"],
-  "Peacock":          ["Male spreads enormous colourful tail","India's national bird","Iridescent blue green feathers","Dances when it rains","Loud harsh call"],
-  "Cobra":            ["Snake that spreads a wide hood","Deadly venom in one bite","Sways to a snake charmer's flute","Spits at prey in some species","King of venomous snakes"],
-  "Tiger":            ["Orange with black stripes","India's national animal","Hunts alone and silently","Bengal variety is most famous","Endangered in the wild"],
-  "Dolphin":          ["Leaps out of water playfully","Uses echolocation to navigate","Lives in groups called pods","Very intelligent mammal","Communicates by clicking"],
-  "Parrot":           ["Brightly coloured tropical bird","Can mimic human speech","Beak is curved and strong","Lives in a cage as a pet","Crackers is a common name for one"],
-  "Cheetah":          ["Fastest land animal","Black spots on golden fur","Sprints but tires quickly","Hunts by sight not smell","Lives on the African savanna"],
-  "Gorilla":          ["Biggest primate on earth","Beats its chest as a warning","Silverback leads the family group","Knuckle walks on the ground","Very gentle unless threatened"],
-  "Kangaroo":         ["Baby called a joey in the pouch","Hops using its powerful legs","Only found in Australia","Males box with their front paws","Large muscular tail for balance"],
-  "Wolf":             ["Hunts in a coordinated pack","Howls at night","Alpha leads the group","Ancestor of domestic dogs","Often misunderstood as dangerous"],
-  "Owl":              ["Hunts only at night","Head can turn almost all the way around","Silent flight due to soft feathers","Regurgitates bones in pellets","Symbol of wisdom"],
-  "Chameleon":        ["Changes skin colour to match surroundings","Very long sticky tongue","Moves extremely slowly","Eyes move independently","Lives in trees"],
-  // 💼 Jobs
-  "Doctor":           ["Wears a stethoscope around the neck","Examines patients and diagnoses illness","Works long shifts at the hospital","Prescribes medicine after a checkup","Takes an oath to do no harm"],
-  "Pilot":            ["Sits in the cockpit at the front","Speaks to air traffic control","Uniform with stripes on the shoulder","Announces turbulence over the intercom","Responsible for hundreds of passengers"],
-  "Teacher":          ["Stands at a blackboard with chalk","Marks homework and gives grades","Explains things in simple words","Rings a bell at end of class","Earns respect but not always money"],
-  "Chef":             ["Wears a tall white hat","Chops and fries and seasons food","Works in a hot busy kitchen","Tastes the dish before serving","Sharp knife is the most important tool"],
-  "Hacker":           ["Types code on a dark screen","Breaks into systems without permission","Uses tricks to bypass security","Wears a hoodie in every movie","Can do good or bad with the skill"],
-  "Astronaut":        ["Floats in zero gravity","Wears a pressurised white suit","Launches into space on a rocket","Eats food from sealed pouches","Trains for years before going up"],
-  "Detective":        ["Looks for clues at crime scenes","Asks many questions to suspects","Carries a badge and sometimes a gun","Pieces together evidence step by step","Sherlock Holmes is a famous one"],
-  "Lawyer":           ["Argues a case in front of a judge","Wears formal clothes in court","Studies law books for years","Objection is a word they say often","Defends or prosecutes in a trial"],
-  "Engineer":         ["Designs and builds things","Uses blueprints and technical drawings","Solves real world problems with science","Works on bridges software or circuits","Needs a degree to get certified"],
-  "Actor":            ["Memorises lines from a script","Performs under bright spotlights","Auditions to get a role","Changes personality for each character","Walks the red carpet at premieres"],
-  "Soldier":          ["Wears camouflage in the field","Lives in barracks on base","Salutes senior officers","Trained for combat and discipline","Deployed to protect the country"],
-  "Farmer":           ["Wakes before sunrise every day","Plows the field before sowing seeds","Depends on rain for a good harvest","Grows the food everyone eats","Hardest working and least paid"],
-  "Scientist":        ["Works with beakers and pipettes in a lab","Forms a hypothesis before testing","Publishes findings in journals","Makes discoveries through experiments","Wears a white coat and safety glasses"],
-  "Photographer":     ["Adjusts aperture and shutter speed","Looks through a viewfinder to frame a shot","Edits photos on a computer later","Shoots portraits events and nature","Carries heavy equipment everywhere"],
-  "Barber":           ["Drapes a cape over your shoulders","Uses scissors and a razor to trim","Lathers up the neck before shaving","Holds a mirror behind your head","Everyone visits one every few weeks"],
-  // 🎮 Games
-  "PUBG":             ["Parachute onto an island with 100 players","Loot weapons and supplies from buildings","Blue zone shrinks and forces everyone together","Last squad standing wins the chicken dinner","Played on phone or PC"],
-  "Ludo":             ["Roll dice and move coloured tokens","Safe zone means you cannot be captured","Race four tokens to the home column","Can send opponent back to start","Classic board game for four players"],
-  "Uno":              ["Shout the name when one card left","Wild card lets you change the colour","Draw four is the most hated card","Reverse and skip change the turn order","Card game for the whole family"],
-  "Minecraft":        ["Mine blocks and build anything you want","Creeper blows up everything you made","Craft tools from wood and stone","Survive the night from monsters","Sandbox game with no main story"],
-  "FIFA":             ["Build your dream team with real players","Transfer window to buy better players","Play matches in career mode","Ultimate Team is the popular mode","Football simulation game"],
-  "Carrom":           ["Flick a striker with your finger","Pocket the coins in the four corners","Powder keeps the board slippery","Queen must be covered after potting","Played on a wooden square board"],
-  "Antakshari":       ["Sing a song starting with the last letter","Bollywood songs are most common","Teams take turns singing","Stops when no one knows a song","Played on long road trips"],
-  "Snake":            ["Eat dots and grow longer","Hit your own tail and it is game over","Started on Nokia phones","Gets harder as the snake gets longer","Simple old mobile game"],
-  "Teen Patti":       ["Each player gets three cards","Bet blind without looking at your cards","Trail is three of a kind","Sequence beats two of a kind","Popular card game at Indian festivals"],
-  "Free Fire":        ["Battle royale on a mobile phone","Booyah shout when you win","Island setting with shrinking zone","Garena developed this game","Very popular among teenagers"],
-  "Among Us":         ["Crewmates complete tasks on a spaceship","Imposter sabotages and kills secretly","Emergency meeting called by button press","Vote to eject the suspect","Space themed social deception game"],
-  "Jenga":            ["Pull out wooden blocks one at a time","Stack must not fall over","Gets very unstable near the end","Steady hands are needed","Loud crash when it finally falls"],
-  "GTA":              ["Open world crime game","Steal cars and drive around the city","Wanted level goes up with more crimes","Rockstar Games made this series","Do missions or just cause chaos"],
-  "Valorant":         ["Tactical shooter with special abilities","Plant or defuse the spike","Each agent has unique powers","Aim is very important to win","Competitive ranked matchmaking"],
-  "Candy Crush":      ["Match three or more sweets in a row","Lives run out and you must wait","Levels get very hard later on","Spend real money to keep playing","Played by millions every day"],
-  // 🎵 Music
-  "Guitar":           ["Six strings stretched over a neck","Strummed or plucked with fingers","Most popular instrument to learn","Electric version used in rock bands","Carried in a long flat case"],
-  "DJ":               ["Mixes tracks using turntables","Drops the bass to make the crowd jump","Wears headphones around the neck","Controls the energy of the whole club","Fades one song into another seamlessly"],
-  "Rap":              ["Fast lyrics over a beat","Rhymes come at the end of lines","Storytelling about real life experiences","Originated in New York in the 70s","Flow and delivery matter as much as words"],
-  "Drums":            ["Hit with wooden sticks","Sets the beat for the whole band","Kit includes snare hi-hat and bass","Fills happen between the main beat","Very loud even without amplification"],
-  "Flute":            ["Blow across a hole to make sound","Long thin metal tube","Lord Krishna played a bamboo version","One of the oldest instruments ever","Fingers cover and uncover holes"],
-  "Singer":           ["Uses their voice as the instrument","Trains breathing and pitch for years","Performs with a microphone on stage","Vocal range determines what songs suit them","Face of the band in most cases"],
-  "Concert":          ["Thousands gather to see live music","Crowd sings along to every word","Opening act warms up the audience","Encore means the band comes back out","Merchandise stall sells t-shirts outside"],
-  "Tabla":            ["Two small drums played together","Right drum has a black tuning paste","Fingers tap complex rhythms","Sits cross legged while playing","Essential in Indian classical music"],
-  "Harmonium":        ["Pump the bellows to push air through reeds","Small keyboard on top","Carried folded in a box","Used in devotional singing","Common in qawwali and bhajans"],
-  "Saxophone":        ["Curved brass body with keys","Blow into a reed mouthpiece","Signature sound of jazz music","Alto and tenor are most common types","Invented in the 19th century"],
-  "Piano":            ["88 black and white keys","Press key and a hammer hits a string","Pedals change how notes sustain","Takes years to play well","Found in concert halls and living rooms"],
-  "Orchestra":        ["Conductor waves a baton at the front","Strings sit at the front of the stage","Can have over 80 musicians","Plays symphonies in grand concert halls","Everyone must follow the tempo together"],
-  // 🎬 Bollywood
-  "Shah Rukh Khan":   ["Spreads his arms wide in every film","Started with nothing from Delhi","King of romance in Bollywood","Dimples are his trademark","Owns the Kolkata IPL team"],
-  "Salman Khan":      ["Known as Bhai by fans","Dabangg role made him iconic","Massive bodybuilder physique","Tiger is his action franchise","Always wears a bracelet or thread"],
-  "Amitabh Bachchan": ["Deep booming baritone voice","Angry young man in 1970s films","Known simply as Big B","Hosts Kaun Banega Crorepati","Bollywood legend still working at 80"],
-  "Deepika Padukone": ["Dimple on one cheek","Represented India at the Oscars ceremony","Very tall and graceful on screen","Married Ranveer Singh","Opened up about mental health publicly"],
-  "Ranveer Singh":    ["Wildest fashion choices in Bollywood","Extremely high energy in interviews","Played Alauddin Khilji and Kapil Dev","Married Deepika Padukone","Always loud and never boring"],
-  "Alia Bhatt":       ["Debuted in Student of the Year","Acted in Gully Boy and RRR","Youngest top actress in Bollywood","Married Ranbir Kapoor","Known for intense dramatic roles"],
-  "Hrithik Roshan":   ["Called the Greek God of Bollywood","Best dancer in Hindi films by far","Krrish is his superhero character","Six pack always on display","Has a distinctive thumb on one hand"],
-  "Dhoom":            ["Bike chase scenes in every instalment","Famous heist thriller franchise","Stylish villain is the highlight each time","Abhishek and Uday Chopra return each time","Action packed and fast paced"],
-  "DDLJ":             ["Train scene at the very end","Mustard fields in Punjab and Europe","Simran and Raj fall in love abroad","Longest running film in cinema history","Kajol and Shah Rukh Khan together"],
-  "Lagaan":           ["Village bets against the British at cricket","Set in colonial India in 1893","Aamir Khan plays the lead villager","Rain finally comes at the end","National selection to represent India at Oscars"],
-  "3 Idiots":         ["Three engineering college friends","Rancho questions everything the professors say","Aamir Khan plays a 40 year old student","Virus is the feared college principal","Follow your passion is the message"],
-  "ZNMD":             ["Three friends on a road trip through Spain","Each overcomes a personal fear","Skydiving scuba diving and bullfighting","Farhan Hrithik and Abhay Deol together","Zindagi Na Milegi Dobara means life comes once"],
-  // 🎉 Festivals
-  "Diwali":           ["Rows of oil lamps lit everywhere","Lakshmi is worshipped for wealth","Fireworks and crackers fill the sky","Sweets exchanged between neighbours","Celebrated across India in October or November"],
-  "Holi":             ["Coloured powder thrown at everyone","Celebrated at the start of spring","Water guns and balloons used too","Bhang is consumed in some regions","Everyone looks the same colour by evening"],
-  "Eid":              ["Celebrated after a month of fasting","Seviyan cooked in every home","New clothes worn for morning prayers","Crescent moon sighting marks the day","Families hug and say Eid Mubarak"],
-  "Navratri":         ["Nine nights of Garba dancing","Goddess Durga is worshipped","Women wear ghagra choli outfits","Fasting during the day is common","Biggest celebrations in Gujarat"],
-  "Durga Puja":       ["Massive pandals decorated across the city","Idol of Durga defeating Mahishasura","Biggest festival in West Bengal","Dhunuchi dance performed at night","Idol immersed in water on the last day"],
-  "Ganesh Chaturthi": ["Large clay idol of elephant god","Modak sweet is his favourite offering","Streets fill with processions","Visarjan means immersing the idol in water","Maharashtra celebrates with the most energy"],
-  "Onam":             ["Flower carpet called pookalam at entrance","Elaborate 26 dish meal on a banana leaf","Snake boat race on the backwaters","Celebrates return of King Mahabali","Kerala's biggest harvest festival"],
-  "Pongal":           ["Rice cooked in a new clay pot","Sugarcane eaten raw during the festival","Kolam drawn at the front door","Cattle decorated and worshipped","Tamil harvest festival in January"],
-  "Baisakhi":         ["Bhangra and giddha danced in fields","Sikh New Year and harvest festival","Marks founding of the Khalsa in 1699","Celebrated with fairs and processions","Farmers rejoice as wheat is ready to harvest"],
-  "Raksha Bandhan":   ["Sister ties a thread on brother's wrist","Brother promises to protect her always","Sweets exchanged after the tying","Thread is called a rakhi","Celebrated on a full moon day"],
-  "Lohri":            ["Bonfire lit in the middle of the street","Rewri and peanuts thrown into the fire","Celebrated in Punjab in January","Marks the end of winter","Drums beat and everyone dances around the fire"],
-  "Makar Sankranti":  ["Kites fill the sky all day","Sesame and jaggery sweets shared","Marks the sun's northward journey","Celebrated on 14th January every year","Harvest festival in many different states"],
-  // 🍢 Street Food
-  "Pani Puri":        ["Hollow crispy ball filled with spiced water","Burst it in your mouth whole","Sold at every roadside stall","Tamarind and jaljeera in the water","Eat it fast before it goes soggy"],
-  "Vada Pav":         ["Spiced potato fritter inside a bread bun","Mumbai's most famous street snack","Green and dry chutney on the side","Sold outside every railway station","Costs less than a cup of tea"],
-  "Chole Bhature":    ["Spicy chickpea curry with a fried bread","Bhatura puffs up when it hits the oil","North Indian breakfast dish","Served with sliced onion and pickle","Very filling and heavy on the stomach"],
-  "Pav Bhaji":        ["Mashed vegetables cooked with butter","Small buns toasted on the same pan","Bright orange red colour from masala","Squeeze lemon on top before eating","Best eaten at a Marine Drive stall"],
-  "Bhel Puri":        ["Puffed rice mixed with sev and veggies","Tangy tamarind chutney drizzled on top","Must be eaten quickly before it softens","Popular on beaches and at fairs","Kurmura is another name for puffed rice"],
-  "Chaat":            ["A mix of crispy sour sweet and spicy","Tamarind chutney and yogurt on top","Delhi is famous for its chaat lanes","Many different varieties exist","Always leaves your fingers sticky"],
-  "Idli":             ["Soft round steamed rice cakes","Eaten with sambar and coconut chutney","South Indian breakfast staple","Made from fermented batter overnight","Light on the stomach and easy to digest"],
-  "Dhokla":           ["Soft spongy steamed savoury cake","Bright yellow from turmeric and chickpea flour","Gujarat's most famous snack","Tempered with mustard seeds on top","Served with green chutney"],
-  "Jalebi":           ["Batter piped in spirals into hot oil","Soaked immediately in sugar syrup","Eaten hot and very crispy","Bright orange colour","Best with rabdi or cold milk"],
-  "Lassi":            ["Thick yogurt based cold drink","Punjab's most refreshing summer drink","Sweet or salted versions available","Poured into a tall glass with cream","Beats the heat better than cold water"],
-  "Masala Chai":      ["Milk tea boiled with ginger and cardamom","Served in a small glass or kulhad","Made strong and sweet across India","Morning ritual for most Indians","Kadak means strong and full of flavour"],
-  "Pakora":           ["Vegetables dipped in chickpea batter and fried","Best eaten during the monsoon","Served with green chutney or ketchup","Onion and potato are most common","Crispy outside and soft inside"],
-  "Misal Pav":        ["Spicy sprouted lentil curry with crunchy sev","Bread bun to soak up the gravy","Popular breakfast in Maharashtra","Very spicy and leaves your mouth burning","Topped with onion lemon and farsan"],
-  "Kachori":          ["Flaky pastry stuffed with spiced lentils or peas","Deep fried until golden and puffed","Served with tamarind chutney in Rajasthan","Eaten as breakfast or a snack","Crumbles and flakes when you bite in"],
-  // 🏏 Cricket
-  "Sachin Tendulkar": ["Scored 100 international centuries","Master Blaster is his nickname","Played his last game at Wankhede","India treats him like a god","Retired in 2013 after 24 years"],
-  "Virat Kohli":      ["Best chase batsman in modern cricket","Extremely fitness conscious","Aggressive celebration after every wicket","King Kohli is what fans call him","Former captain of India in all formats"],
-  "MS Dhoni":         ["Helicopter shot is his signature","Coolest head when pressure is highest","Finishes games single handedly","Wears yellow as Chennai captain","Wicket keeper who bats at number seven"],
-  "Rohit Sharma":     ["Hitman is his nickname","Has scored three double hundreds in ODIs","Opens the batting with elegance","Current India captain in white ball cricket","Looks lazy but hits it very far"],
-  "Jasprit Bumrah":   ["Unique slingy low arm bowling action","Toe crushing yorkers are his weapon","Fastest Indian pacer right now","Unplayable in the final overs","Came from nowhere and became the best"],
-  "IPL":              ["Twenty overs per side format","Franchise teams from different cities","Players auctioned every few years","Cheerleaders and loud music in the stands","Most watched cricket league in the world"],
-  "Eden Gardens":     ["Second largest cricket ground in the world","Kolkata crowd is the noisiest anywhere","Historic venue for many great matches","Floodlit day night games held here","Home of Knight Riders"],
-  "Wankhede":         ["Overlooks the Arabian Sea in Mumbai","India won the 2011 World Cup here","Sachin played his last test here","Very close packed seats all around","Sea breeze cools the ground at night"],
-  "Yorker":           ["Ball lands right at the batsman's feet","Almost impossible to hit when it is perfect","Pace bowlers use it at the death","Toe crusher is another name for it","Batsman jams bat down to block"],
-  "Googly":           ["Leg spin bowler's secret weapon","Turns the opposite way to a normal delivery","Batsman thinks it will go one way but it doesn't","Wrist position is the key to bowling it","Deceives even experienced batsmen"],
-  "Test Match":       ["Played over five whole days","Players wear white clothes","Longer format tests concentration and stamina","Can end in a draw if time runs out","Most respected format in cricket"],
-  "World Cup":        ["Every nation wants to win this trophy","Held every four years","One day format with 50 overs per side","Final match watched by hundreds of millions","India won it in 1983 and 2011"],
-  // 📺 Indian OTT
-  "Mirzapur":         ["Gangsters rule a lawless town in UP","Guddu and Bablu take on the don","Kaleen Bhaiya controls everything","Very violent and raw content","Amazon Prime made this series"],
-  "Sacred Games":     ["Gaitonde speaks to a cop from beyond","Sartaj races to save Mumbai in 25 days","First big Netflix show from India","Crime thriller with flashbacks","Dark and complex multilayered story"],
-  "Panchayat":        ["IAS officer posted to a remote UP village","Simple and heartwarming slow comedy","TVF made this show a classic","No electricity and no network in the village","Abhishek adjusts to village life slowly"],
-  "Scam 1992":        ["Harshad Mehta manipulates the stock market","Set in Bombay in the late 1980s","Based on a real financial fraud","Hansal Mehta directed this series","Sony LIV streamed this show"],
-  "Kota Factory":     ["Students preparing for JEE exams","Shot entirely in black and white","Immense pressure and mental health issues","TVF made this relatable series","Jeetu bhaiya is the beloved teacher"],
-  "TVF Pitchers":     ["Four friends leave jobs to build a startup","Set in Delhi's corporate world","TVF's most loved original series","Funding rejection and office struggles","Naveen is the passionate founder"],
-  "Bigg Boss":        ["Contestants locked in a house for months","No phone or outside contact allowed","Eviction decided by public vote each week","Salman Khan hosts every season","Fights and drama every single day"],
-  "KBC":              ["Contestant sits in the hot seat opposite Amitabh","Fifteen questions of increasing difficulty","Lifelines include phone a friend","One crore rupees for the final answer","Kaun Banega Crorepati is the full name"],
-  "Kapil Sharma Show":["Stand up comedian hosts celebrity guests","Couch full of characters and sidekicks","Comedy sketches between interviews","Goes viral every week on social media","Films and show promotions happen here"],
-  "Taarak Mehta":     ["Set in Gokuldham Society apartments","Has been running for over 15 years","Daily episodes make it India's longest show","Jethalal and his neighbour's wife cause chaos","Taarak Mehta is actually a real writer"],
-  "Roadies":          ["Youngsters compete in tough physical tasks","Gang leaders pick and protect contestants","Bike rides across India between tasks","Viewers vote to eliminate contestants","Reality show running since the early 2000s"],
-  "Shark Tank India": ["Entrepreneurs pitch their business ideas","Sharks invest real money on the show","Equity stake negotiated on screen","Ashneer Grover became the most famous shark","Inspired many Indians to start businesses"],
+  // Food
+  "Pizza":            ["Mozzarella","Slice","Oven-baked","Tomato base","Crust"],
+  "Sushi":            ["Nori wrap","Raw fish","Wasabi dip","Vinegared rice","Chopsticks"],
+  "Burger":           ["Sesame bun","Beef patty","Ketchup drizzle","Lettuce stack","Fast food"],
+  "Biryani":          ["Saffron","Dum-cooked","Basmati","Kewra water","Raita side"],
+  "Chocolate":        ["Cocoa","Truffle","Dark or milk","Melt texture","Foil wrapped"],
+  "Mango":            ["Alphonso","Stone fruit","Sticky pulp","Summer peak","Aam"],
+  "Ice Cream":        ["Scoop","Waffle cone","Sundae","Soft serve","Freezer burn"],
+  "Samosa":           ["Triangular","Aloo filling","Fried crisp","Chutney dip","Street corner"],
+  "Pasta":            ["Al dente","Marinara","Penne","Fork twirl","Durum wheat"],
+  "Tacos":            ["Corn tortilla","Salsa","Carnitas","Hard shell","Lime squeeze"],
+  "Curry":            ["Turmeric","Gravy","Tadka","Simmer low","Naan scoop"],
+  "Noodles":          ["Slurp","Wok toss","Ramen broth","Stir fry","Long strands"],
+  "Paneer":           ["Cottage pressed","Cubed soft","Makhani","Doesn't melt","Cow milk"],
+  "Dosa":             ["Tawa crisp","Fermented","Sambar dip","Paper thin","South Indian"],
+  "Kebab":            ["Skewered","Charcoal smoke","Seekh","Marinade","Mughlai"],
+  "Butter Chicken":   ["Makhani","Tandoori","Orange gravy","Cream finish","Punjab style"],
+  // Sports
+  "Cricket":          ["Wicket","Cover drive","Over","Boundary rope","Leather ball"],
+  "Football":         ["Offside trap","Header","Clean sheet","Penalty spot","Yellow card"],
+  "Tennis":           ["Deuce","Grand Slam","Baseline rally","Serve and volley","Love-all"],
+  "Chess":            ["Checkmate","Gambit","64 squares","Grandmaster","En passant"],
+  "Swimming":         ["Butterfly stroke","Lane rope","Tumble turn","Goggles fog","Lap time"],
+  "Boxing":           ["Jab cross","Canvas","Corner stool","Southpaw","Knockout"],
+  "Badminton":        ["Shuttle","Smash","Drop shot","Featherweight","Grip tape"],
+  "Basketball":       ["Dribble","Three-pointer","Slam dunk","Pick and roll","Rebound"],
+  "Wrestling":        ["Pin down","Grapple","Mat burn","Takedown","Submission"],
+  "Golf":             ["Birdie","Par","Fairway","Caddie","Bunker shot"],
+  "Kabaddi":          ["Raid chant","Tag and run","Hold breath","Ankle tag","Mud court"],
+  "Hockey":           ["Drag flick","Penalty corner","Turf","Stick tackle","Goalpost"],
+  "Volleyball":       ["Spike","Libero","Dig pass","Block jump","Beach version"],
+  "Table Tennis":     ["Topspin","Rubber bat","Ping","Fast rally","Chop shot"],
+  "Archery":          ["Bullseye","Quiver","Bowstring","Arrow release","Steady aim"],
+  // Places
+  "Goa":              ["Portuguese forts","Cashew feni","Beach shack","Carnival","Coastal strip"],
+  "Mumbai":           ["Dabbawalas","Local train","Sea Link","Dharavi","Maximum city"],
+  "Paris":            ["Eiffel Tower","Croissant","Louvre","Baguette","Arrondissement"],
+  "Tokyo":            ["Sakura","Shinkansen","Shibuya","Vending machines","Harajuku"],
+  "Amazon":           ["Canopy","Piranha","Tributary","Rainforest","Jaguar"],
+  "Himalayas":        ["Glacier","Sherpa","Base camp","Yak trail","Altitude sick"],
+  "Dubai":            ["Burj Khalifa","Gold souk","Desert dune","Tax free","Skyscraper"],
+  "New York":         ["Yellow cab","Brooklyn Bridge","Times Square","Subway grid","Bagel"],
+  "Kolkata":          ["Tram","Rosogolla","Eden Gardens","Howrah Bridge","Yellow taxi"],
+  "Taj Mahal":        ["White marble","Shah Jahan","Agra","Symmetry","Sunrise glow"],
+  "Jaipur":           ["Pink City","Amber Fort","Rajput","Camel ride","Desert heat"],
+  "Kerala":           ["Backwater","Houseboat","Coconut grove","Ayurveda","Kathakali"],
+  "Venice":           ["Gondola","Canal","Carnival mask","No cars","Piazza"],
+  "Singapore":        ["Merlion","Hawker centre","Orchid","Changi","Fine city"],
+  "Varanasi":         ["Ghats","Ganga aarti","Silk saree","Moksha","Oldest city"],
+  // Hollywood
+  "Avatar":           ["Pandora","Na'vi","Unobtanium","Flux vortex","James Cameron"],
+  "Titanic":          ["Iceberg","Steerage","Jack Rose","1912","Unsinkable"],
+  "Inception":        ["Totem spin","Limbo","Dream heist","Nolan","Paradox"],
+  "Avengers":         ["Infinity Snap","Assemble","Endgame","Thanos","Vibranium"],
+  "Joker":            ["Staircase dance","Arthur Fleck","Gotham chaos","Greasepaint","Ha ha ha"],
+  "Jurassic Park":    ["Amber DNA","T-Rex","Raptor fence","Hammond","Clever girl"],
+  "Home Alone":       ["Booby trap","Wet Bandits","Buzz tarantula","Chicago","Kevin"],
+  "Interstellar":     ["Wormhole","Gargantua","Tesseract","Cooper","Time dilation"],
+  "The Dark Knight":  ["Why so serious","Pencil trick","Two Face","Ledger","Chaos agent"],
+  "Forrest Gump":     ["Chocolate box","Run Forrest","Bubba shrimp","Jenny","Feather"],
+  "Fight Club":       ["First rule","Tyler Durden","Soap","Twist ending","Project Mayhem"],
+  "Gladiator":        ["Are you not entertained","Maximus","Colosseum","Commodus","Revenge"],
+  // Animals
+  "Lion":             ["Mane","Pride","Savanna","Roar","Apex cat"],
+  "Elephant":         ["Trunk","Tusk","Herd matriarch","Memory","Stomp"],
+  "Penguin":          ["Waddle","Tuxedo","Huddle","Antarctica","Dive"],
+  "Shark":            ["Dorsal fin","Jaw","Chum","Apex ocean","Gills"],
+  "Peacock":          ["Fan display","Iridescent","National bird","Mating dance","Loud call"],
+  "Cobra":            ["Hood spread","Venom","Charmer flute","Spit","Deadly"],
+  "Tiger":            ["Bengal stripe","Stealth","Endangered","Pounce","India emblem"],
+  "Dolphin":          ["Echolocation","Bow ride","Click sounds","Pod swimmer","Smart"],
+  "Parrot":           ["Mimic","Plumage","Perch","Cracker","Beak hook"],
+  "Cheetah":          ["Spotted","Sprint","Acceleration","Lean build","Savanna"],
+  "Gorilla":          ["Silverback","Chest beat","Knuckle walk","Troop","Primate"],
+  "Kangaroo":         ["Pouch","Joey","Hop","Box fight","Australia"],
+  "Wolf":             ["Howl","Pack alpha","Moon","Territory","Ancestor"],
+  "Owl":              ["Nocturnal","Head swivel","Silent flight","Pellet","Wisdom"],
+  "Chameleon":        ["Colour shift","Sticky tongue","Both eyes move","Slow climb","Adapt"],
+  // Jobs
+  "Doctor":           ["Stethoscope","Diagnosis","Rounds","White coat","Oath"],
+  "Pilot":            ["Cockpit","Altitude","Stripes uniform","Turbulence call","Clearance"],
+  "Teacher":          ["Chalk","Grade paper","Lesson plan","Blackboard","Mentor"],
+  "Chef":             ["Toque","Mise en place","Flame","Taste test","Sharp knife"],
+  "Hacker":           ["Zero-day","Root access","Dark terminal","Exploit","Proxy chain"],
+  "Astronaut":        ["Zero-G","EVA suit","Orbit","Freeze-dried food","Launch"],
+  "Detective":        ["Crime scene","Magnifier","Cold case","Interrogate","Tail suspect"],
+  "Lawyer":           ["Objection","Bar exam","Brief","Gavel","Cross-examine"],
+  "Engineer":         ["Blueprint","Tolerance","Load bearing","Circuit","Spec sheet"],
+  "Actor":            ["Audition","Method","Spotlight","Script read","Red carpet"],
+  "Soldier":          ["Camouflage","Salute","Barracks","Deploy","Duty"],
+  "Farmer":           ["Plow","Sow","Harvest","Soil","Irrigation"],
+  "Scientist":        ["Hypothesis","Beaker","Peer review","Lab coat","Discovery"],
+  "Photographer":     ["Aperture","Shutter","Viewfinder","Golden hour","RAW file"],
+  "Barber":           ["Cape drape","Hot lather","Straight razor","Fade cut","Trim line"],
+  // Games
+  "PUBG":             ["Chicken dinner","Blue zone","Loot crate","Parachute drop","Squad"],
+  "Ludo":             ["Token home","Safe square","Dice roll","Send back","Board"],
+  "Uno":              ["Draw four","Wild card","Reverse","Skip turn","Shout"],
+  "Minecraft":        ["Creeper hiss","Craft table","Pickaxe","Spawn point","Sandbox"],
+  "FIFA":             ["Ultimate Team","Transfer","Career mode","Finesse shot","Formation"],
+  "Carrom":           ["Striker flick","Pocket","Board powder","Queen cover","Finger snap"],
+  "Antakshari":       ["Last letter","Hum tune","Bolly song","Teams compete","Road trip"],
+  "Snake":            ["Nokia","Pixel eat","Tail bite","Grow longer","Retro"],
+  "Teen Patti":       ["Blind bet","Trail","Sequence","Show","Chaal"],
+  "Free Fire":        ["Booyah","Garena","Gloo Wall","Mobile BR","Island"],
+  "Among Us":         ["Vent","Crewmate","Emergency meeting","Sus","Eject"],
+  "Jenga":            ["Pull block","Wobble","Crash","Steady hand","Tower"],
+  "GTA":              ["Wanted stars","Open world","Heist","Rockstar","Steal car"],
+  "Valorant":         ["Spike plant","Clutch","Agent ability","Aim duel","Ranked"],
+  "Candy Crush":      ["Match three","Jelly","Lives wait","Saga","Sweet bomb"],
+  // Music
+  "Guitar":           ["Six string","Fret","Strum","Pluck","Riff"],
+  "DJ":               ["Crossfade","Turntable","Bass drop","Set list","Headphones"],
+  "Rap":              ["Verse","Flow","Rhyme scheme","Freestyle","Hook"],
+  "Drums":            ["Snare","Hi-hat","Beat","Fill","Kick pedal"],
+  "Flute":            ["Embouchure","Bamboo","Krishna","Breath","Finger hole"],
+  "Singer":           ["Pitch","Vocal range","Mic","Falsetto","Stage"],
+  "Concert":          ["Setlist","Encore","Mosh pit","Crowd surf","Opening act"],
+  "Tabla":            ["Bayan","Dayan","Taal","Ustad","Bol"],
+  "Harmonium":        ["Reed pump","Fold box","Devotion","Keys","Qawwali"],
+  "Saxophone":        ["Jazz","Reed mouthpiece","Brass curve","Alto","Bebop"],
+  "Piano":            ["88 keys","Ivory","Pedal","Arpeggio","Sonata"],
+  "Orchestra":        ["Conductor baton","Symphony","Strings section","Overture","Hall"],
+  // Bollywood
+  "Shah Rukh Khan":   ["Arms spread","Outsider","King Khan","Dimples","Mannat"],
+  "Salman Khan":      ["Bhai","Dabangg","Tiger franchise","Belt buckle","Being Human"],
+  "Amitabh Bachchan": ["Baritone","Big B","Angry young man","KBC host","Legend"],
+  "Deepika Padukone": ["Dimple","Cannes","OM Shanti Om","Gehraiyaan","Global star"],
+  "Ranveer Singh":    ["Wild outfit","High energy","Khilji role","Gully Boy","Loud"],
+  "Alia Bhatt":       ["SOTY debut","Gully Boy","RRR","Kapoor family","Intense"],
+  "Hrithik Roshan":   ["Greek God","Best dancer","Krrish","Extra thumb","Super 30"],
+  "Dhoom":            ["Bike chase","Heist","Jai-Ali duo","Stylish villain","Thriller"],
+  "DDLJ":             ["Palat scene","Mustard fields","Train door","Raj Simran","NRI romance"],
+  "Lagaan":           ["British bet","Village cricket","1893","Aamir","Rain climax"],
+  "3 Idiots":         ["Aal izz well","Rancho","Virus","Chatur speech","Ladakh"],
+  "ZNMD":             ["Spain road trip","Skydive","Bullfight","Farhan poem","Trio"],
+  // Festivals
+  "Diwali":           ["Diya","Lakshmi puja","Sparkler","Mithai box","Amavasya"],
+  "Holi":             ["Gulal","Pichkari","Bhang thandai","Rang barse","Spring"],
+  "Eid":              ["Seviyan","Crescent moon","Itr","Eid Mubarak","Namaz"],
+  "Navratri":         ["Garba","Dandiya","Nine nights","Durga","Ghagra"],
+  "Durga Puja":       ["Pandal","Dhak drum","Sindoor khela","Dhunuchi","Bengal"],
+  "Ganesh Chaturthi": ["Modak","Bappa","Visarjan","Ganpati","Trunk idol"],
+  "Onam":             ["Pookalam","Sadya","Vallam kali","Mahabali","Kerala"],
+  "Pongal":           ["Kolam","Sugarcane","Clay pot overflow","Jallikattu","Tamil"],
+  "Baisakhi":         ["Bhangra","Khalsa","Wheat harvest","Vaisakhi","Punjab"],
+  "Raksha Bandhan":   ["Rakhi thread","Wrist tie","Sibling bond","Sweets","Full moon"],
+  "Lohri":            ["Bonfire","Rewri","Til","Punjabi winter","Drum circle"],
+  "Makar Sankranti":  ["Kite war","Tilgul","Uttarayan","Harvest sun","January 14"],
+  // Street Food
+  "Pani Puri":        ["Jaljeera water","Hollow ball","Burst in mouth","Tamarind","Golgappa"],
+  "Vada Pav":         ["Batata vada","Mumbai bun","Dry chutney","Station snack","Laadi pav"],
+  "Chole Bhature":    ["Fluffy puri","Chickpea","Pickle onion","North breakfast","Amritsari"],
+  "Pav Bhaji":        ["Butter tawa","Masala mash","Lemon squeeze","Juhu stall","Bun"],
+  "Bhel Puri":        ["Kurmura","Sev","Tamarind drizzle","Beach snack","Tangy mix"],
+  "Chaat":            ["Papdi","Sweet tangy","Dahi drizzle","Delhi lanes","Crispy"],
+  "Idli":             ["Steamed cake","Sambar","Fermented batter","Soft round","South"],
+  "Dhokla":           ["Spongy yellow","Gujarat","Mustard temper","Savoury cake","Besan"],
+  "Jalebi":           ["Spiral fried","Sugar syrup","Orange crisp","Rabdi pair","Hot"],
+  "Lassi":            ["Thick yogurt","Frothy","Sweet salt","Kulhad","Punjab"],
+  "Masala Chai":      ["Kadak","Cardamom","Ginger","Kulhad sip","Adrak"],
+  "Pakora":           ["Besan coat","Monsoon snack","Crispy fry","Chutney dip","Onion"],
+  "Misal Pav":        ["Farsan top","Usal gravy","Kolhapuri spice","Maharashtra","Sprouted"],
+  "Kachori":          ["Flaky crust","Dal stuffed","Rajasthani","Puff fry","Saunth chutney"],
+  // Cricket
+  "Sachin Tendulkar": ["100 centuries","Master Blaster","Mumbai","Bharat Ratna","Desert Storm"],
+  "Virat Kohli":      ["Chase king","Fitness freak","King Kohli","Fist pump","Royal Challengers"],
+  "MS Dhoni":         ["Helicopter shot","Finisher","Cool head","Thala","CSK yellow"],
+  "Rohit Sharma":     ["Hitman","Double hundred","Elegant opener","Paltan","Mumbai Indians"],
+  "Jasprit Bumrah":   ["Slingy action","Yorker","Death overs","Unorthodox","Mumbai"],
+  "IPL":              ["Auction","Franchise","T20","Cheerleader","Dugout"],
+  "Eden Gardens":     ["Kolkata roar","Floodlit","Historic","Knight Riders","Capacity"],
+  "Wankhede":         ["Sea view","2011 final","Sachin farewell","Mumbai","Steep stands"],
+  "Yorker":           ["Toe crusher","Full pitch","Death ball","Base of stumps","Unplayable"],
+  "Googly":           ["Wrong-un","Wrist spin","Deceive","Leg break disguise","Finger flick"],
+  "Test Match":       ["Five days","Whites","Timeless","Draw possible","Red ball"],
+  "World Cup":        ["50 overs","Trophy lift","Final","1983","Nation pride"],
+  // Indian OTT
+  "Mirzapur":         ["Kaleen Bhaiya","Guddu","Tripathi clan","UP gangster","Amazon Prime"],
+  "Sacred Games":     ["Gaitonde","Sartaj","25 days","Trivedi","Netflix India"],
+  "Panchayat":        ["Phulera village","Abhishek","Pradhan ji","TVF","UP posting"],
+  "Scam 1992":        ["Harshad Mehta","Bull run","Bombay Stock","Sony LIV","Big Bull"],
+  "Kota Factory":     ["Jeetu bhaiya","JEE pressure","Black white","TVF","Coaching hub"],
+  "TVF Pitchers":     ["Naveen","Startup pitch","Yeh Meri Family","TVF","Funding"],
+  "Bigg Boss":        ["Luxury budget","Nominations","Salman weekend","Eviction","Confession room"],
+  "KBC":              ["Hot seat","Lifeline","Amitabh","Crore question","Computerji"],
+  "Kapil Sharma Show":["Kapil couch","Sidhu laughs","Guest roast","Friday night","Comedy"],
+  "Taarak Mehta":     ["Gokuldham","Jethalal","Daya ben","TMKOC","Longest run"],
+  "Roadies":          ["Gang war","Raghu RAM","Task fail","Bike journey","Youth reality"],
+  "Shark Tank India": ["Pitch deck","Equity stake","Ashneer","Valuation","Shark deal"],
+  // Mumbai
+  "Local Train":              ["Overcrowded","Western line","Fast vs slow","Ticket punch","Virar direction"],
+  "Mumbai Metro":             ["AC coaches","Versova Andheri","Underground","Aarey depot","Newer than local"],
+  "Vada Pav":                 ["Batata vada","Mumbai bun","Dry chutney","Station snack","Laadi pav"],
+  "Dabbawalas":               ["Tiffin delivery","Six sigma","No GPS","Coding system","Lunchtime"],
+  "Marine Drive":             ["Queen's necklace","Promenade","Sea facing","Sunset walk","Art Deco"],
+  "Dharavi":                  ["Asia's largest slum","Recycling hub","Slumdog","Pottery","Self-employed"],
+  "Gateway of India":         ["Basalt arch","Taj backdrop","Harbour view","1911","Tourist boats"],
+  "Juhu Beach":               ["Chaat stalls","Sunset crowds","Film stars","Pav Bhaji","Weekend rush"],
+  "Bandra Worli Sea Link":    ["Cable stayed","Eight lanes","Bandra to Worli","Concrete pylons","Sea crossing"],
+  "Bombay Stock Exchange":    ["Dalal Street","Sensex","Oldest in Asia","Ringing bell","Bull statue"],
+  "Auto Rickshaw":            ["Three wheeler","Meter down","Not in South Mumbai","Black yellow","Haggling"],
+  "Colaba Causeway":          ["Antique shops","Bollywood scouts","Footpath stalls","Backpacker hub","Irani cafe"],
+  "Elephanta Caves":          ["Ferry ride","Shiva carvings","UNESCO","Island","Rock cut"],
+  "Siddhivinayak Temple":     ["Ganesh temple","Prabhadevi","Tuesday queue","Prasad","Celebrity visits"],
+  "Haji Ali Dargah":          ["Sea inlet","Causeway at low tide","Dargah","Floating mosque","Mahalaxmi"],
+  "Lalbaugcha Raja":          ["Ganesh Chaturthi","King of Lalbaug","Long queue","Wishful devotees","Parel"],
 };
 
 const AVATARS = ["🙂","😊","😄","🤗","😎","🧐","🤔","😏","🙃","🥸","🧑","👩","🧔","👱","🙋","🤵","🧕","😺","🦊","🐧"];
@@ -2055,7 +2085,7 @@ let roomRef = null;    // Firebase ref for current room
 let listeners = [];    // cleanup handles
 
 // Local settings (host syncs these to Firebase)
-let selCats = new Set(Object.keys(WORDS));
+let selCats = new Set();
 let selVote = null;
 
 // ══════════════ SESSION PERSISTENCE (rejoin support) ══════════════
@@ -2579,19 +2609,10 @@ function showLobby() {
 
   // Build lobby category grid for host
   if (IS_HOST) {
-    const cg = document.getElementById('lobbyCatGrid');
-    cg.innerHTML = '';
-    Object.keys(WORDS).forEach(k => {
-      const b = document.createElement('div');
-      b.className = 'cat-btn on';
-      b.textContent = k;
-      b.onclick = () => {
-        if (selCats.has(k)) { if (selCats.size<=1) return toast('Need at least 1 category'); selCats.delete(k); b.classList.remove('on'); }
-        else { selCats.add(k); b.classList.add('on'); }
-        // Sync to Firebase
-        roomRef.child('settings/cats').set([...selCats]);
-      };
-      cg.appendChild(b);
+    const savedCats = new Set(ROOM_STATE?.settings?.cats || []);
+    selCats = new Set(savedCats);
+    buildCatGrid('lobbyCatGrid', selCats, () => {
+      roomRef.child('settings/cats').set([...selCats]);
     });
   }
 
@@ -2642,6 +2663,40 @@ function renderLobby(state) {
     revealBtn.style.borderColor = on ? 'rgba(16,217,160,.5)' : '';
   }
 }
+
+// ── Category grid helpers (shared by online lobby + offline setup) ──
+function buildCatGrid(gridId, selSet, onChange) {
+  const cg = document.getElementById(gridId);
+  if (!cg) return;
+  cg.innerHTML = '';
+  Object.keys(WORDS).forEach(k => {
+    const b = document.createElement('div');
+    b.className = 'cat-btn' + (selSet.has(k) ? ' on' : '');
+    b.textContent = k;
+    b.onclick = () => {
+      if (selSet.has(k)) { selSet.delete(k); b.classList.remove('on'); }
+      else { selSet.add(k); b.classList.add('on'); }
+      onChange(k, selSet.has(k));
+    };
+    cg.appendChild(b);
+  });
+}
+
+function setCatGrid(gridId, selSet, allOn) {
+  if (allOn) Object.keys(WORDS).forEach(k => selSet.add(k));
+  else selSet.clear();
+  document.querySelectorAll('#' + gridId + ' .cat-btn').forEach(b => {
+    b.classList.toggle('on', selSet.has(b.textContent));
+  });
+}
+
+// Online lobby
+function lobbyCatSelectAll()  { setCatGrid('lobbyCatGrid', selCats, true);  roomRef.child('settings/cats').set([...selCats]); }
+function lobbyCatSelectNone() { setCatGrid('lobbyCatGrid', selCats, false); roomRef.child('settings/cats').set([...selCats]); }
+
+// Offline setup
+function offlineCatSelectAll()  { setCatGrid('offlineCatGrid', olSelCats, true);  }
+function offlineCatSelectNone() { setCatGrid('offlineCatGrid', olSelCats, false); }
 
 async function adjRoom(type, d) {
   if (!IS_HOST) return;
@@ -3406,7 +3461,7 @@ let OFFLINE = false;   // true while in offline mode
 let ONLINE_PASSPLAY = false; // true = pass&play via online route (requires Firebase)
 let OL = {};           // offline game state
 let olPlayers = [];    // offline player name list
-let olSelCats = new Set(Object.keys(WORDS));
+let olSelCats = new Set();
 let olS = { imp:1, rounds:3, hintCount:1, revealVotes:true };
 let OFFLINE_FROM = 'modeOffline'; // which mode screen launched offline setup
 
@@ -3433,7 +3488,7 @@ function showOfflineSetup(from) {
   if (from !== 'modeOnline') ONLINE_PASSPLAY = false; // pure offline — clear online flag
   OFFLINE_FROM = from || OFFLINE_FROM;
   olPlayers = [];
-  olSelCats = new Set(Object.keys(WORDS));
+  olSelCats = new Set();
   olS = { imp:1, rounds:3, hintCount:1 };
   renderOfflineChips();
   buildOfflineCatGrid();
@@ -3452,20 +3507,7 @@ function showOfflineSetup(from) {
 }
 
 function buildOfflineCatGrid() {
-  const cg = document.getElementById('offlineCatGrid');
-  cg.innerHTML = '';
-  Object.keys(WORDS).forEach(k => {
-    const b = document.createElement('div');
-    b.className = 'cat-btn on';
-    b.textContent = k;
-    b.onclick = () => {
-      if (olSelCats.has(k)) {
-        if (olSelCats.size <= 1) return toast('Need at least 1 category');
-        olSelCats.delete(k); b.classList.remove('on');
-      } else { olSelCats.add(k); b.classList.add('on'); }
-    };
-    cg.appendChild(b);
-  });
+  buildCatGrid('offlineCatGrid', olSelCats, () => {});
 }
 
 function offlineAdj(type, d) {
@@ -3564,6 +3606,7 @@ function addSelectedToGame() {
 // ── Start offline game ──
 function offlineStartGame() {
   if (olPlayers.length < 3) return toast('Need at least 3 players');
+  if (olSelCats.size === 0) return toast('Select at least one word category');
   if (olS.imp >= olPlayers.length) return toast('Too many imposters for player count');
 
   const cats = [...olSelCats];
