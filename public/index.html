@@ -153,12 +153,6 @@ input[type=text],.stepbtn,.giglabz-close,
 :root[data-theme="light"] .slide-hint-txt{color:var(--text2)}
 :root[data-theme="light"] .slide-hint-sub{color:var(--text2);opacity:.8}
 
-/* light mode slide pill */
-:root[data-theme="light"] .slide-pill{
-  background:rgba(0,0,0,.06);border-color:rgba(0,0,0,.12);
-  color:rgba(0,0,40,.4);
-}
-:root[data-theme="light"] .slide-arrow{color:rgba(0,0,40,.3)}
 
 /* light mode toast */
 :root[data-theme="light"] .toast{
@@ -397,8 +391,6 @@ input[type=text]::placeholder{color:var(--text3);font-weight:400}
   border-radius:26px;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
   position:relative;overflow:hidden;
-  /* slider state */
-  --reveal-pct: 0%;
 }
 .card-face, .card-back-face{
   position:absolute;inset:0;border-radius:26px;
@@ -415,15 +407,14 @@ input[type=text]::placeholder{color:var(--text3);font-weight:400}
   content:'';position:absolute;inset:0;border-radius:24px;
   background:repeating-linear-gradient(135deg,transparent,transparent 22px,rgba(255,255,255,.012) 22px,rgba(255,255,255,.012) 44px);
 }
-/* Front (role) face — clips in from bottom as user slides */
+/* Front (role) face — fades + scales in on tap */
 .card-face{
   z-index:2;
-  clip-path:inset(calc(100% - var(--reveal-pct)) 0 0 0 round 26px);
-  transition:clip-path .05s linear;
+  opacity:0;transform:scale(.94);
+  transition:opacity .3s cubic-bezier(.22,1,.36,1), transform .3s cubic-bezier(.22,1,.36,1);
 }
 .card-face.revealed{
-  clip-path:inset(0% 0 0 0 round 26px) !important;
-  transition:clip-path .35s cubic-bezier(.22,1,.36,1);
+  opacity:1 !important;transform:scale(1) !important;
 }
 .card-face.imp-face{
   background:linear-gradient(160deg,#220608 0%,#130308 60%,#0a0203 100%);
@@ -437,29 +428,7 @@ input[type=text]::placeholder{color:var(--text3);font-weight:400}
 }
 
 /* Slide handle */
-.slide-track{
-  position:absolute;bottom:0;left:0;right:0;height:72px;
-  z-index:10;display:flex;align-items:center;justify-content:center;
-  cursor:grab;
-}
-.slide-track:active{cursor:grabbing}
-.slide-pill{
-  background:rgba(255,255,255,.06);
-  border:1.5px solid rgba(255,255,255,.12);
-  backdrop-filter:blur(8px);
-  border-radius:50px;
-  padding:10px 22px;
-  display:flex;align-items:center;gap:10px;
-  font-family:var(--ff-body);font-size:12px;font-weight:700;
-  color:rgba(255,255,255,.45);letter-spacing:.5px;
-  transition:opacity .2s;
-  pointer-events:none;
-  user-select:none;
-}
-.slide-arrow{font-size:18px;color:rgba(255,255,255,.35);animation:arrowBounce 1.4s ease-in-out infinite}
-@keyframes arrowBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 
-.slide-track.done .slide-pill{opacity:0}
 
 /* Role card content */
 .role-emblem{
@@ -583,9 +552,6 @@ input[type=text]::placeholder{color:var(--text3);font-weight:400}
 .vcard.picked .vcheck{background:var(--red);border-color:var(--red);color:#fff}
 .vcard.self-vote{opacity:.45;pointer-events:none;cursor:not-allowed}
 .vcard.disconnected-player{opacity:.4}
-.vote-word-hint{display:none;margin:0 16px 8px;background:rgba(56,189,248,.07);border:1px solid rgba(56,189,248,.2);border-radius:var(--radius-s);padding:8px 14px;align-items:center;gap:10px}
-.vwh-label{font-family:var(--ff-mono);font-size:9px;letter-spacing:2px;color:var(--text3);font-weight:700;flex-shrink:0}
-.vwh-word{font-family:var(--ff-head);font-size:16px;font-weight:800;color:var(--cyan)}
 .vote-ftr{padding:12px 16px 24px;display:flex;flex-direction:column;gap:8px}
 .vote-bar-fill.all-voted{background:var(--green)}
 
@@ -965,6 +931,30 @@ input[type=text]::placeholder{color:var(--text3);font-weight:400}
   height:3px;background:var(--brd);border-radius:2px;margin-top:6px;overflow:hidden;
 }
 .vote-bar-fill{height:100%;background:var(--cyan);border-radius:2px;transition:width .4s ease}
+.vh-round{border-bottom:1px solid var(--brd);padding-bottom:10px;margin-bottom:10px}
+.vh-round:last-child{border-bottom:none;padding-bottom:0;margin-bottom:0}
+.vh-round-hdr{font-family:var(--ff-mono);font-size:9px;letter-spacing:2px;font-weight:700;color:var(--text3);margin-bottom:6px}
+.vh-row{display:flex;align-items:center;gap:8px;padding:3px 0;font-size:13px}
+.vh-voter{font-weight:600;color:var(--text);min-width:80px;flex-shrink:0}
+.vh-arrow{color:var(--text3);font-size:11px;flex-shrink:0}
+.vh-target{font-weight:700;flex:1}
+.vh-elim{display:flex;align-items:center;gap:6px;margin-top:8px;font-family:var(--ff-mono);font-size:10px;font-weight:700;letter-spacing:1px}
+.vote-name-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;justify-content:center}
+.vnc-chip{
+  font-family:var(--ff-mono);font-size:9px;letter-spacing:.5px;
+  padding:3px 7px;border-radius:20px;font-weight:700;
+  transition:background .25s,color .25s,border-color .25s;
+}
+.vnc-chip.voted{
+  background:rgba(16,217,160,.15);
+  border:1px solid rgba(16,217,160,.4);
+  color:var(--green);
+}
+.vnc-chip.pending{
+  background:var(--surf3);
+  border:1px solid var(--brd);
+  color:var(--text2);
+}
 
 /* ── Role card (multiplayer — each person's own device) ── */
 #myRole{justify-content:flex-start;align-items:center;overflow-y:auto;padding-bottom:40px}
@@ -1378,17 +1368,10 @@ input[type=text]::placeholder{color:var(--text3);font-weight:400}
         </div>
         <div class="slide-hint-txt">Your role is hidden</div>
         <div class="slide-hint-sub">SLIDE UP TO REVEAL</div>
+        <div class="card-seen-badge" id="offlineSeenBadge">SEEN ✓</div>
       </div>
-      <!-- Front face (clips in from bottom) -->
+      <!-- Front face -->
       <div class="card-face" id="cardFace"></div>
-      <!-- Drag handle -->
-      <div class="slide-track" id="slideTrack">
-        <div class="slide-pill" id="slidePill">
-          <span class="slide-arrow">↑</span>
-          <span>SLIDE TO REVEAL</span>
-          <span class="slide-arrow">↑</span>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -1407,9 +1390,9 @@ input[type=text]::placeholder{color:var(--text3);font-weight:400}
     <div class="vote-tally" id="voteTallyBar" style="display:none">
       <span id="voteTallyTxt">0 / 0 voted</span>
       <div class="vote-bar"><div class="vote-bar-fill" id="voteFill" style="width:0%"></div></div>
+      <div class="vote-name-chips" id="voteNameChips"></div>
     </div>
   </div>
-  <div class="vote-word-hint" id="voteWordHint"><span class="vwh-label">SECRET WORD</span><span class="vwh-word" id="voteWordHintVal"></span></div>
   <div id="voteList"></div>
   <div class="vote-ftr" style="display:flex;flex-direction:column;gap:9px">
     <!-- All players (including host) see confirm + skip until they vote -->
@@ -1433,6 +1416,10 @@ input[type=text]::placeholder{color:var(--text3);font-weight:400}
   <div class="word-box">
     <div class="word-box-lbl">SECRET WORD WAS</div>
     <div class="word-box-val" id="resWord"></div>
+  </div>
+  <div class="scoreboard" id="voteHistorySection" style="display:none">
+    <div class="lbl" style="margin-bottom:8px">🗳 VOTING HISTORY</div>
+    <div id="voteHistoryList"></div>
   </div>
   <div class="scoreboard">
     <div class="lbl" style="margin-bottom:6px">🎮 SESSION SCORES</div>
@@ -1591,23 +1578,19 @@ input[type=text]::placeholder{color:var(--text3);font-weight:400}
           </svg>
         </div>
         <div class="slide-hint-txt">Your role is hidden</div>
-        <div class="slide-hint-sub">SLIDE UP TO REVEAL</div>
+        <div class="slide-hint-sub" id="myRoleBackSub">TAP TO REVEAL</div>
+        <div class="card-seen-badge" id="myRoleSeenBadge">SEEN ✓</div>
       </div>
       <div class="card-face" id="myRoleFace"></div>
-      <div class="slide-track" id="myRoleSlideTrack">
-        <div class="slide-pill" id="myRoleSlidePill">
-          <span class="slide-arrow">↑</span>
-          <span>SLIDE TO REVEAL</span>
-          <span class="slide-arrow">↑</span>
-        </div>
-      </div>
     </div>
   </div>
   <button class="btn-p" id="myRoleDoneBtn" onclick="playerReadyAfterReveal()" style="display:none;width:100%">I'M READY ✓</button>
+  <button class="btn-s" id="rerollWordBtn" onclick="hostRerollWord()" style="display:none;width:100%">🎲 REROLL WORD</button>
   <div class="status-bar" id="myRoleWaitBar" style="display:none;justify-content:center">
     <div class="status-dot amber"></div>
     <span>Waiting for all players to be ready…</span>
   </div>
+  <div class="vote-name-chips" id="readyChips" style="margin-top:6px"></div>
 </div>
 </div>
 
@@ -1757,195 +1740,195 @@ const WORDS = {
 
 const HINTS = {
   // 🍕 Food
-  "Pizza":            ["Slice","Mozzarella","Oven","Naples","Pepperoni"],
-  "Sushi":            ["Nori","Wasabi","Roll","Chopstick","Raw"],
-  "Burger":           ["Patty","Bun","Grill","Ketchup","Stack"],
-  "Biryani":          ["Saffron","Dum","Basmati","Aromatic","Layered"],
-  "Chocolate":        ["Cocoa","Melt","Dark","Wrapper","Valentine"],
-  "Mango":            ["Alphonso","Pulpy","King","Aam","Summer"],
-  "Ice Cream":        ["Scoop","Cone","Vanilla","Sundae","Melt"],
-  "Samosa":           ["Potato","Triangle","Chutney","Crispy","Fold"],
-  "Pasta":            ["Sauce","Fork","Al Dente","Shapes","Boil"],
-  "Tacos":            ["Shell","Salsa","Mexico","Filling","Crunch"],
-  "Curry":            ["Turmeric","Simmer","Gravy","Spice","Ladle"],
-  "Noodles":          ["Slurp","Broth","Wok","Strand","Ramen"],
-  "Paneer":           ["Cottage","Cube","Makhani","Crumble","Milk"],
-  "Dosa":             ["Batter","Tawa","Coconut","Ferment","Crisp"],
-  "Kebab":            ["Skewer","Marinade","Charcoal","Smoke","Mughal"],
-  "Butter Chicken":   ["Orange","Cream","Tandoor","Punjab","Gravy"],
+  "Pizza":            ["Round with cheese on top","Cut into triangles","Comes in a flat box","Baked in a hot oven","You pick your toppings"],
+  "Sushi":            ["Raw fish on sticky rice","Wrapped in dark seaweed","Eaten with chopsticks","Dipped in soy sauce","Served on a wooden board"],
+  "Burger":           ["Two buns with a patty inside","You hold it with both hands","Lettuce and tomato stacked","Eaten at fast food places","Ketchup drips out the side"],
+  "Biryani":          ["Rice cooked with spices","Slow cooked in a sealed pot","Saffron gives it yellow colour","Served with raita on the side","Meat layered between rice"],
+  "Chocolate":        ["Melts in your mouth","Comes in a foil wrapper","Sweet and slightly bitter","Given as a gift on Valentine's","Made from cocoa beans"],
+  "Mango":            ["Yellow and very juicy","Tastes sweet in summer","You peel the skin off","Has a big flat seed inside","King of all fruits"],
+  "Ice Cream":        ["Served in a cone or cup","Melts fast in the heat","You lick it with your tongue","Kept in a freezer","Comes in many flavours"],
+  "Samosa":           ["Triangle shaped and fried","Stuffed with spiced potato","Eaten with green chutney","Crispy on the outside","Sold at every chai stall"],
+  "Pasta":            ["Boiled in salted water","Comes in many shapes","Covered in tomato sauce","Twirled on a fork","Italian dish served hot"],
+  "Tacos":            ["Filling wrapped in a shell","Can be soft or crunchy","You put salsa on top","Mexican street food","Held in one hand"],
+  "Curry":            ["Thick spiced gravy","Scooped with rice or bread","Smells strongly of spices","Simmers on the stove","Always better the next day"],
+  "Noodles":          ["Long thin strands you slurp","Cooked in boiling water","Served in a bowl of broth","Eaten with chopsticks","Common in Chinese food"],
+  "Paneer":           ["White cubes of fresh cheese","Made by curdling milk","Doesn't melt when cooked","Used in butter gravy","Soft and slightly rubbery"],
+  "Dosa":             ["Very thin and crispy crepe","Made from fermented batter","Served with coconut chutney","Cooked on a flat iron pan","Comes from South India"],
+  "Kebab":            ["Meat grilled on a skewer","Charcoal gives it smoky flavour","Marinated overnight in spices","Served with onion rings","You bite it off the stick"],
+  "Butter Chicken":   ["Creamy orange coloured gravy","Chicken cooked in a clay oven","Very popular in Punjab","Eaten with butter naan","Mildly spiced and rich"],
   // ⚽ Sports
-  "Cricket":          ["Wicket","Leather","Boundary","Pitch","Over"],
-  "Football":         ["Goal","Offside","Header","Cleat","Whistle"],
-  "Tennis":           ["Serve","Deuce","Baseline","Grand Slam","Love"],
-  "Chess":            ["King","Check","64","Strategy","Rook"],
-  "Swimming":         ["Stroke","Lane","Goggles","Butterfly","Lap"],
-  "Boxing":           ["Jab","Canvas","Round","Corner","Knockout"],
-  "Badminton":        ["Shuttle","Smash","Rally","Feather","Grip"],
-  "Basketball":       ["Dribble","Hoop","Rebound","Layup","Bounce"],
-  "Wrestling":        ["Takedown","Mat","Pin","Tap","Grapple"],
-  "Golf":             ["Par","Birdie","Fairway","Putt","Caddie"],
-  "Kabaddi":          ["Raid","Breath","Touch","Tag","Tackle"],
-  "Hockey":           ["Drag","Flick","Penalty","Field","Stick"],
-  "Volleyball":       ["Spike","Block","Serve","Net","Rally"],
-  "Table Tennis":     ["Paddle","Spin","Fast","Net","Bounce"],
-  "Archery":          ["Bow","Target","Quiver","Release","Bullseye"],
+  "Cricket":          ["Batsman defends three wooden stumps","Ball hit to the boundary scores four","Played over overs and innings","White clothing in the longer format","Hugely popular in India"],
+  "Football":         ["Kicked into a net to score","Eleven players on each side","Yellow card means a warning","Offside rule confuses everyone","Played on a large grass field"],
+  "Tennis":           ["Racket hits a fuzzy yellow ball","Serve starts every point","Scoring goes 15 30 40 game","Played on clay grass or hard court","Singles or doubles format"],
+  "Chess":            ["64 black and white squares","Each piece moves differently","Check puts the king in danger","Game ends with checkmate","Requires deep strategic thinking"],
+  "Swimming":         ["Race through lanes in a pool","Touch the wall to finish","Goggles protect your eyes","Butterfly stroke is the hardest","Competitive at the Olympics"],
+  "Boxing":           ["Punches thrown inside a ring","Referee stops the bout for knockouts","Fighters wear padded gloves","Rounds last three minutes each","Dodge and counterpunch to win"],
+  "Badminton":        ["Feathered shuttlecock over a net","Smash is the fastest shot","Played indoors to avoid wind","Light carbon fibre rackets","India has won Olympic medals"],
+  "Basketball":       ["Ball bounced and thrown into a hoop","Three pointer from far away","Tall players have an advantage","Five on each team","Fast paced indoor sport"],
+  "Wrestling":        ["Two athletes grapple on a mat","Pin your opponent's shoulders down","No strikes allowed in Olympic style","Strength and technique matter","Very old Olympic sport"],
+  "Golf":             ["Hit a small ball into a tiny hole","Fewer shots wins the round","Played over 18 holes on grass","Caddie carries your bag","Silence required when someone swings"],
+  "Kabaddi":          ["Raider holds their breath and chants","Touch opponents and run back","Played on a dirt or mud court","Very popular in Indian villages","Team sport with tackling"],
+  "Hockey":           ["Curved stick hits a flat puck or ball","India won many Olympic golds","Played on grass or artificial turf","Goalkeeper wears heavy padding","Drag flick is a powerful shot"],
+  "Volleyball":       ["Six players rotate positions","Spike the ball over the net","Three touches allowed per side","Libero wears a different colour","Beach version is also popular"],
+  "Table Tennis":     ["Tiny ball on a small table","Bat has rubber on both sides","Fast rallies with lots of spin","China dominates this sport","Played in offices and schools"],
+  "Archery":          ["Arrow released from a bow","Bullseye scores the most points","Bowstring pulled back to the cheek","Quiver holds extra arrows","Requires steady breathing"],
   // 🏙 Places
-  "Goa":              ["Beach","Portuguese","Carnival","Cashew","Coastal"],
-  "Mumbai":           ["Dabbawalas","Locals","Bollywood","Sea","Crowd"],
-  "Paris":            ["Eiffel","Croissant","Fashion","Louvre","Romance"],
-  "Tokyo":            ["Sakura","Bullet","Neon","Harajuku","Dense"],
-  "Amazon":           ["Canopy","Tribe","River","Jaguar","Oxygen"],
-  "Himalayas":        ["Peak","Yak","Glacier","Monastery","Trek"],
-  "Dubai":            ["Burj","Gold","Sheikh","Desert","Skyscraper"],
-  "New York":         ["Statue","Subway","Broadway","Skyline","Iconic"],
-  "Kolkata":          ["Tram","Rosogolla","Eden","Heritage","Yellow"],
-  "Taj Mahal":        ["Marble","Shah Jahan","Agra","Sunrise","Symmetry"],
-  "Jaipur":           ["Pink","Fort","Elephant","Rajput","Desert"],
-  "Kerala":           ["Backwater","Houseboat","Spice","Ayurveda","Coconut"],
-  "Venice":           ["Canal","Gondola","Mask","Flood","Italy"],
-  "Singapore":        ["Merlion","Tiny","Strict","Clean","Orchard"],
-  "Varanasi":         ["Ganga","Ghats","Moksha","Silk","Oldest"],
+  "Goa":              ["Famous for its sandy beaches","Portuguese forts all over","Cashew feni is the local drink","Very popular at New Year","Small coastal state in India"],
+  "Mumbai":           ["Dabbawalas deliver lunches daily","Local trains are always packed","Bollywood is based here","City that never really sleeps","On the coast of the Arabian Sea"],
+  "Paris":            ["Eiffel Tower is the landmark","Croissants for breakfast","Fashion capital of the world","Louvre holds the Mona Lisa","Known as the city of love"],
+  "Tokyo":            ["Cherry blossoms in spring","Bullet trains run on the second","Neon lights in every street","Most populated city on earth","Vending machines everywhere"],
+  "Amazon":           ["Largest tropical rainforest","River runs through Brazil","Jaguar lives here","Produces lots of the world's oxygen","Deforestation is a big problem"],
+  "Himalayas":        ["World's highest mountain range","Snow covers the peaks all year","Yaks carry loads on the trails","Monks live in mountain monasteries","Trekkers come from all over the world"],
+  "Dubai":            ["Burj Khalifa is the tallest building","Built in the middle of a desert","Gold sold in the souks","Tourists come for luxury shopping","Tax free shopping destination"],
+  "New York":         ["Statue of Liberty in the harbour","Subway runs all night","Broadway shows every evening","Times Square never goes dark","Iconic yellow taxis on every block"],
+  "Kolkata":          ["Old yellow trams still running","Rosogolla was invented here","Eden Gardens cricket stadium","Colonial architecture everywhere","City of Joy is its nickname"],
+  "Taj Mahal":        ["White marble mausoleum","Shah Jahan built it for his wife","Located in Agra","Perfectly symmetrical from every side","Looks pink at sunrise"],
+  "Jaipur":           ["Called the Pink City","Amber Fort on the hilltop","Elephants used to carry royals","Rajput kings built the palaces","Hot desert climate"],
+  "Kerala":           ["Houseboat rides through backwaters","Coconut trees line every road","Spices grow in the hills","Famous for Ayurveda massage","God's Own Country is its slogan"],
+  "Venice":           ["City built on water","Gondola rides through narrow canals","No cars allowed anywhere","Colourful carnival masks","Italy's floating city"],
+  "Singapore":        ["Very small but very wealthy","Merlion is the famous statue","Strict rules and heavy fines","Changi airport is world class","Gardens by the Bay at night"],
+  "Varanasi":         ["Oldest continuously lived-in city","Pilgrims bathe in the Ganga","Ghats line the riverbank","Silk sarees are woven here","Hindus come to seek moksha"],
   // 🎥 Hollywood
-  "Avatar":           ["Pandora","Na'vi","Cameron","Blue","Unobtanium"],
-  "Titanic":          ["Iceberg","DiCaprio","Ship","1912","Tragedy"],
-  "Inception":        ["Dream","Top","Nolan","Layers","Gravity"],
-  "Avengers":         ["Snap","Assemble","Thanos","Marvel","Endgame"],
-  "Joker":            ["Arthur","Clown","Staircase","Gotham","Dark"],
-  "Jurassic Park":    ["Dinosaur","DNA","Island","Amber","Escape"],
-  "Home Alone":       ["Trap","Christmas","Macaulay","Burglar","Kid"],
-  "Interstellar":     ["Wormhole","Cooper","Nolan","Black Hole","Time"],
-  "The Dark Knight":  ["Ledger","Harvey","Gotham","Nolan","Chaos"],
-  "Forrest Gump":     ["Run","Chocolates","Bench","Shrimp","Feather"],
-  "Fight Club":       ["Tyler","Rules","Soap","Underground","Twist"],
-  "Gladiator":        ["Arena","Rome","Russell","Emperor","Sword"],
+  "Avatar":           ["Alien planet covered in blue forest","Blue skinned tall creatures","Director James Cameron","Highest grossing film ever","Sequel came out years later"],
+  "Titanic":          ["Famous ship hit an iceberg","Jack and Rose love story","DiCaprio holds her on the bow","Sank on its very first voyage","Ship breaks in half at the end"],
+  "Inception":        ["Heist takes place inside dreams","Spinning top to test reality","Christopher Nolan directed it","Dream inside a dream inside a dream","Gravity bends in the hotel corridor"],
+  "Avengers":         ["All Marvel heroes team up","Thanos wipes out half the universe","Assemble is the rallying cry","Endgame was the finale","Snap of the fingers changes everything"],
+  "Joker":            ["Clown who becomes a villain","Staircase dancing scene is iconic","Set in Gotham City","Arthur Fleck is his real name","Dark and disturbing origin story"],
+  "Jurassic Park":    ["Dinosaurs brought back using DNA","Tourists trapped on an island","T-Rex chases a jeep","Raptors open door handles","Amber fossil contained the key"],
+  "Home Alone":       ["Eight year old left by himself","Christmas holiday movie","Booby traps set for the burglars","Macaulay Culkin's famous role","Two robbers called the Wet Bandits"],
+  "Interstellar":     ["Astronauts travel through a wormhole","Black hole called Gargantua","Father leaves his daughter behind","Time moves slower near the black hole","Christopher Nolan film"],
+  "The Dark Knight":  ["Heath Ledger played the villain","Two Face flips a coin","Gotham City under threat","Why so serious is the quote","Nolan's best Batman film"],
+  "Forrest Gump":     ["Life is like a box of chocolates","He runs across America","Bench at a bus stop narrates story","Shrimp business with Bubba","Tom Hanks in the lead role"],
+  "Fight Club":       ["First rule is never talk about it","Underground fighting ring","Twist is the biggest shock","Tyler Durden is the alter ego","Made from soap and chemicals"],
+  "Gladiator":        ["Roman slave fights in the arena","Are you not entertained quote","Russell Crowe in the lead","Emperor orders the execution","Revenge drives the story"],
   // 🐘 Animals
-  "Lion":             ["Mane","Pride","Roar","Savanna","King"],
-  "Elephant":         ["Trunk","Memory","Tusk","Herd","Stomp"],
-  "Penguin":          ["Waddle","Tuxedo","Antarctica","Dive","Huddle"],
-  "Shark":            ["Fin","Jaw","Deep","Ambush","Teeth"],
-  "Peacock":          ["Plume","Display","National","Iridescent","Fan"],
-  "Cobra":            ["Hood","Venom","Sway","Basket","Deadly"],
-  "Tiger":            ["Stripe","Bengal","Stealth","Endangered","Pounce"],
-  "Dolphin":          ["Click","Sonar","Leap","Pod","Smart"],
-  "Parrot":           ["Mimic","Tropical","Beak","Cage","Colorful"],
-  "Cheetah":          ["Spotted","Dash","Savanna","Lean","Sprint"],
-  "Gorilla":          ["Chest","Troop","Silverback","Knuckle","Primate"],
-  "Kangaroo":         ["Pouch","Joey","Hop","Australia","Box"],
-  "Wolf":             ["Pack","Howl","Alpha","Moon","Hunt"],
-  "Owl":              ["Nocturnal","Wisdom","Swivel","Silent","Pellet"],
-  "Chameleon":        ["Camouflage","Tongue","Lizard","Slow","Adapt"],
+  "Lion":             ["Large cat with a fluffy mane","Lives in groups called prides","Loud roar heard from far away","King of the jungle nickname","Hunts on the African savanna"],
+  "Elephant":         ["Largest land animal","Long trunk used to drink and grab","Has big ivory tusks","Never forgets according to the saying","Lives in herds led by females"],
+  "Penguin":          ["Black and white bird that cannot fly","Waddles when it walks","Lives in Antarctica","Dives very well in cold water","Huddles together to stay warm"],
+  "Shark":            ["Large fin sticking out of water","Many rows of sharp teeth","Smells blood from far away","Apex predator of the ocean","Jaws movie made people scared"],
+  "Peacock":          ["Male spreads enormous colourful tail","India's national bird","Iridescent blue green feathers","Dances when it rains","Loud harsh call"],
+  "Cobra":            ["Snake that spreads a wide hood","Deadly venom in one bite","Sways to a snake charmer's flute","Spits at prey in some species","King of venomous snakes"],
+  "Tiger":            ["Orange with black stripes","India's national animal","Hunts alone and silently","Bengal variety is most famous","Endangered in the wild"],
+  "Dolphin":          ["Leaps out of water playfully","Uses echolocation to navigate","Lives in groups called pods","Very intelligent mammal","Communicates by clicking"],
+  "Parrot":           ["Brightly coloured tropical bird","Can mimic human speech","Beak is curved and strong","Lives in a cage as a pet","Crackers is a common name for one"],
+  "Cheetah":          ["Fastest land animal","Black spots on golden fur","Sprints but tires quickly","Hunts by sight not smell","Lives on the African savanna"],
+  "Gorilla":          ["Biggest primate on earth","Beats its chest as a warning","Silverback leads the family group","Knuckle walks on the ground","Very gentle unless threatened"],
+  "Kangaroo":         ["Baby called a joey in the pouch","Hops using its powerful legs","Only found in Australia","Males box with their front paws","Large muscular tail for balance"],
+  "Wolf":             ["Hunts in a coordinated pack","Howls at night","Alpha leads the group","Ancestor of domestic dogs","Often misunderstood as dangerous"],
+  "Owl":              ["Hunts only at night","Head can turn almost all the way around","Silent flight due to soft feathers","Regurgitates bones in pellets","Symbol of wisdom"],
+  "Chameleon":        ["Changes skin colour to match surroundings","Very long sticky tongue","Moves extremely slowly","Eyes move independently","Lives in trees"],
   // 💼 Jobs
-  "Doctor":           ["Stethoscope","Diagnosis","Scrubs","Rounds","Oath"],
-  "Pilot":            ["Cockpit","Altitude","Uniform","Clearance","Wing"],
-  "Teacher":          ["Chalk","Lesson","Grade","Blackboard","Mentor"],
-  "Chef":             ["Apron","Knife","Flame","Roux","Tasting"],
-  "Hacker":           ["Terminal","Code","Breach","Dark","Proxy"],
-  "Astronaut":        ["Zero-G","Orbit","Module","Launch","Suit"],
-  "Detective":        ["Magnifier","Badge","Clue","Interrogate","Trail"],
-  "Lawyer":           ["Brief","Plead","Bar","Gavel","Objection"],
-  "Engineer":         ["Blueprint","Circuit","Specs","Build","System"],
-  "Actor":            ["Audition","Script","Spotlight","Method","Character"],
-  "Soldier":          ["Barracks","Salute","Camouflage","Deploy","Duty"],
-  "Farmer":           ["Plow","Sow","Harvest","Soil","Season"],
-  "Scientist":        ["Lab","Hypothesis","Beaker","Discover","Publish"],
-  "Photographer":     ["Shutter","Lens","Frame","Aperture","Capture"],
-  "Barber":           ["Scissors","Trim","Cape","Chair","Lather"],
+  "Doctor":           ["Wears a stethoscope around the neck","Examines patients and diagnoses illness","Works long shifts at the hospital","Prescribes medicine after a checkup","Takes an oath to do no harm"],
+  "Pilot":            ["Sits in the cockpit at the front","Speaks to air traffic control","Uniform with stripes on the shoulder","Announces turbulence over the intercom","Responsible for hundreds of passengers"],
+  "Teacher":          ["Stands at a blackboard with chalk","Marks homework and gives grades","Explains things in simple words","Rings a bell at end of class","Earns respect but not always money"],
+  "Chef":             ["Wears a tall white hat","Chops and fries and seasons food","Works in a hot busy kitchen","Tastes the dish before serving","Sharp knife is the most important tool"],
+  "Hacker":           ["Types code on a dark screen","Breaks into systems without permission","Uses tricks to bypass security","Wears a hoodie in every movie","Can do good or bad with the skill"],
+  "Astronaut":        ["Floats in zero gravity","Wears a pressurised white suit","Launches into space on a rocket","Eats food from sealed pouches","Trains for years before going up"],
+  "Detective":        ["Looks for clues at crime scenes","Asks many questions to suspects","Carries a badge and sometimes a gun","Pieces together evidence step by step","Sherlock Holmes is a famous one"],
+  "Lawyer":           ["Argues a case in front of a judge","Wears formal clothes in court","Studies law books for years","Objection is a word they say often","Defends or prosecutes in a trial"],
+  "Engineer":         ["Designs and builds things","Uses blueprints and technical drawings","Solves real world problems with science","Works on bridges software or circuits","Needs a degree to get certified"],
+  "Actor":            ["Memorises lines from a script","Performs under bright spotlights","Auditions to get a role","Changes personality for each character","Walks the red carpet at premieres"],
+  "Soldier":          ["Wears camouflage in the field","Lives in barracks on base","Salutes senior officers","Trained for combat and discipline","Deployed to protect the country"],
+  "Farmer":           ["Wakes before sunrise every day","Plows the field before sowing seeds","Depends on rain for a good harvest","Grows the food everyone eats","Hardest working and least paid"],
+  "Scientist":        ["Works with beakers and pipettes in a lab","Forms a hypothesis before testing","Publishes findings in journals","Makes discoveries through experiments","Wears a white coat and safety glasses"],
+  "Photographer":     ["Adjusts aperture and shutter speed","Looks through a viewfinder to frame a shot","Edits photos on a computer later","Shoots portraits events and nature","Carries heavy equipment everywhere"],
+  "Barber":           ["Drapes a cape over your shoulders","Uses scissors and a razor to trim","Lathers up the neck before shaving","Holds a mirror behind your head","Everyone visits one every few weeks"],
   // 🎮 Games
-  "PUBG":             ["Drop","Loot","Zone","Squad","Chicken"],
-  "Ludo":             ["Dice","Token","Safe","Home","Board"],
-  "Uno":              ["Reverse","Skip","Wild","Draw","Shout"],
-  "Minecraft":        ["Block","Creeper","Craft","Sandbox","Build"],
-  "FIFA":             ["Manager","Ultimate","Transfer","Career","Club"],
-  "Carrom":           ["Powder","Pocket","Strike","Finger","Board"],
-  "Antakshari":       ["Letter","Song","Hum","Bolly","End"],
-  "Snake":            ["Nokia","Pixel","Eat","Grow","Retro"],
-  "Teen Patti":       ["Blind","Show","Trail","Bet","Sequence"],
-  "Free Fire":        ["Booyah","Mobile","Island","Survive","Garena"],
-  "Among Us":         ["Crewmate","Emergency","Vent","Task","Meeting"],
-  "Jenga":            ["Pull","Tower","Wobble","Block","Careful"],
-  "GTA":              ["Heist","Wanted","Steal","City","Rockstar"],
-  "Valorant":         ["Spike","Clutch","Agent","Aim","Abilities"],
-  "Candy Crush":      ["Match","Sweet","Level","Lives","Saga"],
+  "PUBG":             ["Parachute onto an island with 100 players","Loot weapons and supplies from buildings","Blue zone shrinks and forces everyone together","Last squad standing wins the chicken dinner","Played on phone or PC"],
+  "Ludo":             ["Roll dice and move coloured tokens","Safe zone means you cannot be captured","Race four tokens to the home column","Can send opponent back to start","Classic board game for four players"],
+  "Uno":              ["Shout the name when one card left","Wild card lets you change the colour","Draw four is the most hated card","Reverse and skip change the turn order","Card game for the whole family"],
+  "Minecraft":        ["Mine blocks and build anything you want","Creeper blows up everything you made","Craft tools from wood and stone","Survive the night from monsters","Sandbox game with no main story"],
+  "FIFA":             ["Build your dream team with real players","Transfer window to buy better players","Play matches in career mode","Ultimate Team is the popular mode","Football simulation game"],
+  "Carrom":           ["Flick a striker with your finger","Pocket the coins in the four corners","Powder keeps the board slippery","Queen must be covered after potting","Played on a wooden square board"],
+  "Antakshari":       ["Sing a song starting with the last letter","Bollywood songs are most common","Teams take turns singing","Stops when no one knows a song","Played on long road trips"],
+  "Snake":            ["Eat dots and grow longer","Hit your own tail and it is game over","Started on Nokia phones","Gets harder as the snake gets longer","Simple old mobile game"],
+  "Teen Patti":       ["Each player gets three cards","Bet blind without looking at your cards","Trail is three of a kind","Sequence beats two of a kind","Popular card game at Indian festivals"],
+  "Free Fire":        ["Battle royale on a mobile phone","Booyah shout when you win","Island setting with shrinking zone","Garena developed this game","Very popular among teenagers"],
+  "Among Us":         ["Crewmates complete tasks on a spaceship","Imposter sabotages and kills secretly","Emergency meeting called by button press","Vote to eject the suspect","Space themed social deception game"],
+  "Jenga":            ["Pull out wooden blocks one at a time","Stack must not fall over","Gets very unstable near the end","Steady hands are needed","Loud crash when it finally falls"],
+  "GTA":              ["Open world crime game","Steal cars and drive around the city","Wanted level goes up with more crimes","Rockstar Games made this series","Do missions or just cause chaos"],
+  "Valorant":         ["Tactical shooter with special abilities","Plant or defuse the spike","Each agent has unique powers","Aim is very important to win","Competitive ranked matchmaking"],
+  "Candy Crush":      ["Match three or more sweets in a row","Lives run out and you must wait","Levels get very hard later on","Spend real money to keep playing","Played by millions every day"],
   // 🎵 Music
-  "Guitar":           ["String","Fret","Strum","Neck","Pick"],
-  "DJ":               ["Mix","Turntable","Bass","Drop","Club"],
-  "Rap":              ["Verse","Flow","Rhyme","Battle","Hook"],
-  "Drums":            ["Beat","Sticks","Kit","Rhythm","Fill"],
-  "Flute":            ["Breath","Hole","Krishna","Bamboo","Melody"],
-  "Singer":           ["Pitch","Mic","Vocal","Range","Stage"],
-  "Concert":          ["Crowd","Setlist","Encore","Stage","Loud"],
-  "Tabla":            ["Bayan","Dayan","Taal","Ustad","Indian"],
-  "Harmonium":        ["Pump","Keys","Reed","Devotion","Fold"],
-  "Saxophone":        ["Jazz","Brass","Curve","Blow","Alto"],
-  "Piano":            ["Keys","Ivory","Pedal","Classical","Concert"],
-  "Orchestra":        ["Conductor","Baton","Strings","Symphony","Hall"],
+  "Guitar":           ["Six strings stretched over a neck","Strummed or plucked with fingers","Most popular instrument to learn","Electric version used in rock bands","Carried in a long flat case"],
+  "DJ":               ["Mixes tracks using turntables","Drops the bass to make the crowd jump","Wears headphones around the neck","Controls the energy of the whole club","Fades one song into another seamlessly"],
+  "Rap":              ["Fast lyrics over a beat","Rhymes come at the end of lines","Storytelling about real life experiences","Originated in New York in the 70s","Flow and delivery matter as much as words"],
+  "Drums":            ["Hit with wooden sticks","Sets the beat for the whole band","Kit includes snare hi-hat and bass","Fills happen between the main beat","Very loud even without amplification"],
+  "Flute":            ["Blow across a hole to make sound","Long thin metal tube","Lord Krishna played a bamboo version","One of the oldest instruments ever","Fingers cover and uncover holes"],
+  "Singer":           ["Uses their voice as the instrument","Trains breathing and pitch for years","Performs with a microphone on stage","Vocal range determines what songs suit them","Face of the band in most cases"],
+  "Concert":          ["Thousands gather to see live music","Crowd sings along to every word","Opening act warms up the audience","Encore means the band comes back out","Merchandise stall sells t-shirts outside"],
+  "Tabla":            ["Two small drums played together","Right drum has a black tuning paste","Fingers tap complex rhythms","Sits cross legged while playing","Essential in Indian classical music"],
+  "Harmonium":        ["Pump the bellows to push air through reeds","Small keyboard on top","Carried folded in a box","Used in devotional singing","Common in qawwali and bhajans"],
+  "Saxophone":        ["Curved brass body with keys","Blow into a reed mouthpiece","Signature sound of jazz music","Alto and tenor are most common types","Invented in the 19th century"],
+  "Piano":            ["88 black and white keys","Press key and a hammer hits a string","Pedals change how notes sustain","Takes years to play well","Found in concert halls and living rooms"],
+  "Orchestra":        ["Conductor waves a baton at the front","Strings sit at the front of the stage","Can have over 80 musicians","Plays symphonies in grand concert halls","Everyone must follow the tempo together"],
   // 🎬 Bollywood
-  "Shah Rukh Khan":   ["Arms","Dimple","Outsider","Romance","King"],
-  "Salman Khan":      ["Dabangg","Tiger","Charity","Muscle","Bhai"],
-  "Amitabh Bachchan": ["Baritone","Big B","Angry","Legend","KBC"],
-  "Deepika Padukone": ["Dimple","Global","Tall","Olympics","Graceful"],
-  "Ranveer Singh":    ["Energy","Wild","Costume","Gully","Loud"],
-  "Alia Bhatt":       ["SOTY","Gully","RRR","Intense","Young"],
-  "Hrithik Roshan":   ["Greek","Dance","Krrish","War","Six-pack"],
-  "Dhoom":            ["Bike","Heist","Chase","Style","Thriller"],
-  "DDLJ":             ["Train","Mustard","Simran","Raj","Kajol"],
-  "Lagaan":           ["Aamir","Village","British","Bet","1893"],
-  "3 Idiots":         ["Rancho","Aamir","College","Engineer","Friends"],
-  "ZNMD":             ["Spain","Farhan","Skydive","Bullfight","Trio"],
+  "Shah Rukh Khan":   ["Spreads his arms wide in every film","Started with nothing from Delhi","King of romance in Bollywood","Dimples are his trademark","Owns the Kolkata IPL team"],
+  "Salman Khan":      ["Known as Bhai by fans","Dabangg role made him iconic","Massive bodybuilder physique","Tiger is his action franchise","Always wears a bracelet or thread"],
+  "Amitabh Bachchan": ["Deep booming baritone voice","Angry young man in 1970s films","Known simply as Big B","Hosts Kaun Banega Crorepati","Bollywood legend still working at 80"],
+  "Deepika Padukone": ["Dimple on one cheek","Represented India at the Oscars ceremony","Very tall and graceful on screen","Married Ranveer Singh","Opened up about mental health publicly"],
+  "Ranveer Singh":    ["Wildest fashion choices in Bollywood","Extremely high energy in interviews","Played Alauddin Khilji and Kapil Dev","Married Deepika Padukone","Always loud and never boring"],
+  "Alia Bhatt":       ["Debuted in Student of the Year","Acted in Gully Boy and RRR","Youngest top actress in Bollywood","Married Ranbir Kapoor","Known for intense dramatic roles"],
+  "Hrithik Roshan":   ["Called the Greek God of Bollywood","Best dancer in Hindi films by far","Krrish is his superhero character","Six pack always on display","Has a distinctive thumb on one hand"],
+  "Dhoom":            ["Bike chase scenes in every instalment","Famous heist thriller franchise","Stylish villain is the highlight each time","Abhishek and Uday Chopra return each time","Action packed and fast paced"],
+  "DDLJ":             ["Train scene at the very end","Mustard fields in Punjab and Europe","Simran and Raj fall in love abroad","Longest running film in cinema history","Kajol and Shah Rukh Khan together"],
+  "Lagaan":           ["Village bets against the British at cricket","Set in colonial India in 1893","Aamir Khan plays the lead villager","Rain finally comes at the end","National selection to represent India at Oscars"],
+  "3 Idiots":         ["Three engineering college friends","Rancho questions everything the professors say","Aamir Khan plays a 40 year old student","Virus is the feared college principal","Follow your passion is the message"],
+  "ZNMD":             ["Three friends on a road trip through Spain","Each overcomes a personal fear","Skydiving scuba diving and bullfighting","Farhan Hrithik and Abhay Deol together","Zindagi Na Milegi Dobara means life comes once"],
   // 🎉 Festivals
-  "Diwali":           ["Diya","Lakshmi","Crackers","October","Sweets"],
-  "Holi":             ["Gulal","Spring","Water","Bhang","Color"],
-  "Eid":              ["Seviyan","Namaz","Crescent","Biryani","Embrace"],
-  "Navratri":         ["Garba","Nine","Goddess","Fasting","Ahmedabad"],
-  "Durga Puja":       ["Pandal","Bengal","Idol","Dhunuchi","Autumn"],
-  "Ganesh Chaturthi": ["Modak","Visarjan","Maharashtra","Bappa","Trunk"],
-  "Onam":             ["Pookalam","Boat","Sadya","Kerala","August"],
-  "Pongal":           ["Kolam","Sugarcane","Sun","Tamil","Harvest"],
-  "Baisakhi":         ["Bhangra","Harvest","Sikh","Punjab","Spring"],
-  "Raksha Bandhan":   ["Thread","Wrist","Sibling","Sweets","Bond"],
-  "Lohri":            ["Bonfire","Punjab","Winter","Rewri","Drum"],
-  "Makar Sankranti":  ["Kite","Sesame","January","Harvest","Sun"],
+  "Diwali":           ["Rows of oil lamps lit everywhere","Lakshmi is worshipped for wealth","Fireworks and crackers fill the sky","Sweets exchanged between neighbours","Celebrated across India in October or November"],
+  "Holi":             ["Coloured powder thrown at everyone","Celebrated at the start of spring","Water guns and balloons used too","Bhang is consumed in some regions","Everyone looks the same colour by evening"],
+  "Eid":              ["Celebrated after a month of fasting","Seviyan cooked in every home","New clothes worn for morning prayers","Crescent moon sighting marks the day","Families hug and say Eid Mubarak"],
+  "Navratri":         ["Nine nights of Garba dancing","Goddess Durga is worshipped","Women wear ghagra choli outfits","Fasting during the day is common","Biggest celebrations in Gujarat"],
+  "Durga Puja":       ["Massive pandals decorated across the city","Idol of Durga defeating Mahishasura","Biggest festival in West Bengal","Dhunuchi dance performed at night","Idol immersed in water on the last day"],
+  "Ganesh Chaturthi": ["Large clay idol of elephant god","Modak sweet is his favourite offering","Streets fill with processions","Visarjan means immersing the idol in water","Maharashtra celebrates with the most energy"],
+  "Onam":             ["Flower carpet called pookalam at entrance","Elaborate 26 dish meal on a banana leaf","Snake boat race on the backwaters","Celebrates return of King Mahabali","Kerala's biggest harvest festival"],
+  "Pongal":           ["Rice cooked in a new clay pot","Sugarcane eaten raw during the festival","Kolam drawn at the front door","Cattle decorated and worshipped","Tamil harvest festival in January"],
+  "Baisakhi":         ["Bhangra and giddha danced in fields","Sikh New Year and harvest festival","Marks founding of the Khalsa in 1699","Celebrated with fairs and processions","Farmers rejoice as wheat is ready to harvest"],
+  "Raksha Bandhan":   ["Sister ties a thread on brother's wrist","Brother promises to protect her always","Sweets exchanged after the tying","Thread is called a rakhi","Celebrated on a full moon day"],
+  "Lohri":            ["Bonfire lit in the middle of the street","Rewri and peanuts thrown into the fire","Celebrated in Punjab in January","Marks the end of winter","Drums beat and everyone dances around the fire"],
+  "Makar Sankranti":  ["Kites fill the sky all day","Sesame and jaggery sweets shared","Marks the sun's northward journey","Celebrated on 14th January every year","Harvest festival in many different states"],
   // 🍢 Street Food
-  "Pani Puri":        ["Hollow","Tamarind","Burst","Jaljeera","Water"],
-  "Vada Pav":         ["Batata","Bun","Chutney","Mumbai","Local"],
-  "Chole Bhature":    ["Chickpea","Fried","North","Fluffy","Punjab"],
-  "Pav Bhaji":        ["Butter","Mash","Stall","Bun","Masala"],
-  "Bhel Puri":        ["Puffed","Beach","Tangy","Kurmura","Crunch"],
-  "Chaat":            ["Tamarind","Crispy","Delhi","Tangy","Mixed"],
-  "Idli":             ["Steam","Sambar","Soft","South","Round"],
-  "Dhokla":           ["Steamed","Gujarat","Spongy","Yellow","Savory"],
-  "Jalebi":           ["Spiral","Syrup","Crispy","Orange","Hot"],
-  "Lassi":            ["Yogurt","Punjab","Frothy","Thick","Chilled"],
-  "Masala Chai":      ["Ginger","Cardamom","Kadak","Milk","Sip"],
-  "Pakora":           ["Onion","Monsoon","Batter","Crispy","Dip"],
-  "Misal Pav":        ["Sprout","Spicy","Maharashtra","Gravy","Bun"],
-  "Kachori":          ["Stuffed","Rajasthan","Flaky","Pea","Fried"],
+  "Pani Puri":        ["Hollow crispy ball filled with spiced water","Burst it in your mouth whole","Sold at every roadside stall","Tamarind and jaljeera in the water","Eat it fast before it goes soggy"],
+  "Vada Pav":         ["Spiced potato fritter inside a bread bun","Mumbai's most famous street snack","Green and dry chutney on the side","Sold outside every railway station","Costs less than a cup of tea"],
+  "Chole Bhature":    ["Spicy chickpea curry with a fried bread","Bhatura puffs up when it hits the oil","North Indian breakfast dish","Served with sliced onion and pickle","Very filling and heavy on the stomach"],
+  "Pav Bhaji":        ["Mashed vegetables cooked with butter","Small buns toasted on the same pan","Bright orange red colour from masala","Squeeze lemon on top before eating","Best eaten at a Marine Drive stall"],
+  "Bhel Puri":        ["Puffed rice mixed with sev and veggies","Tangy tamarind chutney drizzled on top","Must be eaten quickly before it softens","Popular on beaches and at fairs","Kurmura is another name for puffed rice"],
+  "Chaat":            ["A mix of crispy sour sweet and spicy","Tamarind chutney and yogurt on top","Delhi is famous for its chaat lanes","Many different varieties exist","Always leaves your fingers sticky"],
+  "Idli":             ["Soft round steamed rice cakes","Eaten with sambar and coconut chutney","South Indian breakfast staple","Made from fermented batter overnight","Light on the stomach and easy to digest"],
+  "Dhokla":           ["Soft spongy steamed savoury cake","Bright yellow from turmeric and chickpea flour","Gujarat's most famous snack","Tempered with mustard seeds on top","Served with green chutney"],
+  "Jalebi":           ["Batter piped in spirals into hot oil","Soaked immediately in sugar syrup","Eaten hot and very crispy","Bright orange colour","Best with rabdi or cold milk"],
+  "Lassi":            ["Thick yogurt based cold drink","Punjab's most refreshing summer drink","Sweet or salted versions available","Poured into a tall glass with cream","Beats the heat better than cold water"],
+  "Masala Chai":      ["Milk tea boiled with ginger and cardamom","Served in a small glass or kulhad","Made strong and sweet across India","Morning ritual for most Indians","Kadak means strong and full of flavour"],
+  "Pakora":           ["Vegetables dipped in chickpea batter and fried","Best eaten during the monsoon","Served with green chutney or ketchup","Onion and potato are most common","Crispy outside and soft inside"],
+  "Misal Pav":        ["Spicy sprouted lentil curry with crunchy sev","Bread bun to soak up the gravy","Popular breakfast in Maharashtra","Very spicy and leaves your mouth burning","Topped with onion lemon and farsan"],
+  "Kachori":          ["Flaky pastry stuffed with spiced lentils or peas","Deep fried until golden and puffed","Served with tamarind chutney in Rajasthan","Eaten as breakfast or a snack","Crumbles and flakes when you bite in"],
   // 🏏 Cricket
-  "Sachin Tendulkar": ["Master","100","Mumbai","Gods","Retire"],
-  "Virat Kohli":      ["Chase","Fitness","Aggressive","King","Captain"],
-  "MS Dhoni":         ["Helicopter","Calm","Finisher","Yellow","CSK"],
-  "Rohit Sharma":     ["Hitman","Double","Opener","145","Elegant"],
-  "Jasprit Bumrah":   ["Action","Yorker","Slinger","Pace","Wrist"],
-  "IPL":              ["Franchise","Auction","T20","Cheer","Season"],
-  "Eden Gardens":     ["Kolkata","Crowd","Floodlight","Historic","Roar"],
-  "Wankhede":         ["Sea","Mumbai","Final","2011","Capacity"],
-  "Yorker":           ["Full","Toe","Pace","Unplayable","Base"],
-  "Googly":           ["Spin","Wrist","Deceive","Leg","Turn"],
-  "Test Match":       ["5-Day","Whites","Stamina","Draw","Classic"],
-  "World Cup":        ["Trophy","Nation","Final","Glory","ODI"],
+  "Sachin Tendulkar": ["Scored 100 international centuries","Master Blaster is his nickname","Played his last game at Wankhede","India treats him like a god","Retired in 2013 after 24 years"],
+  "Virat Kohli":      ["Best chase batsman in modern cricket","Extremely fitness conscious","Aggressive celebration after every wicket","King Kohli is what fans call him","Former captain of India in all formats"],
+  "MS Dhoni":         ["Helicopter shot is his signature","Coolest head when pressure is highest","Finishes games single handedly","Wears yellow as Chennai captain","Wicket keeper who bats at number seven"],
+  "Rohit Sharma":     ["Hitman is his nickname","Has scored three double hundreds in ODIs","Opens the batting with elegance","Current India captain in white ball cricket","Looks lazy but hits it very far"],
+  "Jasprit Bumrah":   ["Unique slingy low arm bowling action","Toe crushing yorkers are his weapon","Fastest Indian pacer right now","Unplayable in the final overs","Came from nowhere and became the best"],
+  "IPL":              ["Twenty overs per side format","Franchise teams from different cities","Players auctioned every few years","Cheerleaders and loud music in the stands","Most watched cricket league in the world"],
+  "Eden Gardens":     ["Second largest cricket ground in the world","Kolkata crowd is the noisiest anywhere","Historic venue for many great matches","Floodlit day night games held here","Home of Knight Riders"],
+  "Wankhede":         ["Overlooks the Arabian Sea in Mumbai","India won the 2011 World Cup here","Sachin played his last test here","Very close packed seats all around","Sea breeze cools the ground at night"],
+  "Yorker":           ["Ball lands right at the batsman's feet","Almost impossible to hit when it is perfect","Pace bowlers use it at the death","Toe crusher is another name for it","Batsman jams bat down to block"],
+  "Googly":           ["Leg spin bowler's secret weapon","Turns the opposite way to a normal delivery","Batsman thinks it will go one way but it doesn't","Wrist position is the key to bowling it","Deceives even experienced batsmen"],
+  "Test Match":       ["Played over five whole days","Players wear white clothes","Longer format tests concentration and stamina","Can end in a draw if time runs out","Most respected format in cricket"],
+  "World Cup":        ["Every nation wants to win this trophy","Held every four years","One day format with 50 overs per side","Final match watched by hundreds of millions","India won it in 1983 and 2011"],
   // 📺 Indian OTT
-  "Mirzapur":         ["Gangster","Guddu","Kaleen","Amazon","Season"],
-  "Sacred Games":     ["Gaitonde","Netflix","Sartaj","Mumbai","Crime"],
-  "Panchayat":        ["Village","IAS","TVF","UP","Abhishek"],
-  "Scam 1992":        ["Harshad","Market","Bombay","Sony","Bull"],
-  "Kota Factory":     ["JEE","Black-White","Pressure","TVF","Study"],
-  "TVF Pitchers":     ["Startup","Naveen","TVF","Delhi","Office"],
-  "Bigg Boss":        ["House","Drama","Evict","Weekly","Salman"],
-  "KBC":              ["Crore","Hot Seat","Lifeline","Amitabh","Question"],
-  "Kapil Sharma Show":["Laugh","Guest","Couch","Comedy","Viral"],
-  "Taarak Mehta":     ["Gokuldham","Society","Long","Daily","Friends"],
-  "Roadies":          ["Bike","Gang","Task","Youth","Reality"],
-  "Shark Tank India": ["Investment","Pitch","Equity","Startup","Shark"],
+  "Mirzapur":         ["Gangsters rule a lawless town in UP","Guddu and Bablu take on the don","Kaleen Bhaiya controls everything","Very violent and raw content","Amazon Prime made this series"],
+  "Sacred Games":     ["Gaitonde speaks to a cop from beyond","Sartaj races to save Mumbai in 25 days","First big Netflix show from India","Crime thriller with flashbacks","Dark and complex multilayered story"],
+  "Panchayat":        ["IAS officer posted to a remote UP village","Simple and heartwarming slow comedy","TVF made this show a classic","No electricity and no network in the village","Abhishek adjusts to village life slowly"],
+  "Scam 1992":        ["Harshad Mehta manipulates the stock market","Set in Bombay in the late 1980s","Based on a real financial fraud","Hansal Mehta directed this series","Sony LIV streamed this show"],
+  "Kota Factory":     ["Students preparing for JEE exams","Shot entirely in black and white","Immense pressure and mental health issues","TVF made this relatable series","Jeetu bhaiya is the beloved teacher"],
+  "TVF Pitchers":     ["Four friends leave jobs to build a startup","Set in Delhi's corporate world","TVF's most loved original series","Funding rejection and office struggles","Naveen is the passionate founder"],
+  "Bigg Boss":        ["Contestants locked in a house for months","No phone or outside contact allowed","Eviction decided by public vote each week","Salman Khan hosts every season","Fights and drama every single day"],
+  "KBC":              ["Contestant sits in the hot seat opposite Amitabh","Fifteen questions of increasing difficulty","Lifelines include phone a friend","One crore rupees for the final answer","Kaun Banega Crorepati is the full name"],
+  "Kapil Sharma Show":["Stand up comedian hosts celebrity guests","Couch full of characters and sidekicks","Comedy sketches between interviews","Goes viral every week on social media","Films and show promotions happen here"],
+  "Taarak Mehta":     ["Set in Gokuldham Society apartments","Has been running for over 15 years","Daily episodes make it India's longest show","Jethalal and his neighbour's wife cause chaos","Taarak Mehta is actually a real writer"],
+  "Roadies":          ["Youngsters compete in tough physical tasks","Gang leaders pick and protect contestants","Bike rides across India between tasks","Viewers vote to eliminate contestants","Reality show running since the early 2000s"],
+  "Shark Tank India": ["Entrepreneurs pitch their business ideas","Sharks invest real money on the show","Equity stake negotiated on screen","Ashneer Grover became the most famous shark","Inspired many Indians to start businesses"],
 };
 
 const AVATARS = ["🙂","😊","😄","🤗","😎","🧐","🤔","😏","🙃","🥸","🧑","👩","🧔","👱","🙋","🤵","🧕","😺","🦊","🐧"];
@@ -1955,11 +1938,54 @@ const DB = {
   WORD_CACHE_KEY: 'wi_word_cache',
   LEADERBOARD_KEY: 'wi_leaderboard',
   THEME_KEY: 'wi_theme',
-  loadWordCache() { try { return new Set(JSON.parse(localStorage.getItem(this.WORD_CACHE_KEY)||'[]')); } catch { return new Set(); } },
-  saveWordCache(c) { try { localStorage.setItem(this.WORD_CACHE_KEY,JSON.stringify([...c])); } catch {} },
-  addWord(w) { const c=this.loadWordCache(); c.add(w); this.saveWordCache(c); updateOfflineCachePill(); },
-  clearWordCache() { try { localStorage.removeItem(this.WORD_CACHE_KEY); } catch {} updateOfflineCachePill(); },
-  availableWords(cats) { const used=this.loadWordCache(); const all=[]; cats.forEach(cat=>(WORDS[cat]||[]).forEach(w=>all.push({word:w,cat}))); return all.filter(e=>!used.has(e.word)); },
+  // ── Word cache: in-memory Set, mirrored to Firebase + localStorage ──
+  // Loaded once after initFirebase via DB.syncWordCache().
+  // All sync call sites use _wordCache directly so they stay fast.
+  _wordCache: new Set(),
+
+  async syncWordCache() {
+    if (rtdb) {
+      try {
+        const snap = await rtdb.ref('wordCache').get();
+        const words = snap.exists() ? (snap.val() || []) : [];
+        this._wordCache = new Set(Array.isArray(words) ? words : Object.values(words));
+        try { localStorage.setItem(this.WORD_CACHE_KEY, JSON.stringify([...this._wordCache])); } catch {}
+        updateOfflineCachePill();
+        return;
+      } catch(e) { console.warn('wordCache Firebase read failed, using localStorage', e); }
+    }
+    try { this._wordCache = new Set(JSON.parse(localStorage.getItem(this.WORD_CACHE_KEY)||'[]')); } catch {}
+    updateOfflineCachePill();
+  },
+
+  loadWordCache() { return new Set(this._wordCache); },
+
+  saveWordCache(c) {
+    this._wordCache = new Set(c);
+    const arr = [...c];
+    if (rtdb) rtdb.ref('wordCache').set(arr).catch(e => console.warn('wordCache write failed', e));
+    try { localStorage.setItem(this.WORD_CACHE_KEY, JSON.stringify(arr)); } catch {}
+  },
+
+  addWord(w) {
+    this._wordCache.add(w);
+    this.saveWordCache(this._wordCache);
+    updateOfflineCachePill();
+  },
+
+  clearWordCache() {
+    this._wordCache = new Set();
+    if (rtdb) rtdb.ref('wordCache').remove().catch(e => console.warn('wordCache clear failed', e));
+    try { localStorage.removeItem(this.WORD_CACHE_KEY); } catch {}
+    updateOfflineCachePill();
+  },
+
+  availableWords(cats) {
+    const used = this._wordCache;
+    const all = [];
+    cats.forEach(cat => (WORDS[cat]||[]).forEach(w => all.push({word:w,cat})));
+    return all.filter(e => !used.has(e.word));
+  },
   // Leaderboard is stored in Firebase at /leaderboard/<playerName>
   // Falls back to a local cache so offline results still persist locally
   // and are flushed to Firebase the next time the app is online.
@@ -2344,6 +2370,7 @@ async function showCreateRoom() {
 
   try {
     await initFirebase();
+    await DB.syncWordCache();
   } catch (err) {
     show('home');
     toast('No internet connection — online play unavailable');
@@ -2401,6 +2428,7 @@ async function joinRoom() {
 
   try {
     await initFirebase();
+    await DB.syncWordCache();
   } catch (err) {
     show('joinRoom');
     toast('No internet connection — cannot join room');
@@ -2501,7 +2529,19 @@ function onRoomUpdate(state) {
   } else if (status === 'lobby') {
     renderLobby(state);
   } else if (status === 'revealing') {
-    if (!['myRole'].includes(currentScreen)) showMyRole(state);
+    if (state.game?.rerolling) {
+      // Host is rerolling — navigate to waiting so the next update
+      // triggers a fresh showMyRole for everyone
+      show('waiting');
+    } else if (!['myRole'].includes(currentScreen)) {
+      // First entry (or returning from waiting after reroll) — build the card
+      showMyRole(state);
+    } else {
+      // Already on the reveal screen — only update the ready chips.
+      // Never re-call showMyRole here: it resets the tap-reveal state for
+      // everyone on screen whenever any single player writes ready=true.
+      renderReadyChips(state);
+    }
     checkAllReady(state);
   } else if (status === 'voting') {
     const vr = state.game?.voteResult;
@@ -2519,7 +2559,11 @@ function onRoomUpdate(state) {
     } else if (!['vote'].includes(currentScreen)) {
       showVoteScreen(state);
     } else {
-      renderVoteScreen(state);
+      // Already on vote screen — only update tally and wait-bar.
+      // Do NOT call renderVoteScreen: it resets selVote and rebuilds the
+      // vote list, wiping everyone's in-progress selection whenever any
+      // player submits their vote.
+      liveUpdateVoteScreen(state);
     }
   } else if (status === 'result') {
     if (!['result'].includes(currentScreen)) showResultScreen(state);
@@ -2647,6 +2691,7 @@ async function hostStartGame() {
   const players = Object.values(ROOM_STATE.players || {});
   const s = ROOM_STATE.settings || {};
   if (players.length < 3) { _gameStarting = false; return toast('Need at least 3 players'); }
+  if (selCats.size === 0) { _gameStarting = false; return toast('Select at least one word category'); }
   if ((s.imp||1) >= players.length) { _gameStarting = false; return toast('Too many imposters for this player count'); }
 
   const cats = s.cats || Object.keys(WORDS);
@@ -2708,6 +2753,7 @@ async function hostStartGame() {
     roles,
     settings: { imp: impCount, rounds: s.rounds||3, hintCount },
     voteRound: 1,
+    voteLog: [],
     eliminated: [],
     readyCount: 0,
     votes: {},
@@ -2731,15 +2777,18 @@ function showMyRole(state) {
   document.getElementById('myRoleName').textContent = ME.name.toUpperCase();
   document.getElementById('myRoleInst').textContent = 'Slide up to see your role — keep it secret!';
   document.getElementById('myRoleDoneBtn').style.display = 'none';
+  document.getElementById('rerollWordBtn').style.display = 'none';
   document.getElementById('myRoleWaitBar').style.display = 'none';
+  document.getElementById('readyChips').innerHTML = '';
+  const seenBadge = document.getElementById('myRoleSeenBadge');
+  if (seenBadge) seenBadge.classList.remove('visible');
 
   // Reset card
   const face = document.getElementById('myRoleFace');
-  face.innerHTML = ''; face.style.transition = 'none';
-  face.style.setProperty('--reveal-pct','0%');
-  face.className = 'card-face';
-  document.getElementById('myRoleSlideTrack').className = 'slide-track';
-  document.getElementById('myRoleSlidePill').style.opacity = '1';
+  face.innerHTML = ''; face.className = 'card-face';
+  document.getElementById('myRoleCard')?.classList.remove('card-revealed');
+  const backSub2 = document.getElementById('myRoleBackSub');
+  if (backSub2) backSub2.textContent = 'TAP TO REVEAL';
 
   // Build content
   requestAnimationFrame(() => requestAnimationFrame(() => {
@@ -2758,19 +2807,23 @@ function showMyRole(state) {
       face.classList.add('agt-face');
       face.innerHTML = `<div class="role-emblem">${SVG_AGENT}</div><div class="role-lbl">AGENT</div><div class="secret-label">SECRET WORD</div><div class="secret-word">${myRole.reveal?.word||state.game?.word}</div><div class="agent-note">Describe it without saying it — give clues!</div>`;
     }
-    attachSlide('myRoleCard', 'myRoleFace', 'myRoleSlideTrack', 'myRoleSlidePill', onMyRoleRevealed);
+    attachTapReveal('myRoleCard', 'myRoleFace', onMyRoleRevealed, 'myRoleSeenBadge', 'myRoleBackSub');
   }));
 }
 
 function onMyRoleRevealed() {
   document.getElementById('myRoleInst').textContent = 'Remember your role — tap ready when done!';
   document.getElementById('myRoleDoneBtn').style.display = 'block';
+  if (IS_HOST) document.getElementById('rerollWordBtn').style.display = 'block';
 }
 
 async function playerReadyAfterReveal() {
   document.getElementById('myRoleDoneBtn').style.display = 'none';
+  document.getElementById('rerollWordBtn').style.display = 'none';
   document.getElementById('myRoleWaitBar').style.display = 'flex';
   await roomRef.child(`players/${ME.id}/ready`).set(true);
+  // Update chips immediately — Firebase will confirm momentarily
+  renderReadyChips(ROOM_STATE);
 
   // Host checks if all are ready → move to voting
   if (IS_HOST) {
@@ -2784,7 +2837,94 @@ async function playerReadyAfterReveal() {
   }
 }
 
+function renderReadyChips(state) {
+  const el = document.getElementById('readyChips');
+  if (!el) return;
+  const players = Object.values(state.players||{});
+  el.innerHTML = players.map(p => {
+    const isReady = !!p.ready;
+    return `<span class="vnc-chip ${isReady ? 'voted' : 'pending'}">${isReady ? '✓ ' : ''}${p.name}</span>`;
+  }).join('');
+}
+
 // Also host auto-detects when all ready via subscription
+// ══════════════ HOST: REROLL WORD ══════════════
+async function hostRerollWord() {
+  if (!IS_HOST) return;
+  const g = ROOM_STATE.game || {};
+  const s = g.settings || {};
+  const players = Object.values(ROOM_STATE.players||{});
+
+  // Pick a new word (same logic as hostStartGame)
+  const cats = ROOM_STATE.settings?.cats || Object.keys(WORDS);
+  let available = DB.availableWords(cats);
+  // Exclude the current word so we never reroll to the same word
+  available = available.filter(p => p.word !== g.word);
+  if (available.length === 0) {
+    // All words used — clear cache and retry (excluding current word)
+    const usedCache = DB.loadWordCache();
+    cats.forEach(cat => (WORDS[cat]||[]).forEach(w => usedCache.delete(w)));
+    DB.saveWordCache(usedCache);
+    updateOfflineCachePill();
+    available = DB.availableWords(cats).filter(p => p.word !== g.word);
+  }
+  if (available.length === 0) return toast('No other words available to reroll to');
+  const pick = available[Math.floor(Math.random() * available.length)];
+  DB.addWord(pick.word);
+
+  // Regenerate hints and roles with the new word, keeping imposters the same
+  const allHints = HINTS[pick.word] || ['Related','Similar','Nearby','Connected','Close'];
+  const hintCount = s.hintCount || 1;
+  const imposterIds = new Set(g.imposterIds || []);
+  const imposterList = [...imposterIds];
+  const shuffledHints = [...allHints].sort(() => Math.random() - .5);
+  const getHintsForImposter = (idx) => {
+    const hints = [];
+    for (let i = 0; i < hintCount; i++) {
+      hints.push(shuffledHints[(idx * hintCount + i) % shuffledHints.length]);
+    }
+    return hints;
+  };
+
+  const roles = {};
+  players.forEach(p => {
+    if (imposterIds.has(p.id)) {
+      const impIdx = imposterList.indexOf(p.id);
+      const coImposters = players
+        .filter(q => imposterIds.has(q.id) && q.id !== p.id)
+        .map(q => q.name);
+      roles[p.id] = {
+        isImposter: true,
+        reveal: { type: 'imposter', hints: getHintsForImposter(impIdx), coImposters }
+      };
+    } else {
+      roles[p.id] = {
+        isImposter: false,
+        reveal: { type: 'agent', word: pick.word }
+      };
+    }
+  });
+
+  // Reset all players to not-ready so everyone re-reveals the new card
+  const playerUpdates = {};
+  players.forEach(p => { playerUpdates[`players/${p.id}/ready`] = false; });
+
+  // Step 1: set rerolling flag — all clients (including non-hosts) see this in
+  // onRoomUpdate and navigate to 'waiting', leaving myRole so the next update
+  // triggers a fresh showMyRole for everyone.
+  await roomRef.child('game/rerolling').set(true);
+
+  // Step 2: write new word + roles + clear ready flags
+  await roomRef.update({
+    ...playerUpdates,
+    'game/word': pick.word,
+    'game/cat': pick.cat,
+    'game/roles': roles,
+    'game/rerolling': null,  // clear flag atomically with the new data
+  });
+  // onRoomUpdate fires on all clients: currentScreen is now 'waiting' → showMyRole
+}
+
 async function checkAllReady(state) {
   if (!IS_HOST) return;
   const players = Object.values(state.players||{});
@@ -2807,6 +2947,27 @@ function showVoteScreen(state) {
   renderVoteScreen(state);
 }
 
+// Live update — called when already on the vote screen.
+// Only refreshes tally, wait-bar, and action panel visibility.
+// Does NOT rebuild the vote list or reset selVote.
+function liveUpdateVoteScreen(state) {
+  const g = state.game || {};
+  const eliminated = g.eliminated || [];
+  const myVote = g.votes?.[ME.id];
+  const amEliminated = eliminated.includes(ME.id);
+  const hasActed = !!myVote || amEliminated;
+  document.getElementById('votePlayerActions').style.display = hasActed ? 'none' : 'flex';
+  document.getElementById('voteWaitBar').style.display = hasActed ? 'flex' : 'none';
+  if (amEliminated) {
+    document.getElementById('voteWaitBar').innerHTML =
+      '<div class="status-dot" style="background:var(--text3)"></div><span>You were eliminated — spectating</span>';
+  } else {
+    document.getElementById('voteWaitBar').innerHTML =
+      '<div class="status-dot amber"></div><span>Vote submitted — waiting for others…</span>';
+  }
+  updateVoteTally(state);
+}
+
 function renderVoteScreen(state) {
   const g = state.game || {};
   const s = g.settings || {};
@@ -2824,18 +2985,6 @@ function renderVoteScreen(state) {
   if (voteSkipBtn) { voteSkipBtn.textContent = '⏭ SKIP MY VOTE'; voteSkipBtn.onclick = skipMyVote; voteSkipBtn.style.display = ''; }
   const offlineSkip = document.getElementById('offlineSkipBtn');
   if (offlineSkip) offlineSkip.style.display = 'none';
-
-  // Fix #18: show secret word to non-imposters; hide from imposters
-  const myRole = state.game?.roles?.[ME.id];
-  const hintEl = document.getElementById('voteWordHint');
-  if (hintEl) {
-    if (myRole && !myRole.isImposter) {
-      document.getElementById('voteWordHintVal').textContent = g.word || '';
-      hintEl.style.display = 'flex';
-    } else {
-      hintEl.style.display = 'none';
-    }
-  }
 
   // Build vote list — disconnected players shown greyed out and non-voteable
   selVote = null;
@@ -2856,10 +3005,19 @@ function renderVoteScreen(state) {
     </div>`;
   }).join('');
 
-  // Everyone sees the action panel; hide it and show wait bar once they've voted
+  // Eliminated players are spectators — they cannot vote
+  const amEliminated = eliminated.includes(ME.id);
   const myVote = g.votes?.[ME.id];
-  document.getElementById('votePlayerActions').style.display = myVote ? 'none' : 'flex';
-  document.getElementById('voteWaitBar').style.display = myVote ? 'flex' : 'none';
+  const hasActed = !!myVote || amEliminated;
+  document.getElementById('votePlayerActions').style.display = hasActed ? 'none' : 'flex';
+  document.getElementById('voteWaitBar').style.display = hasActed ? 'flex' : 'none';
+  if (amEliminated) {
+    document.getElementById('voteWaitBar').innerHTML =
+      '<div class="status-dot" style="background:var(--text3)"></div><span>You were eliminated — spectating</span>';
+  } else {
+    document.getElementById('voteWaitBar').innerHTML =
+      '<div class="status-dot amber"></div><span>Vote submitted — waiting for others…</span>';
+  }
   document.getElementById('voteTallyBar').style.display = 'block';
 
   updateVoteTally(state);
@@ -2874,13 +3032,16 @@ function renderVoteScreen(state) {
 
 async function submitMyVote() {
   if (!selVote) return toast('Select someone to vote out!');
+  const eliminated = ROOM_STATE.game?.eliminated || [];
+  if (eliminated.includes(ME.id)) return; // eliminated players cannot vote
   await roomRef.child(`game/votes/${ME.id}`).set(selVote.pid);
   document.getElementById('votePlayerActions').style.display = 'none';
   document.getElementById('voteWaitBar').style.display = 'flex';
 }
 
 async function skipMyVote() {
-  // Write sentinel so host knows this player abstained
+  const eliminated = ROOM_STATE.game?.eliminated || [];
+  if (eliminated.includes(ME.id)) return; // eliminated players cannot vote
   await roomRef.child(`game/votes/${ME.id}`).set('skip');
   document.getElementById('votePlayerActions').style.display = 'none';
   document.getElementById('voteWaitBar').style.display = 'flex';
@@ -2890,21 +3051,30 @@ function updateVoteTally(state) {
   const g = state.game || {};
   const players = Object.values(state.players||{});
   const eliminated = g.eliminated || [];
-  // Disconnected players cannot vote — exclude them from the required total
-  // so they don't block the round from completing when everyone else has voted.
   const active = players.filter(p=>!eliminated.includes(p.id));
   const votingActive = active.filter(p=>!p.disconnected);
   const votes = g.votes || {};
   const voteCount = Object.keys(votes).length;
   const total = votingActive.length;
   const allVoted = total > 0 && voteCount >= total;
+
   document.getElementById('voteTallyTxt').textContent = allVoted
     ? `All ${total} voted ✓`
     : `${voteCount} / ${total} voted`;
   document.getElementById('voteTallyTxt').style.color = allVoted ? 'var(--green)' : '';
+
   const fill = document.getElementById('voteFill');
   fill.style.width = total ? `${(voteCount/total)*100}%` : '0%';
   fill.classList.toggle('all-voted', allVoted);
+
+  // Name chips: show who has voted (green ✓) and who is still pending (grey)
+  const chipsEl = document.getElementById('voteNameChips');
+  if (chipsEl) {
+    chipsEl.innerHTML = votingActive.map(p => {
+      const hasVoted = !!votes[p.id];
+      return `<span class="vnc-chip ${hasVoted ? 'voted' : 'pending'}">${hasVoted ? '✓ ' : ''}${p.name}</span>`;
+    }).join('');
+  }
 
   // Host auto-triggers reveal when everyone has voted or skipped.
   // Guard: skip if voteResult is already written (reveal already in progress).
@@ -2950,12 +3120,14 @@ async function hostRevealVotes() {
   const tied = sorted.filter(([,c])=>c===topCount).length > 1;
 
   const revealOn = (ROOM_STATE.settings?.revealVotes !== false);
-  const breakdown = revealOn ? buildVoteBreakdown(active, votes, players) : null;
+  // Always build breakdown for tied votes so players see why no one was eliminated.
+  // For non-tied outcomes, only build if revealVotes setting is on.
+  const breakdown = (revealOn || tied || !topId) ? buildVoteBreakdown(active, votes, players) : null;
 
   let voteResult;
   if (tied || !topId) {
     voteResult = { type:'skip', title:'Tied Vote!', sub:'No one eliminated — next round…',
-      action:'advance', eliminatedId:null, breakdown: breakdown||'' };
+      action:'advance', eliminatedId:null, breakdown: breakdown||'<span></span>' };
   } else {
     const topPlayer = active.find(p=>p.id===topId);
     const isImposter = (g.imposterIds||[]).includes(topId);
@@ -2964,14 +3136,14 @@ async function hostRevealVotes() {
       const aliveImposters = (g.imposterIds||[]).filter(id=>!eliminated2.includes(id));
       if (aliveImposters.length === 0) {
         voteResult = { type:'win', title:`${topPlayer?.name} caught!`, sub:'All imposters eliminated — Agents win!',
-          action:'end', outcome:'agents_win', eliminated: eliminated2, breakdown: breakdown||'' };
+          action:'end', outcome:'agents_win', eliminated: eliminated2, breakdown: breakdown||'<span></span>' };
       } else {
         voteResult = { type:'win', title:`${topPlayer?.name} was an imposter!`, sub:'One down — keep voting!',
-          action:'advance', eliminatedId: topId, eliminated: eliminated2, breakdown: breakdown||'' };
+          action:'advance', eliminatedId: topId, eliminated: eliminated2, breakdown: breakdown||'<span></span>' };
       }
     } else {
       voteResult = { type:'lose', title:`${topPlayer?.name} was innocent`, sub:'Wrong call — the imposter is still out there.',
-        action:'advance', eliminatedId: topId, eliminated: eliminated2, breakdown: breakdown||'' };
+        action:'advance', eliminatedId: topId, eliminated: eliminated2, breakdown: breakdown||'<span></span>' };
     }
   }
 
@@ -2990,14 +3162,36 @@ async function advanceVoteRound(eliminatedId, g, players) {
   const settings = g.settings || {};
   if ((g.voteRound||1) >= (settings.rounds||3)) { await hostEndGame('imp_survived', eliminated, g, players); return; }
 
+  // Save this round's votes to history before wiping them
+  const roundEntry = {
+    round: g.voteRound || 1,
+    votes: g.votes || {},
+    eliminatedId: eliminatedId || null,
+  };
+  const existingLog = Array.isArray(g.voteLog) ? g.voteLog : (g.voteLog ? Object.values(g.voteLog) : []);
+
   // Next round — reset votes; guards reset so next round can trigger
   resetVoteGuards();
-  const updates = { 'game/voteRound': (g.voteRound||1)+1, 'game/votes': {}, 'game/eliminated': eliminated };
+  const updates = {
+    'game/voteRound': (g.voteRound||1)+1,
+    'game/votes': {},
+    'game/eliminated': eliminated,
+    'game/voteLog': [...existingLog, roundEntry],
+  };
   await roomRef.update(updates);
   // Keep status as voting — subscribers re-render
 }
 
 async function hostEndGame(outcome, eliminated, g, players) {
+  // Append final round votes to history
+  const finalEntry = {
+    round: g.voteRound || 1,
+    votes: g.votes || {},
+    eliminatedId: eliminated[eliminated.length - 1] || null,
+  };
+  const existingLog = Array.isArray(g.voteLog) ? g.voteLog : (g.voteLog ? Object.values(g.voteLog) : []);
+  const voteLog = [...existingLog, finalEntry];
+
   // Compute scores
   const scoreUpdates = {};
   players.forEach(p => {
@@ -3016,7 +3210,60 @@ async function hostEndGame(outcome, eliminated, g, players) {
     'game/outcome': outcome,
     'game/eliminated': eliminated,
     'game/voteResult': null,
+    'game/voteLog': voteLog,
   });
+}
+
+function renderVoteHistory(g, players) {
+  const section = document.getElementById('voteHistorySection');
+  const list = document.getElementById('voteHistoryList');
+  if (!section || !list) return;
+
+  const rawLog = g.voteLog;
+  if (!rawLog) { section.style.display = 'none'; return; }
+  // Firebase may return an object if the array had gaps; normalise to array
+  const log = Array.isArray(rawLog) ? rawLog : Object.values(rawLog);
+  if (!log.length) { section.style.display = 'none'; return; }
+
+  const playerMap = {};
+  players.forEach(p => { playerMap[p.id] = p; });
+
+  list.innerHTML = log.map(entry => {
+    const votes = entry.votes || {};
+    const elimId = entry.eliminatedId;
+    const elimPlayer = elimId ? playerMap[elimId] : null;
+    const isImposter = elimId ? (g.imposterIds||[]).includes(elimId) : false;
+
+    // Build per-voter rows
+    const rows = Object.entries(votes).map(([voterId, targetId]) => {
+      const voter = playerMap[voterId];
+      const target = targetId === 'skip' ? null : playerMap[targetId];
+      if (!voter) return '';
+      const targetTxt = target
+        ? `<span class="vh-target" style="color:${(g.imposterIds||[]).includes(targetId)?'var(--red2)':'var(--text)'}">${target.name}</span>`
+        : `<span class="vh-target" style="color:var(--text3);font-style:italic">skipped</span>`;
+      return `<div class="vh-row">
+        <span class="vh-voter">${voter.name}</span>
+        <span class="vh-arrow">voted</span>
+        ${targetTxt}
+      </div>`;
+    }).filter(Boolean).join('');
+
+    const elimLine = elimPlayer
+      ? `<div class="vh-elim">
+          <span style="color:${isImposter?'var(--green)':'var(--red2)'}">${isImposter?'✓':'✗'}</span>
+          <span style="color:var(--text2)">${elimPlayer.name} eliminated${isImposter?' — was the imposter':' — was innocent'}</span>
+        </div>`
+      : `<div class="vh-elim"><span style="color:var(--text3)">—</span><span style="color:var(--text3)">No elimination (tie or all skipped)</span></div>`;
+
+    return `<div class="vh-round">
+      <div class="vh-round-hdr">ROUND ${entry.round}</div>
+      ${rows || '<div class="vh-row"><span style="color:var(--text3);font-size:12px;font-style:italic">No votes recorded</span></div>'}
+      ${elimLine}
+    </div>`;
+  }).join('');
+
+  section.style.display = 'block';
 }
 
 // ══════════════ RESULT SCREEN ══════════════
@@ -3067,6 +3314,9 @@ async function showResultScreen(state) {
     await DB.recordResult(lbPlayers, outcome);
   }
 
+  // Voting history
+  renderVoteHistory(g, players);
+
   // Session scores — read from the state snapshot (scores written by hostEndGame)
   const sorted = [...players].sort((a,b)=>(b.score||0)-(a.score||0));
   document.getElementById('scoreList').innerHTML = sorted.map((p,i)=>`
@@ -3100,55 +3350,31 @@ const SVG_IMPOSTER = `<svg viewBox="0 0 52 52" fill="none"><path d="M26 6L32 18H
 
 const IS_TOUCH = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
 
-function attachSlide(cardId, faceId, trackId, pillId, onComplete) {
-  const track = document.getElementById(trackId);
-  const face  = document.getElementById(faceId);
-  const card  = document.getElementById(cardId);
-  let revealed = false;
+function attachTapReveal(cardId, faceId, onComplete, seenBadgeId, backSubId) {
+  const card = document.getElementById(cardId);
+  const face = document.getElementById(faceId);
+  const backSub = backSubId ? document.getElementById(backSubId) : null;
 
-  // Update pill label for non-touch devices
-  const pillSpan = track.querySelector('.slide-pill span:not(.slide-arrow)');
-  if (pillSpan && !IS_TOUCH) pillSpan.textContent = 'CLICK TO REVEAL';
-
-  const cardH = () => card.getBoundingClientRect().height || 420;
-  let startY = null, startPct = 0, live = false, dragMoved = false;
-
-  function pct(y) { return Math.min(100, Math.max(0, startPct + ((startY-y)/cardH())*100)); }
-  function onStart(y) { if (revealed) return; startY=y; startPct=parseFloat(face.style.getPropertyValue('--reveal-pct')||'0'); live=true; dragMoved=false; }
-  function onMove(y) {
-    if (!live||revealed) return;
-    if (Math.abs(y - startY) > 8) dragMoved = true;
-    const p = pct(y);
-    face.style.setProperty('--reveal-pct', p+'%');
-    document.getElementById(pillId).style.opacity = Math.max(0, 1-p/40)+'';
-    if (p>=80) doReveal();
-  }
-  function onEnd(y) {
-    if (!live) return; live=false; if (revealed) return;
-    // On non-touch: a click (no significant drag) immediately reveals
-    if (!IS_TOUCH && !dragMoved) { doReveal(); return; }
-    if (pct(y)<80) {
-      face.style.transition='clip-path .3s cubic-bezier(.34,1.56,.64,1)';
-      face.style.setProperty('--reveal-pct','0%');
-      document.getElementById(pillId).style.opacity='1';
-      setTimeout(()=>face.style.transition='',350);
-    } else doReveal();
-  }
   function doReveal() {
-    if (revealed) return; revealed=true;
     face.classList.add('revealed');
-    face.style.setProperty('--reveal-pct','100%');
-    document.getElementById(trackId).classList.add('done');
+    card.classList.add('card-revealed');
+    if (backSub) backSub.textContent = 'TAP TO HIDE';
     if (onComplete) onComplete();
-    document.onmousemove=null; document.onmouseup=null;
+    card.onclick = doCover;
   }
 
-  track.ontouchstart = e => onStart(e.touches[0].clientY);
-  track.ontouchmove  = e => { e.preventDefault(); onMove(e.touches[0].clientY); };
-  track.ontouchend   = e => onEnd(e.changedTouches[0].clientY);
-  track.onmousedown  = e => onStart(e.clientY);
-  document.onmousemove = e => { if (live) onMove(e.clientY); };
-  document.onmouseup   = e => { if (live) onEnd(e.clientY); };
+  function doCover() {
+    face.classList.remove('revealed');
+    card.classList.remove('card-revealed');
+    if (backSub) backSub.textContent = 'TAP TO PEEK AGAIN';
+    if (seenBadgeId) {
+      const badge = document.getElementById(seenBadgeId);
+      if (badge) badge.classList.add('visible');
+    }
+    card.onclick = doReveal;
+  }
+
+  card.onclick = doReveal;
 }
 
 // ══════════════ NAME PROMPT HELPER ══════════════
@@ -3348,7 +3574,6 @@ function offlineStartGame() {
     cats.forEach(cat => (WORDS[cat]||[]).forEach(w => usedCache.delete(w)));
     DB.saveWordCache(usedCache);
     updateOfflineCachePill();
-    updateOfflineCachePill();
     available = DB.availableWords(cats);
   }
 
@@ -3435,10 +3660,10 @@ function offlineRenderReveal() {
   const face = document.getElementById('cardFace');
   face.innerHTML = '';
   face.style.transition = 'none';
-  face.style.setProperty('--reveal-pct','0%');
   face.className = 'card-face';
-  document.getElementById('slideTrack').className = 'slide-track';
-  document.getElementById('slidePill').style.opacity = '1';
+  document.getElementById('roleCard')?.classList.remove('card-revealed');
+  const ob = document.getElementById('offlineBackSub'); if(ob) ob.textContent='TAP TO REVEAL';
+  document.getElementById('offlineSeenBadge')?.classList.remove('visible');
   document.getElementById('rvNextBtn').style.display = 'none';
   OL.cardShown = false;
 
@@ -3468,7 +3693,7 @@ function offlineRenderReveal() {
       face.classList.add('agt-face');
       face.innerHTML = `<div class="role-emblem">${SVG_AGENT}</div><div class="role-lbl">AGENT</div><div class="secret-label">SECRET WORD</div><div class="secret-word">${OL.word}</div><div class="agent-note">Describe it without saying it — give clues!</div>`;
     }
-    attachSlide('roleCard','cardFace','slideTrack','slidePill', offlineOnRevealed);
+    attachTapReveal('roleCard', 'cardFace', offlineOnRevealed, 'offlineSeenBadge', 'offlineBackSub');
   }));
 }
 
@@ -3484,7 +3709,6 @@ function nextReveal() {
   // Used by BOTH offline and online (online passes through to showVote)
   const face = document.getElementById('cardFace');
   face.style.transition = 'none';
-  face.style.setProperty('--reveal-pct','0%');
   face.innerHTML = '';
   face.className = 'card-face';
   document.onmousemove = null;
@@ -3512,9 +3736,7 @@ function offlineShowVote() {
     `VOTE ROUND ${OL.voteRound} OF ${OL.settings.rounds} · WHO IS THE IMPOSTER?`;
   document.getElementById('voteTallyBar').style.display = 'none';
 
-  // Hide secret word during voting — imposters must not see it; word is revealed on the result screen
-  const hintEl = document.getElementById('voteWordHint');
-  if (hintEl) hintEl.style.display = 'none';
+
 
   // Offline: show single-vote UI
   document.getElementById('votePlayerActions').style.display = 'flex';
@@ -3564,6 +3786,10 @@ function offlineSubmitVote() {
   const voted = active.find(p=>p.id===olSelVote.pid);
   if (!voted) return;
 
+  // Record this round in the vote log (offline is majority-vote by show of hands,
+  // so we just record who was chosen, not individual votes)
+  OL.voteLog.push({ round: OL.voteRound, votes: {}, eliminatedId: voted.id, chosenName: voted.name });
+
   OL.eliminated.push(voted.id);
   const isImposter = voted.isImposter;
   const reveal = olS.revealVotes !== false;
@@ -3590,7 +3816,36 @@ function offlineSubmitVote() {
   }
 }
 
+function renderOfflineVoteHistory() {
+  const section = document.getElementById('voteHistorySection');
+  const list = document.getElementById('voteHistoryList');
+  if (!section || !list) return;
+  const log = OL.voteLog || [];
+  if (!log.length) { section.style.display = 'none'; return; }
+
+  const imposterIds = OL.players.filter(p=>p.isImposter).map(p=>p.id);
+
+  list.innerHTML = log.map(entry => {
+    const elimId = entry.eliminatedId;
+    const elimPlayer = elimId ? OL.players.find(p=>p.id===elimId) : null;
+    const isImposter = elimId ? imposterIds.includes(elimId) : false;
+    const elimLine = elimPlayer
+      ? `<div class="vh-elim">
+          <span style="color:${isImposter?'var(--green)':'var(--red2)'}">${isImposter?'✓':'✗'}</span>
+          <span style="color:var(--text2)">${elimPlayer.name} eliminated${isImposter?' — was the imposter':' — was innocent'}</span>
+        </div>`
+      : `<div class="vh-elim"><span style="color:var(--text3)">—</span><span style="color:var(--text3)">Round skipped — no elimination</span></div>`;
+    return `<div class="vh-round">
+      <div class="vh-round-hdr">ROUND ${entry.round}</div>
+      ${elimLine}
+    </div>`;
+  }).join('');
+
+  section.style.display = 'block';
+}
+
 function offlineSkipVote() {
+  OL.voteLog.push({ round: OL.voteRound, votes: {}, eliminatedId: null });
   showVoteResultOverlay('skip','Round Skipped','No one eliminated this round.',()=>offlineAdvanceRound());
 }
 
@@ -3611,36 +3866,60 @@ function offlineAdvanceRound() {
 
 // ── Vote Result Overlay (animated reveal between rounds) ──
 function buildVoteBreakdown(active, votes, players) {
-  if (!votes || Object.keys(votes).length === 0) return null;
   const playerMap = {};
   players.forEach(p => { playerMap[p.id] = p; });
+  const safeVotes = votes || {};
 
-  // Group voter names under each candidate (Among Us style)
+  // Who voted and who didn't (skipped or abstained count as voted for tally but not for a target)
+  const votedIds = new Set(Object.keys(safeVotes));
+  const didntVote = active.filter(p => !votedIds.has(p.id));
+
+  // Group real votes (non-skip) under each candidate
   const grouped = {};
   active.forEach(p => { grouped[p.id] = []; });
-  Object.entries(votes).forEach(([voterId, targetId]) => {
-    if (grouped[targetId] !== undefined) grouped[targetId].push(voterId);
+  Object.entries(safeVotes).forEach(([voterId, targetId]) => {
+    if (targetId !== 'skip' && grouped[targetId] !== undefined) grouped[targetId].push(voterId);
   });
 
-  const rows = Object.entries(grouped)
+  // Skipped voters
+  const skippedIds = Object.entries(safeVotes)
+    .filter(([, t]) => t === 'skip')
+    .map(([vid]) => vid);
+
+  const chip = (name, alpha = '.09') =>
+    `<span style="background:rgba(255,255,255,${alpha});border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:3px 9px;font-size:11px;font-weight:600;color:var(--text2);white-space:nowrap">${name}</span>`;
+
+  const candidateRows = Object.entries(grouped)
     .sort(([,a],[,b]) => b.length - a.length)
     .map(([targetId, voterIds]) => {
       const target = playerMap[targetId];
       if (!target) return '';
       const count = voterIds.length;
-      const chips = voterIds.map(vid => {
-        const v = playerMap[vid];
-        return v ? `<span style="background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:3px 9px;font-size:11px;font-weight:600;color:var(--text2);white-space:nowrap">${v.name}</span>` : '';
-      }).join('');
+      const chips = voterIds.map(vid => playerMap[vid] ? chip(playerMap[vid].name) : '').join('');
       const countColor = count >= 2 ? 'var(--red2)' : count === 1 ? 'var(--gold)' : 'var(--text3)';
-      return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06)">
+      return `<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.06)">
         <span style="font-size:13px;font-weight:700;color:var(--text);min-width:72px;flex-shrink:0">${target.name}</span>
         <div style="display:flex;flex-wrap:wrap;gap:4px;flex:1">${count ? chips : '<span style="color:var(--text3);font-size:11px;font-style:italic">no votes</span>'}</div>
         <span style="font-family:var(--ff-mono);font-size:15px;font-weight:800;color:${countColor};flex-shrink:0">${count}</span>
       </div>`;
     }).filter(Boolean).join('');
 
-  return `<div style="font-family:var(--ff-mono);font-size:9px;letter-spacing:2px;color:var(--text3);font-weight:700;margin-bottom:8px">VOTE BREAKDOWN</div>${rows}`;
+  const skipRow = skippedIds.length ? `
+    <div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.06)">
+      <span style="font-size:12px;font-weight:700;color:var(--text3);min-width:72px;flex-shrink:0">Skipped</span>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;flex:1">${skippedIds.map(vid => playerMap[vid] ? chip(playerMap[vid].name) : '').join('')}</div>
+      <span style="font-family:var(--ff-mono);font-size:15px;font-weight:800;color:var(--text3);flex-shrink:0">${skippedIds.length}</span>
+    </div>` : '';
+
+  const noVoteRow = didntVote.length ? `
+    <div style="display:flex;align-items:center;gap:10px;padding:7px 0">
+      <span style="font-size:12px;font-weight:700;color:var(--text3);min-width:72px;flex-shrink:0">No vote</span>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;flex:1">${didntVote.map(p => chip(p.name, '.06')).join('')}</div>
+      <span style="font-family:var(--ff-mono);font-size:15px;font-weight:800;color:var(--text3);flex-shrink:0">${didntVote.length}</span>
+    </div>` : '';
+
+  if (!candidateRows && !skipRow && !noVoteRow) return null;
+  return `<div style="font-family:var(--ff-mono);font-size:9px;letter-spacing:2px;color:var(--text3);font-weight:700;margin-bottom:8px">VOTE BREAKDOWN</div>${candidateRows}${skipRow}${noVoteRow}`;
 }
 
 // ── Online vote result overlay: driven by Firebase game/voteResult ──
@@ -3697,8 +3976,9 @@ function _renderVoteOverlayContent(type, title, sub, breakdownHtml) {
   document.getElementById('vroTitle').style.color = type==='win' ? 'var(--green)' : type==='lose' ? 'var(--red2)' : 'var(--gold)';
   document.getElementById('vroSub').textContent = sub;
   const vl = document.getElementById('vroVoteList');
-  if (breakdownHtml) { vl.innerHTML = breakdownHtml; vl.style.display = 'block'; }
-  else { vl.style.display = 'none'; }
+  const hasBreakdown = breakdownHtml && breakdownHtml.length > 0 && breakdownHtml !== '<span></span>';
+  if (hasBreakdown) { vl.innerHTML = breakdownHtml; vl.style.display = 'block'; }
+  else { vl.innerHTML = ''; vl.style.display = 'none'; }
 }
 
 function closeVoteResultOverlay() {
@@ -3742,6 +4022,9 @@ async function offlineShowResult(outcome) {
 
   document.getElementById('resImpName').textContent = `🕵️ Imposter: ${imposters}`;
   document.getElementById('resWord').textContent = OL.word;
+
+  // Voting history (offline uses chosenName since individual votes aren't tracked)
+  renderOfflineVoteHistory();
 
   const sorted = [...OL.players].sort((a,b)=>b.score-a.score);
   document.getElementById('scoreList').innerHTML = sorted.map((p,i)=>`
@@ -3951,6 +4234,7 @@ async function tryAutoRejoin() {
 
   try {
     await initFirebase();
+    await DB.syncWordCache();
     const snap = await rtdb.ref(`rooms/${room}`).get();
     if (!snap.exists()) {
       clearSession();
