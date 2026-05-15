@@ -10,6 +10,8 @@
 <meta name="apple-mobile-web-app-title" content="Codename">
 <title>Codename</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icons/icon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -206,6 +208,31 @@ body::before{
 @keyframes revealSlide{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
 @keyframes cardReveal{from{transform:scale(.94) translateY(12px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
 @keyframes shimmer{from{background-position:200% center}to{background-position:-200% center}}
+@keyframes springPop{0%{transform:scale(1)}35%{transform:scale(1.18)}65%{transform:scale(.94)}85%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes shakeX{0%,100%{transform:translateX(0)}18%{transform:translateX(-8px)}36%{transform:translateX(8px)}54%{transform:translateX(-5px)}72%{transform:translateX(5px)}90%{transform:translateX(-2px)}}
+@keyframes slideInUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes popIn{from{opacity:0;transform:scale(.6)}60%{transform:scale(1.12)}to{opacity:1;transform:scale(1)}}
+@keyframes ripple{0%{transform:scale(0);opacity:.5}100%{transform:scale(5);opacity:0}}
+@keyframes checkPop{0%{transform:scale(0) rotate(-20deg)}60%{transform:scale(1.3) rotate(5deg)}100%{transform:scale(1) rotate(0)}}
+@keyframes badgePulse{0%{transform:scale(1)}50%{transform:scale(1.4)}100%{transform:scale(1)}}
+@keyframes scoreRowIn{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes wordReveal{0%{letter-spacing:6px;opacity:0}100%{letter-spacing:normal;opacity:1}}
+@keyframes iconBounce{0%,100%{transform:translateY(0) scale(1)}30%{transform:translateY(-18px) scale(1.15)}60%{transform:translateY(-6px) scale(.97)}}
+@keyframes chatSlideIn{from{opacity:0;transform:translateX(20px) scale(.95)}to{opacity:1;transform:translateX(0) scale(1)}}
+@keyframes tallyGlow{0%,100%{box-shadow:none}50%{box-shadow:0 0 12px rgba(16,217,160,.35)}}
+@keyframes elimFade{0%{opacity:1;transform:scale(1)}60%{transform:scale(1.04)}100%{opacity:.35;transform:scale(.96)}}
+@keyframes pulseGreen{0%,100%{box-shadow:0 0 0 0 rgba(16,217,160,0)}50%{box-shadow:0 0 0 10px rgba(16,217,160,.15)}}
+@keyframes logoEntrance{0%{opacity:0;transform:scale(.7) translateY(20px)}60%{transform:scale(1.04) translateY(-4px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes wordmarkEntrance{0%{opacity:0;transform:translateY(14px) scale(.95)}100%{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes taglineEntrance{0%{opacity:0;transform:translateY(8px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes heroEntrance{0%{opacity:0;transform:scale(.88) translateY(16px)}70%{transform:scale(1.03) translateY(-3px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes logoPulse{0%,100%{filter:drop-shadow(0 0 6px rgba(232,54,74,.3))}50%{filter:drop-shadow(0 0 20px rgba(232,54,74,.6))}}
+@keyframes cardFlip{0%{transform:perspective(700px) rotateY(-40deg) scale(.9);opacity:.5}60%{transform:perspective(700px) rotateY(5deg) scale(1.02)}100%{transform:perspective(700px) rotateY(0) scale(1);opacity:1}}
+@keyframes cardHide{0%{transform:scale(1) translateY(0);opacity:1}40%{transform:scale(1.04) translateY(-6px)}100%{transform:scale(.93) translateY(10px);opacity:0}}
+@keyframes gameStartFlash{0%,100%{opacity:0}30%{opacity:.22}}
+@keyframes imposterReveal{0%{opacity:0;transform:scale(.5) rotate(-15deg)}55%{transform:scale(1.12) rotate(3deg)}80%{transform:scale(.97) rotate(-1deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
+@keyframes agentReveal{0%{opacity:0;transform:translateY(20px) scale(.9)}60%{transform:translateY(-4px) scale(1.03)}100%{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes seenBadgeIn{0%{opacity:0;transform:translate(-50%,8px) scale(.6)}65%{transform:translate(-50%,-3px) scale(1.1)}100%{opacity:1;transform:translate(-50%,0) scale(1)}}
 
 .scanline{
   position:fixed;left:0;right:0;height:1.5px;
@@ -312,6 +339,11 @@ input[type=text]::placeholder{color:var(--text3);font-weight:400}
 
 /* Logo — custom SVG-based wordmark */
 .logo-wrap{text-align:center;margin-bottom:6px;padding:4px 0}
+.logo-emblem{animation:logoEntrance .75s cubic-bezier(.22,1,.36,1) both, logoPulse 3.5s ease-in-out 1s infinite}
+.logo-wordmark{animation:wordmarkEntrance .55s cubic-bezier(.22,1,.36,1) .18s both}
+.logo-tagline{animation:taglineEntrance .4s cubic-bezier(.22,1,.36,1) .32s both}
+.btn-hero:nth-of-type(1){animation:heroEntrance .5s cubic-bezier(.22,1,.36,1) .42s both}
+.btn-hero:nth-of-type(2){animation:heroEntrance .5s cubic-bezier(.22,1,.36,1) .52s both}
 .logo-emblem{
   width:90px;height:90px;margin:0 auto 16px;
   position:relative;
@@ -415,6 +447,7 @@ input[type=text]::placeholder{color:var(--text3);font-weight:400}
 }
 .card-face.revealed{
   opacity:1 !important;transform:scale(1) !important;
+  animation:cardFlip .42s cubic-bezier(.22,1,.36,1);
 }
 .card-face.imp-face{
   background:linear-gradient(160deg,#220608 0%,#130308 60%,#0a0203 100%);
@@ -1121,10 +1154,56 @@ input[type=text]::placeholder{color:var(--text3);font-weight:400}
   letter-spacing:.2px;
 }
 .toast.show{transform:translateX(-50%) translateY(0)}
+
+/* ══ CHAT ══ */
+#chatBtn{display:none;position:fixed;bottom:88px;right:16px;z-index:140;width:52px;height:52px;border-radius:50%;background:var(--surf2);border:1.5px solid var(--brd2);box-shadow:0 4px 20px rgba(0,0,0,.4);cursor:pointer;font-size:22px;align-items:center;justify-content:center;transition:transform .15s,background .15s;-webkit-tap-highlight-color:transparent}
+#chatBtn:active{transform:scale(.92)}
+#chatBtn.visible{display:flex}
+#chatBadge{display:none;position:absolute;top:0;right:0;width:16px;height:16px;border-radius:50%;background:var(--red);border:2px solid var(--bg);font-family:var(--ff-mono);font-size:8px;font-weight:800;color:#fff;align-items:center;justify-content:center}
+#chatBadge.visible{display:flex;animation:badgePulse .45s ease}
+#chatPanel{display:none;position:fixed;bottom:0;left:0;right:0;z-index:140;background:var(--surf);border-top:1.5px solid var(--brd2);border-radius:20px 20px 0 0;flex-direction:column;max-height:60dvh;box-shadow:0 -8px 32px rgba(0,0,0,.35);transform:translateY(100%);transition:transform .3s cubic-bezier(.22,1,.36,1)}
+#chatPanel.open{display:flex;transform:translateY(0)}
+.chat-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;border-bottom:1px solid var(--brd);font-family:var(--ff-mono);font-size:11px;font-weight:700;letter-spacing:1.5px;color:var(--text2);flex-shrink:0}
+.chat-close{width:28px;height:28px;border-radius:50%;background:var(--surf2);border:1px solid var(--brd);cursor:pointer;font-size:14px;color:var(--text2);display:flex;align-items:center;justify-content:center}
+.chat-msgs{flex:1;overflow-y:auto;padding:10px 14px;display:flex;flex-direction:column;gap:8px;scroll-behavior:smooth}
+.chat-msg{display:flex;gap:8px;align-items:flex-start;animation:chatSlideIn .28s cubic-bezier(.22,1,.36,1)}
+.chat-avatar{font-size:20px;flex-shrink:0;line-height:1.3}
+.chat-bubble{background:var(--surf2);border:1px solid var(--brd);border-radius:0 12px 12px 12px;padding:6px 10px;max-width:75%}
+.chat-bubble.mine{background:rgba(16,217,160,.1);border-color:rgba(16,217,160,.25);border-radius:12px 0 12px 12px}
+.chat-msg.mine{flex-direction:row-reverse}
+.chat-name{font-family:var(--ff-mono);font-size:9px;font-weight:700;letter-spacing:.5px;color:var(--text3);margin-bottom:2px}
+.chat-text{font-size:13px;font-weight:500;color:var(--text);word-break:break-word;line-height:1.4}
+.chat-ftr{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--brd);flex-shrink:0;padding-bottom:max(10px,env(safe-area-inset-bottom))}
+.chat-ftr.readonly{justify-content:center;font-family:var(--ff-mono);font-size:10px;letter-spacing:1px;color:var(--text3);font-weight:600}
+#chatInput{flex:1;background:var(--surf2);border:1.5px solid var(--brd);border-radius:20px;padding:8px 14px;font-family:var(--ff-body);font-size:14px;color:var(--text);outline:none}
+#chatInput:focus{border-color:var(--cyan)}
+#chatSendBtn{width:38px;height:38px;border-radius:50%;flex-shrink:0;background:var(--cyan);border:none;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:transform .12s}
+#chatSendBtn:active{transform:scale(.88)}
+.chat-empty{text-align:center;font-family:var(--ff-mono);font-size:10px;letter-spacing:1px;color:var(--text3);padding:20px 0}
+
+.card-seen-badge{
+  position:absolute;bottom:14px;left:50%;transform:translate(-50%,0);
+  font-family:var(--ff-mono);font-size:10px;font-weight:700;letter-spacing:2px;
+  color:var(--green);background:rgba(16,217,160,.1);border:1px solid rgba(16,217,160,.3);
+  border-radius:20px;padding:4px 12px;pointer-events:none;opacity:0;transition:opacity .3s;
+}
+.card-seen-badge.visible{opacity:1;animation:seenBadgeIn .45s cubic-bezier(.22,1,.36,1)}
+
+/* ══ GAME START FLASH ══ */
+#gameStartFlash{display:none;position:fixed;inset:0;z-index:500;background:#fff;pointer-events:none}
+#gameStartFlash.active{display:block;animation:gameStartFlash .65s ease-out forwards}
+
+/* ══ ANIMATION HELPERS ══ */
+.anim-pop{animation:springPop .38s cubic-bezier(.34,1.56,.64,1)!important}
+.anim-shake{animation:shakeX .45s ease!important}
+.vcard.selecting{animation:springPop .38s cubic-bezier(.34,1.56,.64,1)}
+.score-row{animation:scoreRowIn .4s ease both}
+
 </style>
 </head>
 <body>
 <div class="scanline"></div>
+<div id="gameStartFlash"></div>
 <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark mode">🌙</button>
 <button class="leave-game-btn" id="leaveGameBtn" onclick="confirmLeaveGame()">← Leave</button>
 
@@ -1309,7 +1388,7 @@ input[type=text]::placeholder{color:var(--text3);font-weight:400}
   <div class="card-box">
     <div class="lbl">Settings</div>
     <div class="srow">
-      <span class="slabel">🦹 Imposters</span>
+      <span class="slabel">🧛🏻 Imposters</span>
       <div class="stepper">
         <button class="stepbtn" onclick="offlineAdj('imp',-1)">−</button>
         <span class="sval" id="offlineImpVal">1</span>
@@ -1412,6 +1491,25 @@ input[type=text]::placeholder{color:var(--text3);font-weight:400}
   </div>
 </div>
 
+
+<!-- ═══════════════ CHAT ═══════════════ -->
+<button id="chatBtn" onclick="toggleChat()" aria-label="Chat">
+  💬
+  <div id="chatBadge"></div>
+</button>
+<div id="chatPanel">
+  <div class="chat-hdr">
+    <span>DISCUSSION</span>
+    <div class="chat-close" onclick="toggleChat()">✕</div>
+  </div>
+  <div class="chat-msgs" id="chatMsgs">
+    <div class="chat-empty" id="chatEmpty">No messages yet — start the discussion!</div>
+  </div>
+  <div class="chat-ftr" id="chatFtr">
+    <input id="chatInput" placeholder="Message…" maxlength="200" autocomplete="off" autocorrect="off" spellcheck="false">
+    <button id="chatSendBtn" onclick="sendChat()">➤</button>
+  </div>
+</div>
 
 <!-- ═══════════════ RESULT ═══════════════ -->
 <div class="screen" id="result">
@@ -1518,7 +1616,7 @@ input[type=text]::placeholder{color:var(--text3);font-weight:400}
   <div class="card-box lobby-settings" id="lobbySettings">
     <div class="lbl">Settings <span style="color:var(--gold);font-size:9px">HOST ONLY</span></div>
     <div class="srow">
-      <span class="slabel">🦹 Imposters</span>
+      <span class="slabel">🧛🏻 Imposters</span>
       <div class="stepper">
         <button class="stepbtn" onclick="adjRoom('imp',-1)">−</button>
         <span class="sval" id="rImpVal">1</span>
@@ -2098,6 +2196,324 @@ let listeners = [];    // cleanup handles
 let selCats = new Set();
 let selVote = null;
 
+// ══════════════ SOUND ENGINE ══════════════
+const SFX = (() => {
+  let ctx = null;
+  let masterGain = null;
+  let compressor = null;
+  let reverbNode = null;
+
+  function prime() {
+    if (ctx) { if (ctx.state === 'suspended') ctx.resume(); return; }
+    ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if (ctx.state === 'suspended') ctx.resume();
+
+    // Master chain: compressor → master gain → output
+    compressor = ctx.createDynamicsCompressor();
+    compressor.threshold.value = -18;
+    compressor.knee.value = 10;
+    compressor.ratio.value = 4;
+    compressor.attack.value = 0.003;
+    compressor.release.value = 0.15;
+
+    masterGain = ctx.createGain();
+    masterGain.gain.value = 0.82;
+
+    compressor.connect(masterGain);
+    masterGain.connect(ctx.destination);
+
+    // Synthesised reverb — short plate-style impulse, no external files
+    try {
+      const sr = ctx.sampleRate, len = sr * 1.2, decay = 1.8;
+      const imp = ctx.createBuffer(2, len, sr);
+      for (let ch = 0; ch < 2; ch++) {
+        const d = imp.getChannelData(ch);
+        for (let i = 0; i < len; i++) d[i] = (Math.random()*2-1) * Math.pow(1 - i/len, decay);
+      }
+      reverbNode = ctx.createConvolver();
+      reverbNode.buffer = imp;
+      const rvg = ctx.createGain(); rvg.gain.value = 0.14;
+      reverbNode.connect(rvg); rvg.connect(masterGain);
+    } catch {}
+  }
+
+  ['touchstart','mousedown','keydown'].forEach(e =>
+    document.addEventListener(e, prime, {once:false,passive:true})
+  );
+
+  const C = () => { if (!ctx) prime(); if (ctx.state==='suspended') ctx.resume(); return ctx; };
+
+  // Route signal to both dry mix and reverb
+  function out(node) {
+    node.connect(compressor);
+    if (reverbNode) node.connect(reverbNode);
+  }
+
+  // ADSR gain envelope
+  function adsr(g, t, atk, dcy, sus, rel, peak=0.9) {
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.linearRampToValueAtTime(peak, t + atk);
+    g.gain.linearRampToValueAtTime(sus * peak, t + atk + dcy);
+    g.gain.setValueAtTime(sus * peak, t + atk + dcy);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + atk + dcy + rel);
+  }
+
+  // Rich sine tone — two detuned oscillators for warmth
+  function sine(freq, vol, atk, dcy, sus, rel, detune=3) {
+    try {
+      const c = C(), t = c.currentTime;
+      const g = c.createGain();
+      [0, detune, -detune/2].forEach((dt, i) => {
+        const o = c.createOscillator();
+        const og = c.createGain();
+        o.type = 'sine'; o.frequency.value = freq; o.detune.value = dt;
+        og.gain.value = i === 0 ? 0.7 : 0.15;
+        o.connect(og); og.connect(g);
+        o.start(t); o.stop(t + atk + dcy + rel + 0.05);
+      });
+      adsr(g, t, atk, dcy, sus, rel, vol);
+      out(g);
+    } catch {}
+  }
+
+  // Percussive click — tuned noise burst through resonant filter
+  function click(freq, vol, dur) {
+    try {
+      const c = C(), t = c.currentTime;
+      const buf = c.createBuffer(1, Math.ceil(c.sampleRate * dur), c.sampleRate);
+      const d = buf.getChannelData(0);
+      for (let i = 0; i < d.length; i++) d[i] = Math.random()*2-1;
+      const src = c.createBufferSource();
+      src.buffer = buf;
+      const filter = c.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.setValueAtTime(freq * 2.5, t);
+      filter.frequency.exponentialRampToValueAtTime(freq * 0.6, t + dur);
+      filter.Q.value = 8;
+      const g = c.createGain();
+      g.gain.setValueAtTime(vol, t);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      src.connect(filter); filter.connect(g); g.connect(compressor);
+      src.start(t); src.stop(t + dur + 0.01);
+    } catch {}
+  }
+
+  // Pitched sweep — frequency glides from f1 to f2
+  function sweep(f1, f2, vol, atk, dcy, sus, rel) {
+    try {
+      const c = C(), t = c.currentTime;
+      const o = c.createOscillator(), g = c.createGain();
+      o.type = 'sine';
+      o.frequency.setValueAtTime(f1, t);
+      o.frequency.exponentialRampToValueAtTime(f2, t + atk + dcy);
+      adsr(g, t, atk, dcy, sus, rel, vol);
+      o.connect(g); out(g);
+      o.start(t); o.stop(t + atk + dcy + rel + 0.05);
+    } catch {}
+  }
+
+  // Bell / marimba partial stack — natural instrument character
+  function bell(freq, vol, decay) {
+    try {
+      const c = C(), t = c.currentTime;
+      const partials = [[1,1],[2.76,0.5],[5.4,0.25],[8.93,0.12]];
+      partials.forEach(([ratio, amp]) => {
+        const o = c.createOscillator(), g = c.createGain();
+        o.type = 'sine'; o.frequency.value = freq * ratio;
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.linearRampToValueAtTime(vol * amp, t + 0.004);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + decay * (1/ratio + 0.3));
+        o.connect(g); out(g);
+        o.start(t); o.stop(t + decay + 0.1);
+      });
+    } catch {}
+  }
+
+  // Sub bass thump — low sine with fast attack, felt more than heard
+  function thump(freq, vol, dur) {
+    try {
+      const c = C(), t = c.currentTime;
+      const o = c.createOscillator(), g = c.createGain();
+      o.type = 'sine'; o.frequency.setValueAtTime(freq * 2, t);
+      o.frequency.exponentialRampToValueAtTime(freq, t + 0.04);
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.linearRampToValueAtTime(vol, t + 0.008);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(g); g.connect(compressor);
+      o.start(t); o.stop(t + dur + 0.01);
+    } catch {}
+  }
+
+  return {
+
+    // ── Card reveal: whoosh — rising sweep with airy tail ──
+    cardReveal() {
+      sweep(280, 560, 0.055, 0.01, 0.06, 0.4, 0.28);
+      sine(880, 0.04, 0.012, 0.05, 0.3, 0.22);
+    },
+
+    // ── Imposter reveal: dark, tense — sub thump + minor chord ──
+    imposterReveal() {
+      thump(55, 0.22, 0.55);
+      setTimeout(() => {
+        sine(220, 0.07, 0.01, 0.08, 0.3, 0.45); // root
+        sine(261, 0.05, 0.02, 0.08, 0.3, 0.40); // minor third
+        sine(329, 0.04, 0.03, 0.08, 0.25, 0.35); // fifth
+      }, 50);
+      setTimeout(() => sweep(110, 70, 0.06, 0.02, 0.1, 0.2, 0.5), 180);
+    },
+
+    // ── Agent reveal: bright, confident — major chord bell strike ──
+    agentReveal() {
+      bell(523, 0.10, 0.9);  // C5
+      setTimeout(() => bell(659, 0.08, 0.8), 55);  // E5
+      setTimeout(() => bell(784, 0.07, 0.7), 110); // G5
+      setTimeout(() => bell(1047, 0.06, 0.6), 165); // C6
+    },
+
+    // ── Vote select: crisp UI tap — high-freq click + soft sine ──
+    voteSelect() {
+      click(1200, 0.12, 0.04);
+      sine(600, 0.035, 0.003, 0.02, 0.1, 0.08);
+    },
+
+    // ── Vote confirm: satisfying — thump + ascending resolve ──
+    voteConfirm() {
+      thump(80, 0.18, 0.25);
+      setTimeout(() => sine(440, 0.07, 0.008, 0.06, 0.4, 0.3), 30);
+      setTimeout(() => bell(660, 0.08, 0.55), 90);
+    },
+
+    // ── Vote skip: neutral swipe — descending airy sweep ──
+    voteSkip() {
+      sweep(600, 360, 0.045, 0.008, 0.05, 0.15, 0.28);
+      sine(360, 0.03, 0.01, 0.04, 0.2, 0.18);
+    },
+
+    // ── All voted: completion chime — warm bell triad ──
+    allVoted() {
+      [523, 659, 784, 1047].forEach((f, i) =>
+        setTimeout(() => bell(f, 0.09 - i*0.01, 0.7 - i*0.05), i * 75)
+      );
+    },
+
+    // ── Ready: positive tick — bright double bell ──
+    ready() {
+      bell(880, 0.07, 0.35);
+      setTimeout(() => bell(1100, 0.06, 0.28), 55);
+    },
+
+    // ── Win: triumphant — layered bell fanfare ──
+    win() {
+      thump(65, 0.15, 0.3);
+      [[523,0],[659,80],[784,160],[1047,240],[1319,340]].forEach(([f,d]) =>
+        setTimeout(() => bell(f, 0.11, 0.8), d)
+      );
+    },
+
+    // ── Lose: moody — descending minor bells, low rumble ──
+    lose() {
+      thump(45, 0.14, 0.5);
+      [[392,0],[349,90],[311,180],[261,280]].forEach(([f,d]) =>
+        setTimeout(() => { sine(f, 0.06, 0.01, 0.05, 0.3, 0.5); }, d)
+      );
+      setTimeout(() => sweep(200, 80, 0.05, 0.02, 0.08, 0.1, 0.6), 300);
+    },
+
+    // ── Tie: suspended — unresolved chord cluster ──
+    tie() {
+      sine(440, 0.055, 0.01, 0.06, 0.5, 0.4);
+      sine(466, 0.04,  0.01, 0.06, 0.5, 0.4);  // slightly sharp — tension
+      sine(554, 0.035, 0.02, 0.06, 0.4, 0.35);
+    },
+
+    // ── Eliminated: descending — wobbly pitch fall ──
+    eliminated() {
+      thump(70, 0.12, 0.35);
+      setTimeout(() => sweep(440, 180, 0.07, 0.02, 0.12, 0.15, 0.65), 40);
+      setTimeout(() => sine(180, 0.05, 0.01, 0.05, 0.3, 0.5), 150);
+    },
+
+    // ── Chat ping: gentle — soft high bell, Apple-inspired ──
+    chatPing() {
+      bell(1397, 0.055, 0.4);
+      setTimeout(() => bell(1047, 0.035, 0.3), 40);
+    },
+
+    // ── Player join: welcoming pop — quick ascending pair ──
+    playerJoin() {
+      bell(523, 0.065, 0.3);
+      setTimeout(() => bell(784, 0.055, 0.25), 70);
+    },
+
+    // ── Room created: confident — two-note resolution ──
+    roomCreated() {
+      bell(523, 0.08, 0.45);
+      setTimeout(() => bell(784, 0.09, 0.5), 120);
+      setTimeout(() => bell(1047, 0.07, 0.4), 220);
+    },
+
+    // ── Error: gentle bump — low soft double pulse ──
+    error() {
+      sine(200, 0.055, 0.005, 0.03, 0.2, 0.18, 4);
+      setTimeout(() => sine(180, 0.04, 0.005, 0.03, 0.1, 0.15, 4), 100);
+    },
+
+    // ── Game start: cinematic sweep — builds from silence to punch ──
+    gameStart() {
+      // Rising tonal sweep
+      sweep(110, 880, 0.08, 0.35, 0.2, 0.5, 0.18);
+      // Sub impact at the peak
+      setTimeout(() => thump(55, 0.22, 0.4), 380);
+      // Bell chord bloom
+      setTimeout(() => {
+        [[523,0],[659,60],[784,120],[1047,200]].forEach(([f,d]) =>
+          setTimeout(() => bell(f, 0.1, 0.7), d)
+        );
+      }, 400);
+    },
+
+    // ── Countdown: clean tick — crisp and modern ──
+    countdown() {
+      click(1800, 0.09, 0.03);
+      sine(880, 0.04, 0.003, 0.015, 0.1, 0.06);
+    },
+  };
+})();
+
+// ══════════════ ANIMATION HELPERS ══════════════
+function animPop(el) {
+  if (!el) return;
+  el.classList.remove('anim-pop');
+  void el.offsetWidth; // reflow
+  el.classList.add('anim-pop');
+  el.addEventListener('animationend', () => el.classList.remove('anim-pop'), { once: true });
+}
+
+function animShake(el) {
+  if (!el) return;
+  el.classList.remove('anim-shake');
+  void el.offsetWidth;
+  el.classList.add('anim-shake');
+  el.addEventListener('animationend', () => el.classList.remove('anim-shake'), { once: true });
+}
+
+function staggerIn(selector, delayMs = 60) {
+  document.querySelectorAll(selector).forEach((el, i) => {
+    el.style.animationDelay = `${i * delayMs}ms`;
+  });
+}
+
+function ripple(btn) {
+  const r = document.createElement('span');
+  r.style.cssText = `position:absolute;border-radius:50%;background:rgba(255,255,255,.25);
+    width:10px;height:10px;top:50%;left:50%;transform-origin:center;
+    animation:ripple .5s ease-out forwards;pointer-events:none`;
+  btn.style.position = 'relative'; btn.style.overflow = 'hidden';
+  btn.appendChild(r);
+  r.addEventListener('animationend', () => r.remove());
+}
+
 // ══════════════ SESSION PERSISTENCE (rejoin support) ══════════════
 const SESSION_KEY = 'cn_session';
 
@@ -2145,6 +2561,7 @@ function show(id) {
   document.getElementById(id).classList.add('on');
   window.scrollTo(0, 0);
   document.getElementById('leaveGameBtn').classList.toggle('visible', GAME_SCREENS.includes(id));
+  if (id !== 'vote') showChatBtn(false);
 }
 
 function confirmLeaveGame() {
@@ -2249,7 +2666,7 @@ async function renderLeaderboard(containerId) {
     <div class="lb-row ${medals[i]||''}">
       <div class="lb-rank">${['🥇','🥈','🥉'][i]||(i+1)+'.'}</div>
       <div><div class="lb-name">${e.name}</div>
-      <div class="lb-games">${e.games} game${e.games!==1?'s':''} · 🕵️${e.agentWins||0}W 🦹${e.imposterWins||0}W</div></div>
+      <div class="lb-games">${e.games} game${e.games!==1?'s':''} · 🕵️${e.agentWins||0}W 🧛🏻${e.imposterWins||0}W</div></div>
       <div class="lb-stats">
         <div class="lb-wr ${e.wr>=50?'good':'bad'}">${e.wr}%</div>
         <div class="lb-detail">${e.wins}W · ${e.losses}L</div>
@@ -2445,6 +2862,7 @@ async function showCreateRoom() {
     subscribeToRoom(code);
     registerDisconnectHandlers();
     saveSession();
+    SFX.roomCreated();
     showLobby();
   } catch(err) {
     toast('Failed to create room. Check your Firebase config.');
@@ -2537,12 +2955,22 @@ function subscribeToRoom(code) {
   addListener(roomRef, 'value', snap => {
     if (!snap.exists()) { handleRoomDeleted(); return; }
     const raw = snap.val();
-    // Sanitise: strip any player stub that lacks a name (can appear if onDisconnect
-    // fires before the full player record was written, or due to stale set() payloads)
+    // Sanitise: strip any player stub that lacks a name
     if (raw.players) {
       Object.keys(raw.players).forEach(pid => {
         if (!raw.players[pid]?.name) delete raw.players[pid];
       });
+    }
+    // Firebase stores arrays as {0:x,1:y} objects when they contain gaps or come
+    // back from update(). Normalise to real arrays so .includes()/.filter() work.
+    if (raw.game) {
+      const toArr = v => v == null ? [] : Array.isArray(v) ? v : Object.values(v);
+      raw.game.eliminated  = toArr(raw.game.eliminated);
+      raw.game.imposterIds = toArr(raw.game.imposterIds);
+      if (raw.game.voteLog) raw.game.voteLog = toArr(raw.game.voteLog);
+      if (raw.game.votes && !Array.isArray(raw.game.votes)) {
+        // votes is a map {playerId: targetId} — keep as object, never array-coerce
+      }
     }
     ROOM_STATE = raw;
     onRoomUpdate(ROOM_STATE);
@@ -2551,6 +2979,7 @@ function subscribeToRoom(code) {
 
 function handleRoomDeleted() {
   clearListeners();
+  stopChatListener();
   clearSession();
   ROOM = null; IS_HOST = false; ROOM_STATE = {};
   toast('Room was closed by the host');
@@ -2735,13 +3164,13 @@ async function leaveRoom() {
   if (IS_HOST) {
     showConfirm('🚪','Close Room','This will remove all players and end the game.',async () => {
       await roomRef.remove();
-      clearListeners(); ROOM=null; IS_HOST=false; ROOM_STATE={};
+      clearListeners(); stopChatListener(); ROOM=null; IS_HOST=false; ROOM_STATE={};
       clearSession();
       show('home');
     });
   } else {
     await roomRef.child(`players/${ME.id}`).remove();
-    clearListeners(); ROOM=null; IS_HOST=false; ROOM_STATE={};
+    clearListeners(); stopChatListener(); ROOM=null; IS_HOST=false; ROOM_STATE={};
     clearSession();
     show('home');
   }
@@ -2829,6 +3258,11 @@ async function hostStartGame() {
   const playerUpdates = {};
   players.forEach(p => { playerUpdates[`players/${p.id}/ready`] = false; playerUpdates[`players/${p.id}/vote`] = null; });
 
+  // Flash + sound on game start
+  const flash = document.getElementById('gameStartFlash');
+  if (flash) { flash.classList.remove('active'); void flash.offsetWidth; flash.classList.add('active'); }
+  SFX.gameStart();
+  if (navigator.vibrate) navigator.vibrate([60, 40, 60, 40, 100]);
   await roomRef.update({ ...playerUpdates, game: gameData, status: 'revealing', votes: {} });
   } finally { _gameStarting = false; }
 }
@@ -2862,14 +3296,16 @@ function showMyRole(state) {
       const coSection = coImposters.length > 0
         ? `<div class="co-imp-section">
              <div class="co-imp-label">YOUR ${coImposters.length > 1 ? 'ALLIES' : 'ALLY'}</div>
-             <div class="co-imp-chips">${coImposters.map(n=>`<div class="co-imp-chip">🦹 ${n}</div>`).join('')}</div>
+             <div class="co-imp-chips">${coImposters.map(n=>`<div class="co-imp-chip">🧛🏻 ${n}</div>`).join('')}</div>
            </div>`
         : '';
       face.classList.add('imp-face');
+      face.style.setProperty('--reveal-anim','imposterReveal');
       const chips = myRole.reveal.hints.map(h=>`<div class="hint-chip">${h}</div>`).join('');
       face.innerHTML = `<div class="role-emblem">${SVG_IMPOSTER}</div><div class="role-lbl">IMPOSTER</div><div class="hint-label">YOUR ${myRole.reveal.hints.length>1?'HINTS':'HINT'}</div><div class="hint-chips">${chips}</div><div class="hint-note">Blend in — you don't know the real secret word!</div>${coSection}`;
     } else {
       face.classList.add('agt-face');
+      face.style.setProperty('--reveal-anim','agentReveal');
       face.innerHTML = `<div class="role-emblem">${SVG_AGENT}</div><div class="role-lbl">AGENT</div><div class="secret-label">SECRET WORD</div><div class="secret-word">${myRole.reveal?.word||state.game?.word}</div><div class="agent-note">Describe it without saying it — give clues!</div>`;
     }
     attachTapReveal('myRoleCard', 'myRoleFace', onMyRoleRevealed, 'myRoleSeenBadge', 'myRoleBackSub');
@@ -2877,12 +3313,17 @@ function showMyRole(state) {
 }
 
 function onMyRoleRevealed() {
+  const myRole = ROOM_STATE.game?.roles?.[ME.id];
+  if (myRole?.isImposter) { SFX.imposterReveal(); if (navigator.vibrate) navigator.vibrate([30,20,60]); }
+  else { SFX.agentReveal(); if (navigator.vibrate) navigator.vibrate(15); }
   document.getElementById('myRoleInst').textContent = 'Remember your role — tap ready when done!';
   document.getElementById('myRoleDoneBtn').style.display = 'block';
   if (IS_HOST) document.getElementById('rerollWordBtn').style.display = 'block';
 }
 
 async function playerReadyAfterReveal() {
+  SFX.ready();
+  if (navigator.vibrate) navigator.vibrate(25);
   document.getElementById('myRoleDoneBtn').style.display = 'none';
   document.getElementById('rerollWordBtn').style.display = 'none';
   document.getElementById('myRoleWaitBar').style.display = 'flex';
@@ -3010,6 +3451,8 @@ async function moveToVoting() {
 function showVoteScreen(state) {
   show('vote');
   renderVoteScreen(state);
+  showChatBtn(true);
+  if (!chatListener) startChatListener();
 }
 
 // Live update — called when already on the vote screen.
@@ -3072,6 +3515,7 @@ function renderVoteScreen(state) {
 
   // Eliminated players are spectators — they cannot vote
   const amEliminated = eliminated.includes(ME.id);
+  setChatEliminated(amEliminated);
   const myVote = g.votes?.[ME.id];
   const hasActed = !!myVote || amEliminated;
   document.getElementById('votePlayerActions').style.display = hasActed ? 'none' : 'flex';
@@ -3098,7 +3542,10 @@ function renderVoteScreen(state) {
 async function submitMyVote() {
   if (!selVote) return toast('Select someone to vote out!');
   const eliminated = ROOM_STATE.game?.eliminated || [];
-  if (eliminated.includes(ME.id)) return; // eliminated players cannot vote
+  if (eliminated.includes(ME.id)) return;
+  SFX.voteConfirm();
+  if (navigator.vibrate) navigator.vibrate([20,30,40]);
+  const btn = document.getElementById('voteConfirmBtn'); if (btn) ripple(btn);
   await roomRef.child(`game/votes/${ME.id}`).set(selVote.pid);
   document.getElementById('votePlayerActions').style.display = 'none';
   document.getElementById('voteWaitBar').style.display = 'flex';
@@ -3106,7 +3553,8 @@ async function submitMyVote() {
 
 async function skipMyVote() {
   const eliminated = ROOM_STATE.game?.eliminated || [];
-  if (eliminated.includes(ME.id)) return; // eliminated players cannot vote
+  if (eliminated.includes(ME.id)) return;
+  SFX.voteSkip();
   await roomRef.child(`game/votes/${ME.id}`).set('skip');
   document.getElementById('votePlayerActions').style.display = 'none';
   document.getElementById('voteWaitBar').style.display = 'flex';
@@ -3126,7 +3574,9 @@ function updateVoteTally(state) {
   document.getElementById('voteTallyTxt').textContent = allVoted
     ? `All ${total} voted ✓`
     : `${voteCount} / ${total} voted`;
+  const wasFull = document.getElementById('voteFill').classList.contains('all-voted');
   document.getElementById('voteTallyTxt').style.color = allVoted ? 'var(--green)' : '';
+  if (allVoted && !wasFull) { SFX.allVoted(); if (navigator.vibrate) navigator.vibrate([30,20,30]); }
 
   const fill = document.getElementById('voteFill');
   fill.style.width = total ? `${(voteCount/total)*100}%` : '0%';
@@ -3381,13 +3831,15 @@ async function showResultScreen(state) {
 
   // Voting history
   renderVoteHistory(g, players);
+  setTimeout(()=>{ if(outcome==='agents_win') SFX.win(); else SFX.lose(); },400);
+  setTimeout(()=>staggerIn('#scoreList .score-row',80),300);
 
   // Session scores — read from the state snapshot (scores written by hostEndGame)
   const sorted = [...players].sort((a,b)=>(b.score||0)-(a.score||0));
   document.getElementById('scoreList').innerHTML = sorted.map((p,i)=>`
     <div class="score-row">
       <div class="s-rank">${['🥇','🥈','🥉'][i]||(i+1)+'.'}</div>
-      <div class="s-name">${p.name}${imposterIds.includes(p.id)?' 🦹':''}${(g.eliminated||[]).includes(p.id)?' ☠️':''}</div>
+      <div class="s-name">${p.name}${imposterIds.includes(p.id)?' 🧛🏻':''}${(g.eliminated||[]).includes(p.id)?' ☠️':''}</div>
       <div class="s-pts">${p.score||0}</div>
     </div>`).join('');
 
@@ -3429,9 +3881,11 @@ function attachTapReveal(cardId, faceId, onComplete, seenBadgeId, backSubId) {
   }
 
   function doCover() {
-    face.classList.remove('revealed');
+    face.style.animation = 'cardHide .32s cubic-bezier(.22,1,.36,1) forwards';
+    setTimeout(() => { face.style.animation = ''; face.classList.remove('revealed'); }, 320);
     card.classList.remove('card-revealed');
     if (backSub) backSub.textContent = 'TAP TO PEEK AGAIN';
+    SFX.cardReveal();
     if (seenBadgeId) {
       const badge = document.getElementById(seenBadgeId);
       if (badge) badge.classList.add('visible');
@@ -3694,6 +4148,10 @@ function offlineStartGame() {
     round: (OL.round||0) + 1,
   };
 
+  const flash2 = document.getElementById('gameStartFlash');
+  if (flash2) { flash2.classList.remove('active'); void flash2.offsetWidth; flash2.classList.add('active'); }
+  SFX.gameStart();
+  if (navigator.vibrate) navigator.vibrate([60,40,60,40,100]);
   offlineShowReveal();
 }
 
@@ -3737,7 +4195,7 @@ function offlineRenderReveal() {
       const coSection = coImposters.length > 0
         ? `<div class="co-imp-section">
              <div class="co-imp-label">YOUR ${coImposters.length > 1 ? 'ALLIES' : 'ALLY'}</div>
-             <div class="co-imp-chips">${coImposters.map(n=>`<div class="co-imp-chip">🦹 ${n}</div>`).join('')}</div>
+             <div class="co-imp-chips">${coImposters.map(n=>`<div class="co-imp-chip">🧛🏻 ${n}</div>`).join('')}</div>
            </div>`
         : '';
       face.classList.add('imp-face');
@@ -3752,6 +4210,11 @@ function offlineRenderReveal() {
 }
 
 function offlineOnRevealed() {
+  // Offline: we know current player's role from OL
+  const idx = OL.revealIdx - 1; // already incremented
+  const player = OL.players[idx < 0 ? 0 : idx];
+  if (player?.isImposter) { SFX.imposterReveal(); if (navigator.vibrate) navigator.vibrate([30,20,60]); }
+  else { SFX.agentReveal(); if (navigator.vibrate) navigator.vibrate(15); }
   OL.cardShown = true;
   document.getElementById('rvInst').textContent = 'Remember your role — pass the phone!';
   const btn = document.getElementById('rvNextBtn');
@@ -4021,6 +4484,9 @@ function showVoteResultOverlay(type, title, sub, onContinue, breakdownHtml) {
 }
 
 function _renderVoteOverlayContent(type, title, sub, breakdownHtml) {
+  if (type==='win'){SFX.win();if(navigator.vibrate)navigator.vibrate([40,30,40,30,80]);}
+  else if(type==='lose'){SFX.lose();if(navigator.vibrate)navigator.vibrate([80,40,80]);}
+  else SFX.tie();
   const SVG_WIN_SM = `<svg width="72" height="72" viewBox="0 0 72 72" fill="none"><circle cx="36" cy="36" r="32" fill="rgba(16,217,160,.15)" stroke="var(--green)" stroke-width="2"/><path d="M20 36l10 10 22-22" stroke="var(--green)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
   const SVG_LOSE_SM = `<svg width="72" height="72" viewBox="0 0 72 72" fill="none"><circle cx="36" cy="36" r="32" fill="rgba(232,54,74,.12)" stroke="var(--red)" stroke-width="2"/><path d="M24 24l24 24M48 24L24 48" stroke="var(--red2)" stroke-width="3.5" stroke-linecap="round"/></svg>`;
   const SVG_SKIP_SM = `<svg width="72" height="72" viewBox="0 0 72 72" fill="none"><circle cx="36" cy="36" r="32" fill="rgba(245,200,66,.1)" stroke="var(--gold)" stroke-width="2"/><path d="M24 36h24M42 28l8 8-8 8" stroke="var(--gold)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
@@ -4084,7 +4550,7 @@ async function offlineShowResult(outcome) {
   document.getElementById('scoreList').innerHTML = sorted.map((p,i)=>`
     <div class="score-row">
       <div class="s-rank">${['🥇','🥈','🥉'][i]||(i+1)+'.'}</div>
-      <div class="s-name">${p.name}${p.isImposter?' 🦹':''}${OL.eliminated.includes(p.id)?' ☠️':''}</div>
+      <div class="s-name">${p.name}${p.isImposter?' 🧛🏻':''}${OL.eliminated.includes(p.id)?' ☠️':''}</div>
       <div class="s-pts">${p.score}</div>
     </div>`).join('');
 
@@ -4126,8 +4592,11 @@ function selectVote(i, pid) {
     if (vch) vch.textContent='';
   });
   selVote = {index:i, pid};
-  document.getElementById(`vc${i}`).classList.add('picked');
-  document.getElementById(`vch${i}`).textContent='✓';
+  const card = document.getElementById(`vc${i}`);
+  if (card) { card.classList.add('picked','selecting'); card.addEventListener('animationend',()=>card.classList.remove('selecting'),{once:true}); }
+  const vchi = document.getElementById(`vch${i}`); if (vchi) vchi.textContent='✓';
+  SFX.voteSelect();
+  if (navigator.vibrate) navigator.vibrate(18);
 }
 
 // ══════════════════════════════════════════════════════════
@@ -4269,6 +4738,130 @@ function stopScanner() {
   video.srcObject = null;
 }
 
+// ══════════════ CHAT ══════════════
+let chatListener = null;
+let chatOpen = false;
+let chatUnread = 0;
+let chatMessages = [];
+
+function showChatBtn(visible) {
+  const btn = document.getElementById('chatBtn');
+  if (visible) btn.classList.add('visible');
+  else { btn.classList.remove('visible'); closeChatPanel(); }
+}
+
+function toggleChat() {
+  chatOpen ? closeChatPanel() : openChatPanel();
+}
+
+function openChatPanel() {
+  chatOpen = true;
+  document.getElementById('chatPanel').classList.add('open');
+  clearChatBadge();
+  scrollChatToBottom(true);
+  const inp = document.getElementById('chatInput');
+  if (inp && !inp.disabled) setTimeout(() => inp.focus(), 350);
+}
+
+function closeChatPanel() {
+  chatOpen = false;
+  document.getElementById('chatPanel').classList.remove('open');
+}
+
+function clearChatBadge() {
+  chatUnread = 0;
+  const b = document.getElementById('chatBadge');
+  b.textContent = ''; b.classList.remove('visible');
+}
+
+function bumpChatBadge() {
+  if (chatOpen) return;
+  chatUnread++;
+  const b = document.getElementById('chatBadge');
+  b.textContent = chatUnread > 9 ? '9+' : chatUnread;
+  b.classList.add('visible');
+}
+
+function scrollChatToBottom(instant) {
+  const el = document.getElementById('chatMsgs');
+  if (el) el.scrollTo({ top: el.scrollHeight, behavior: instant ? 'auto' : 'smooth' });
+}
+
+function escapeHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function renderChatMessages() {
+  const el = document.getElementById('chatMsgs');
+  if (!el) return;
+  const empty = document.getElementById('chatEmpty');
+  if (!chatMessages.length) { if (empty) empty.style.display='block'; return; }
+  if (empty) empty.style.display = 'none';
+  el.innerHTML = chatMessages.map(m => {
+    const mine = m.senderId === ME.id;
+    return `<div class="chat-msg${mine?' mine':''}">
+      <div class="chat-avatar">${m.avatar||'🎭'}</div>
+      <div class="chat-bubble${mine?' mine':''}">
+        <div class="chat-name">${mine?'You':escapeHtml(m.name)}</div>
+        <div class="chat-text">${escapeHtml(m.text)}</div>
+      </div>
+    </div>`;
+  }).join('');
+  scrollChatToBottom(false);
+}
+
+async function sendChat() {
+  const input = document.getElementById('chatInput');
+  if (!input) return;
+  const text = input.value.trim();
+  if (!text || !ROOM || !roomRef) return;
+  input.value = '';
+  try {
+    await roomRef.child('chat').push({
+      senderId: ME.id, name: ME.name, avatar: ME.avatar, text, ts: Date.now(),
+    });
+  } catch(e) { console.warn('Chat send failed', e); }
+}
+
+function startChatListener() {
+  if (!roomRef || chatListener) return;
+  const since = Date.now();
+  chatMessages = [];
+  chatListener = roomRef.child('chat').on('child_added', snap => {
+    const msg = snap.val();
+    if (!msg || !msg.text) return;
+    chatMessages.push(msg);
+    renderChatMessages();
+    if (msg.senderId !== ME.id && msg.ts > since) { bumpChatBadge(); SFX.chatPing(); }
+  });
+}
+
+function stopChatListener() {
+  if (roomRef && chatListener) roomRef.child('chat').off('child_added', chatListener);
+  chatListener = null; chatMessages = []; chatOpen = false; chatUnread = 0;
+  document.getElementById('chatPanel')?.classList.remove('open');
+}
+
+function setChatEliminated(isElim) {
+  const ftr = document.getElementById('chatFtr');
+  if (!ftr) return;
+  if (isElim) {
+    ftr.className = 'chat-ftr readonly';
+    ftr.innerHTML = '<span>👁 Spectating — view only</span>';
+  } else if (!ftr.querySelector('#chatInput')) {
+    ftr.className = 'chat-ftr';
+    ftr.innerHTML = `<input id="chatInput" placeholder="Message…" maxlength="200" autocomplete="off" autocorrect="off" spellcheck="false">
+      <button id="chatSendBtn" onclick="sendChat()">➤</button>`;
+    document.getElementById('chatInput').addEventListener('keydown', e => {
+      if (e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();}
+    });
+  }
+}
+
+document.getElementById('chatInput')?.addEventListener('keydown', e => {
+  if (e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();}
+});
+
 // ── Boot ──
 initTheme();
 loadGiglabz();
@@ -4336,6 +4929,13 @@ async function tryAutoRejoin() {
     clearSession();
     show('home');
   }
+}
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
 }
 </script>
 </body>
